@@ -4,10 +4,11 @@ using UnityEngine.SceneManagement;
 
 public class MainController : MonoBehaviour
 {
-    [SerializeField] private Transform _playerStarterPoint;
+    
+    [Header("Player")][SerializeField] private Transform _playerStarterPoint;
     [SerializeField] private PlayerView _playerPrefab;
     [SerializeField] private PlayerView _playerView;
-    [SerializeField] private bool _useMouse = true;
+    [Header("Settings")][SerializeField] private bool _useMouse = true;
     [SerializeField] private bool _debugTestingScene = false;
     [SerializeField] private string _testingSceneName = "";
 
@@ -18,20 +19,22 @@ public class MainController : MonoBehaviour
     {
         ///----------Services-------------
         DontDestroyOnLoad(this.gameObject);
-        //SceneManager.UnloadSceneAsync(_starterSceneName);
+        new InputController(this);
+        SceneManager.LoadSceneAsync(_testingSceneName, LoadSceneMode.Additive);
         
         
-
+        
         ///------SceneSettings------
         if (_playerStarterPoint == null)
         {
             //_playerStarterPoint = FindObjectOfType<PlayerStarterPosition>().transform;
-            Debug.Log($"Не повезло ");
+            Debug.Log($"Не повезло");
         }
-
-        _playerView = Instantiate(_playerPrefab, _playerStarterPoint.position, Quaternion.identity);
+        //_playerView = Instantiate(_playerPrefab, _playerStarterPoint.position, Quaternion.identity);
         //_playerView = _playerPrefab;
         //_playerController.SetPlayer(_playerView);
+        
+        
 
     }
 
@@ -39,10 +42,7 @@ public class MainController : MonoBehaviour
     {
         for (int i = 0; i < _controllers.Count; i++)
         {
-            if (_controllers[i] is IInitialize)
-            {
-                _controllers[i].Initialize();
-            }
+            _controllers[i].Initialize();
         }
     }
 

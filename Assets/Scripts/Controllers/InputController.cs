@@ -11,8 +11,10 @@ public class InputController : BaseController, IExecute
 
 
     private Vector2 _mouseStartPosition;
+
+    private bool _mouseCLickedPreviousFrame = false;
     private Vector2 _mouseOldPosition;
-    private Vector2 _mousePosition;
+    private Vector2 _mousePosition = Vector2.zero;
     
 
     /// <summary>
@@ -44,27 +46,27 @@ public class InputController : BaseController, IExecute
                 {
                     case TouchPhase.Began:
                         {
-                            InputEvents.current.TouchBeganEvent(_touch.position);
+                            InputEvents.Current.TouchBeganEvent(_touch.position);
                             break;
                         }
                     case TouchPhase.Canceled:
                         {
-                            InputEvents.current.TouchCancelledEvent();
+                            InputEvents.Current.TouchCancelledEvent();
                             break;
                         }
                     case TouchPhase.Moved:
                         {
-                            InputEvents.current.TouchMovedEvent(_touch.position);
+                            InputEvents.Current.TouchMovedEvent(_touch.position);
                             break;
                         }
                     case TouchPhase.Ended:
                         {
-                            InputEvents.current.TouchEndedEvent();
+                            InputEvents.Current.TouchEndedEvent(_touch.position);
                             break;
                         }
                     case TouchPhase.Stationary:
                         {
-                            InputEvents.current.TouchStationaryEvent();
+                            InputEvents.Current.TouchStationaryEvent();
                             break;
                         }
                 }
@@ -72,28 +74,66 @@ public class InputController : BaseController, IExecute
         }
         else
         {
+            if (_mouseCLickedPreviousFrame)
+            {
+                if (Input.GetMouseButton(0))
+                {
+                    _mousePosition = Input.mousePosition;
+                    if (_mousePosition == _mouseOldPosition)
+                    {
+                        InputEvents.Current.TouchStationaryEvent();
+                        Debug.Log("Cтационарно");
+                    }
+                    else
+                    {
+                        InputEvents.Current.TouchMovedEvent(_touch.position);
+                        Debug.Log("Мувд");
+                    }
+                }
+                else
+                {
+                    _mousePosition = Input.mousePosition;
+                    InputEvents.Current.TouchEndedEvent(_mousePosition);
+                    Debug.Log("Енд");
+                    _mouseCLickedPreviousFrame = false;
+                }
+            }
+            else
+            {
+                if (Input.GetMouseButton(0))
+                {
+                    _mouseCLickedPreviousFrame = true;
+                    InputEvents.Current.TouchBeganEvent(Input.mousePosition);
+                    Debug.Log("Старт");
+                }
+            }
+            _mouseOldPosition = _mousePosition;
+
+
+
+/*
             if (Input.GetMouseButtonDown(0))
             {
                 _mousePosition =_mouseOldPosition = _mouseStartPosition = Input.mousePosition * .01f;             
-                InputEvents.current.TouchBeganEvent(_mouseStartPosition);
+                InputEvents.Current.TouchBeganEvent(_mouseStartPosition);
             }
             if (Input.GetMouseButton(0))
             {
                 _mousePosition = Input.mousePosition * .01f;
                 if (_mousePosition == _mouseOldPosition)
                 {
-                    InputEvents.current.TouchStationaryEvent();
+                    InputEvents.Current.TouchStationaryEvent();
                 }
                 else
                 {
                     _mousePosition = _mousePosition - _mouseOldPosition;
-                    InputEvents.current.TouchMovedEvent(_mousePosition);
+                    InputEvents.Current.TouchMovedEvent(_mousePosition);
                 }
             }
             if (Input.GetMouseButtonUp(0))
             {
-                InputEvents.current.TouchEndedEvent();
-            }
+                InputEvents.Current.TouchEndedEvent();
+            }*/
         }
     }
 
