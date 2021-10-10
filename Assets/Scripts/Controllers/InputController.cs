@@ -4,31 +4,25 @@ using UnityEngine;
 
 public class InputController : BaseController, IExecute
 {
-    public InputController(MainController main) : base(main) { }
-    private bool _countQueue = true;
-    private Queue<Vector2> _queue = new Queue<Vector2>();
-    private float _temporalMagnitude = 0;
-
-
-    private Vector2 _mouseStartPosition;
-
-    private bool _mouseCLickedPreviousFrame = false;
-    private Vector2 _mouseOldPosition;
-    private Vector2 _mousePosition = Vector2.zero;
+    public InputController()  { }
     
+    private bool                 _countQueue = true;
+    private Queue<Vector2>       _queue = new Queue<Vector2>();
+    private float                _temporalMagnitude = 0;
+    private Vector2              _mouseStartPosition;
+    private bool                 _mouseCLickedPreviousFrame = false;
+    private Vector2              _mouseOldPosition;
+    private Vector2              _mousePosition = Vector2.zero;
+    private int                  _counter = 0;
+    private Touch                _firstTouch;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public float TemporalMagnitude = 0;
-    private int counter = 0;
-    private Touch _touch;
+    
+    public float                 TemporalMagnitude = 0;
+    
 
     public override void Initialize()
     {
         base.Initialize();
-
-
     }
 
     public void Execute()
@@ -41,12 +35,12 @@ public class InputController : BaseController, IExecute
         {
             if (Input.touchCount > 0)
             {
-                _touch = Input.GetTouch(0);
-                switch (_touch.phase)
+                _firstTouch = Input.GetTouch(0);
+                switch (_firstTouch.phase)
                 {
                     case TouchPhase.Began:
                         {
-                            InputEvents.Current.TouchBeganEvent(_touch.position);
+                            InputEvents.Current.TouchBeganEvent(_firstTouch.position);
                             break;
                         }
                     case TouchPhase.Canceled:
@@ -56,17 +50,17 @@ public class InputController : BaseController, IExecute
                         }
                     case TouchPhase.Moved:
                         {
-                            InputEvents.Current.TouchMovedEvent(_touch.position);
+                            InputEvents.Current.TouchMovedEvent(_firstTouch.position);
                             break;
                         }
                     case TouchPhase.Ended:
                         {
-                            InputEvents.Current.TouchEndedEvent(_touch.position);
+                            InputEvents.Current.TouchEndedEvent(_firstTouch.position);
                             break;
                         }
                     case TouchPhase.Stationary:
                         {
-                            InputEvents.Current.TouchStationaryEvent();
+                            InputEvents.Current.TouchStationaryEvent(_firstTouch.position);
                             break;
                         }
                 }
@@ -81,20 +75,20 @@ public class InputController : BaseController, IExecute
                     _mousePosition = Input.mousePosition;
                     if (_mousePosition == _mouseOldPosition)
                     {
-                        InputEvents.Current.TouchStationaryEvent();
-                        Debug.Log("Cтационарно");
+                        InputEvents.Current.TouchStationaryEvent(_mousePosition);
+                        //Debug.Log("Cтационарно");
                     }
                     else
                     {
-                        InputEvents.Current.TouchMovedEvent(_touch.position);
-                        Debug.Log("Мувд");
+                        InputEvents.Current.TouchMovedEvent(_mousePosition);
+                        //Debug.Log("Мувд");
                     }
                 }
                 else
                 {
                     _mousePosition = Input.mousePosition;
                     InputEvents.Current.TouchEndedEvent(_mousePosition);
-                    Debug.Log("Енд");
+                    //Debug.Log("Енд");
                     _mouseCLickedPreviousFrame = false;
                 }
             }
@@ -104,7 +98,7 @@ public class InputController : BaseController, IExecute
                 {
                     _mouseCLickedPreviousFrame = true;
                     InputEvents.Current.TouchBeganEvent(Input.mousePosition);
-                    Debug.Log("Старт");
+                    //Debug.Log("Старт");
                 }
             }
             _mouseOldPosition = _mousePosition;

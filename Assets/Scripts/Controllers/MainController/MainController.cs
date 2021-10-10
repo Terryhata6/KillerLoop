@@ -1,48 +1,83 @@
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class MainController : MonoBehaviour
 {
     
-    [Header("Player")][SerializeField] private Transform _playerStarterPoint;
-    [SerializeField] private PlayerView _playerPrefab;
-    [SerializeField] private PlayerView _playerView;
-    [Header("Settings")][SerializeField] private bool _useMouse = true;
-    [SerializeField] private bool _debugTestingScene = false;
-    [SerializeField] private string _testingSceneName = "";
-
-    private List<BaseController> _controllers = new List<BaseController>();
-
+    [Header("Player")]
+    [SerializeField] private Transform                      _playerStarterPoint;
+    [SerializeField] private PlayerView                     _playerPrefab;
+    [SerializeField] private PlayerView                     _playerView;
+    [SerializeField] private bool                           _needInstantiatePlayer;
+    [Header("Settings")]
+    [SerializeField] private bool                           _useMouse = true;
+    [SerializeField] private bool                           _debugTestingScene = false;
+    [SerializeField] private string                         _testingSceneName = "";
+    private List<BaseController>                            _controllers = new List<BaseController>();
+    
     public bool UseMouse => _useMouse;
+    
     private void Awake()
     {
         ///----------Services-------------
         DontDestroyOnLoad(this.gameObject);
-        new InputController(this);
-        SceneManager.LoadSceneAsync(_testingSceneName, LoadSceneMode.Additive);
         
+        _controllers.Add(new InputController().SetMainController(this));
+        _controllers.Add(new PlayerController().SetMainController(this));
         
-        
-        ///------SceneSettings------
-        if (_playerStarterPoint == null)
+        if (_debugTestingScene)
         {
-            //_playerStarterPoint = FindObjectOfType<PlayerStarterPosition>().transform;
-            Debug.Log($"Не повезло");
+            SceneManager.LoadSceneAsync(_testingSceneName, LoadSceneMode.Additive);
         }
+
+        
+
+        
         //_playerView = Instantiate(_playerPrefab, _playerStarterPoint.position, Quaternion.identity);
         //_playerView = _playerPrefab;
         //_playerController.SetPlayer(_playerView);
-        
-        
-
     }
 
     private void Start()
     {
+        //------SceneSettings------
         for (int i = 0; i < _controllers.Count; i++)
         {
             _controllers[i].Initialize();
+        }
+        
+        //------SceneSettings------
+        if (_playerStarterPoint != null)
+        {
+            //_playerStarterPoint = FindObjectOfType<PlayerStarterPosition>().transform;
+            
+        }
+        else
+        {
+            Debug.Log($"Нет стартовой точки", this.gameObject);
+        }
+        
+        if (!_needInstantiatePlayer)
+        {
+            if (_playerView != null)
+            {
+                GetController<PlayerController>().SetPlayerViewInstance(_playerView);
+                Debug.Log("Player set", _playerView.gameObject);
+            }
+            else
+            {
+                Debug.LogError("View not found and not instantiate from settings");
+            }
+        }
+        else
+        {
+            if (_playerPrefab != null)
+            {
+                _playerView = Instantiate(_playerPrefab, Vector3.zero, Quaternion.identity);
+                GetController<PlayerController>().SetPlayerViewInstance(_playerView);
+            }
         }
     }
 
@@ -55,6 +90,8 @@ public class MainController : MonoBehaviour
                 (_controllers[i] as IExecute).Execute();
             }
         }
+        
+        
     }
 
     private void LateUpdate()
@@ -122,8 +159,8 @@ public class MainController : MonoBehaviour
     /// </summary>
     public void stupid()
     {        
-        GetController<BaseController>();
-        InputController a = new InputController(this);
+        //GetController<BaseController>();
+        InputController a = new InputController();
         a = GetController<InputController>();
     }
     #endregion

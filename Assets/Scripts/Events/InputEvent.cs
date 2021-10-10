@@ -30,10 +30,10 @@ public class InputEvents
         #endregion
         
         #region TouchStationaryEvents
-        public Action OnTouchStationaryEvent;
-        public void TouchStationaryEvent()
+        public Action<Vector2> OnTouchStationaryEvent;
+        public void TouchStationaryEvent(Vector2 mousePos)
         {
-            OnTouchStationaryEvent?.Invoke();
+            OnTouchStationaryEvent?.Invoke(mousePos);
         }
         #endregion
         

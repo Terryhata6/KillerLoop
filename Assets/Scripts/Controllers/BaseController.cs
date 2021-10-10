@@ -3,15 +3,15 @@ using UnityEngine;
 
 public abstract class BaseController : IInitialize
 {
-    protected bool _isActive = true;
-    protected MainController _main;
-    public MainController Main => _main;
-    public BaseController(MainController main)
+    public BaseController()
     {
-        main.AddController(this);
-        _main = main;
-        //Debug.Log($"{this.GetType()} added in controller list");
+       
     }
+    
+    protected bool                  _isActive = true;
+    protected MainController        _main;
+    public MainController Main => _main;
+    
     public bool IsActive => _isActive;
     protected virtual void SetState(bool state)
     {
@@ -29,8 +29,15 @@ public abstract class BaseController : IInitialize
     {
         SetState(true);
     }
+    
     public virtual void Disable()
     {
         SetState(false);
+    }
+
+    public virtual BaseController SetMainController(MainController main)
+    {
+        _main = main;
+        return this;
     }
 }
