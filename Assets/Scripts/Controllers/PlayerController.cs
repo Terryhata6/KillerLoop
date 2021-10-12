@@ -3,11 +3,6 @@ using UnityEngine;
 
 public class PlayerController : BaseController, IExecute
 {
-    public PlayerController() 
-    {
-        
-    }
-    
     private PlayerView  _playerView;
     private Vector2     _positionDelta = Vector2.zero;
     private Vector2     _positionBegan = Vector2.zero;
@@ -19,6 +14,10 @@ public class PlayerController : BaseController, IExecute
     public Vector2      PositionEnd => _positionEnd;
     
     
+    public PlayerController() 
+    {
+        
+    }
     
     
     
@@ -51,7 +50,6 @@ public class PlayerController : BaseController, IExecute
     public void SetPlayerViewInstance(PlayerView view)
     {
         _playerView = view;
-        
     }
 
     private void UpdateBeganPosition(Vector2 beganPosition)

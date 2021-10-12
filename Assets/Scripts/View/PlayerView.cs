@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerView : MonoBehaviour
+public class PlayerView : BaseObjectView
 {
     [SerializeField] private PlayerState      _state = PlayerState.Idle;
     [SerializeField] private float            _movingBlend = 0;

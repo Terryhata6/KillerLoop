@@ -6,5 +6,4 @@
         WallMove,
         Jumping,
         Dead
-        
     }
