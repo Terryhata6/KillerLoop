@@ -4,47 +4,49 @@ using UnityEngine;
 
 public class PlayerView : BaseObjectView
 {
-    [SerializeField] private PlayerState      _state = PlayerState.Idle;
-    [SerializeField] private float            _movingBlend = 0;
-    [SerializeField] private Animator         _animator;
-    [SerializeField] private Rigidbody        _rigidbody;
-    [SerializeField] private float            _movementSpeed;
-    
+    [SerializeField] private PlayerState _state = PlayerState.Idle;
+    [SerializeField] private float _movingBlend = 0;
+    [SerializeField] private Animator _animator;
+    [SerializeField] private Rigidbody _rigidbody;
+    [SerializeField] private float _movementSpeed;
+    [SerializeField] private float _jumpForce;
+
     public PlayerState State => _state;
-    public float       MovingBlend => _movingBlend;
-    public Animator    Animator => _animator;
-    public Rigidbody   Rigidbody => _rigidbody;
-    public float       MovementSpeed => _movementSpeed;
+    public float MovingBlend => _movingBlend;
+    public Animator Animator => _animator;
+    public Rigidbody Rigidbody => _rigidbody;
+    public float MovementSpeed => _movementSpeed;
+    public float JumpForce => _jumpForce;
 
     public void SetState(PlayerState state)
     {
         switch (state)
         {
             case PlayerState.Idle:
-            {
-                break;
-            }
+                {
+                    break;
+                }
             case PlayerState.Dead:
-            {
-                break;
-            }
+                {
+                    break;
+                }
             case PlayerState.Jumping:
-            {
-                break;
-            }
+                {
+                    break;
+                }
             case PlayerState.Move:
-            {
-                break;
-            }
+                {
+                    break;
+                }
             case PlayerState.WallMove:
-            {
-                break;
-            }
+                {
+                    break;
+                }
             default: break;
         }
         _state = state;
     }
-    
+
     public void SetMovingBlend(float newValue)
     {
         _movingBlend = newValue;
@@ -54,6 +56,6 @@ public class PlayerView : BaseObjectView
 
     public void LevelFail()
     {
-        
+
     }
 }

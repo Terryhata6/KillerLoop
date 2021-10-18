@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 318778944230572930}
   - component: {fileID: 318778944230572928}
   - component: {fileID: 318778944230572929}
+  - component: {fileID: 8586124386378148408}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -72,6 +73,7 @@ MonoBehaviour:
   _animator: {fileID: 318778944230572930}
   _rigidbody: {fileID: 318778944230572929}
   _movementSpeed: 3
+  _jumpForce: 0
 --- !u!54 &318778944230572929
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -88,6 +90,20 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!136 &8586124386378148408
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 318778944230572931}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.25
+  m_Height: 1.5
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.75, z: 0}
 --- !u!1 &551953254865248472
 GameObject:
   m_ObjectHideFlags: 0
@@ -99,7 +115,6 @@ GameObject:
   - component: {fileID: 4861360519967340973}
   - component: {fileID: 551953254865248478}
   - component: {fileID: 551953254865248479}
-  - component: {fileID: 551953254865248477}
   m_Layer: 8
   m_Name: mixamorig:Hips
   m_TagString: Untagged
@@ -153,20 +168,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!136 &551953254865248477
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 551953254865248472}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  m_Radius: 0.2961112
-  m_Height: 1.0774088
-  m_Direction: 1
-  m_Center: {x: -0.02452189, y: -0.09129566, z: 0.10333419}
 --- !u!1 &616283973049921579
 GameObject:
   m_ObjectHideFlags: 0
@@ -1066,7 +1067,7 @@ Cloth:
   - maxDistance: 0
     collisionSphereDistance: 3.4028235e+38
   m_CapsuleColliders:
-  - {fileID: 551953254865248477}
+  - {fileID: 0}
   - {fileID: 5436632081788670879}
   - {fileID: 2517625628291333335}
   - {fileID: 8282847878981421910}
