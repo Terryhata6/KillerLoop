@@ -2,17 +2,18 @@
 
 public class PlayerMovingStateModel : BasePlayerStateModel
 {
-    private Vector3       _movingVector = Vector3.zero;
-    private Vector2       _movingVector2D;
-    private float         _magnitude;
-    private Quaternion    _rotationTemp;
-    private Vector3       _translatePositionTemp;
-    private float         _vectorSpeedMagnitude;
+    private Vector3 _movingVector = Vector3.zero;
+    private Vector2 _movingVector2D;
+    private float _magnitude;
+    private Quaternion _rotationTemp;
+    private Vector3 _translatePositionTemp;
+    private float _vectorSpeedMagnitude;
 
 
     public override void Execute(PlayerController controller, PlayerView player)
     {
         base.Execute(controller, player);
+        FindLand(player);
 
         _movingVector2D = controller.PositionDelta - controller.PositionBegan;
 
@@ -28,7 +29,7 @@ public class PlayerMovingStateModel : BasePlayerStateModel
         _movingVector.x = _movingVector2D.x;
         _movingVector.z = _movingVector2D.y;
         _movingVector.y = 0;
-         
+
         _rotationTemp = Quaternion.LookRotation(_movingVector, Vector3.up);
         player.transform.rotation = _rotationTemp;
 

@@ -12,25 +12,32 @@ public abstract class BasePlayerStateModel : IPlayerState
 
     public virtual void Execute(PlayerController controller, PlayerView player)
     {
-        /*
+        
+    }
+
+    public void FindLand(PlayerView player)
+    {
         if (Physics.Raycast(player.transform.position + _raycastOffset, Vector3.down, out _hit, _rayLenght))
         {
             player.Rigidbody.isKinematic = true;
             player.transform.position += new Vector3(0, (_footDistance - _hit.distance), 0);
-            if (player.Animator.GetBool("InFalling"))
-            {
-                player.Animator.SetBool("InFalling", false);
-            }
+            //if (player.Animator.GetBool("InFalling"))
+            //{
+            //    player.Animator.SetBool("InFalling", false);
+            //}
         }
         else
         {
             player.Rigidbody.isKinematic = false;
-            player.Animator.SetBool("InFalling", true);
+            //if (player.Animator.GetBool("InFalling"))
+            //{
+            //    player.Animator.SetBool("InFalling", true);
+            //}
             if (player.Rigidbody.velocity.y <= _failVelocity)
             {
                 player.LevelFail();
                 Time.timeScale = 0;
             }
-        }*/
+        }
     }
 }

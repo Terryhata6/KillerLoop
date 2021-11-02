@@ -3,7 +3,7 @@
     {
         Idle,
         Move,
-        WallMove,
         Jumping,
+        WallRunLeft,
         Dead
     }
