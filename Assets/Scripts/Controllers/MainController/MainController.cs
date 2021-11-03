@@ -8,9 +8,9 @@ public class MainController : MonoBehaviour
     
     [Header("Player")]
     [SerializeField] private Transform                      _playerStarterPoint;
-    [SerializeField] private PlayerView                     _playerPrefab;
+    [SerializeField] private GameObject                     _playerPrefab;
     [SerializeField] private PlayerView                     _playerView;
-    [SerializeField] private bool                           _needInstantiatePlayer;
+
     [Header("Settings")]
     [SerializeField] private bool                           _useMouse = true;
     [SerializeField] private bool                           _debugTestingScene = false;
@@ -18,6 +18,7 @@ public class MainController : MonoBehaviour
     private List<BaseController>                            _controllers = new List<BaseController>();
     
     public bool UseMouse => _useMouse;
+    public Transform PlayerTransform => _playerView.transform;
     
     private void Awake()
     {
@@ -26,18 +27,18 @@ public class MainController : MonoBehaviour
         
         _controllers.Add(new InputController().SetMainController(this));
         _controllers.Add(new PlayerController().SetMainController(this));
+        _controllers.Add(new CameraController().SetMainController(this));
         
         if (_debugTestingScene)
         {
             SceneManager.LoadSceneAsync(_testingSceneName, LoadSceneMode.Additive);
         }
 
-        
 
-        
-        //_playerView = Instantiate(_playerPrefab, _playerStarterPoint.position, Quaternion.identity);
-        //_playerView = _playerPrefab;
+        _playerPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/Player/Player"));
+        _playerView = _playerPrefab.GetComponent<PlayerView>();
         //_playerController.SetPlayer(_playerView);
+        GetController<PlayerController>().SetPlayerViewInstance(_playerView);
     }
 
     private void Start()
@@ -52,32 +53,10 @@ public class MainController : MonoBehaviour
         if (_playerStarterPoint != null)
         {
             //_playerStarterPoint = FindObjectOfType<PlayerStarterPosition>().transform;
-            
         }
         else
         {
-            Debug.Log($"Нет стартовой точки", this.gameObject);
-        }
-        
-        if (!_needInstantiatePlayer)
-        {
-            if (_playerView != null)
-            {
-                GetController<PlayerController>().SetPlayerViewInstance(_playerView);
-                Debug.Log("Player set", _playerView.gameObject);
-            }
-            else
-            {
-                Debug.LogError("View not found and not instantiate from settings");
-            }
-        }
-        else
-        {
-            if (_playerPrefab != null)
-            {
-                _playerView = Instantiate(_playerPrefab, Vector3.zero, Quaternion.identity);
-                GetController<PlayerController>().SetPlayerViewInstance(_playerView);
-            }
+            CustomDebug.Log($"Нет стартовой точки", this.gameObject);
         }
     }
 
