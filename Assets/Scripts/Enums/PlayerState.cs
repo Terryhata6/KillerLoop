@@ -5,5 +5,6 @@
         Move,
         Jumping,
         WallRunLeft,
+        Slide,
         Dead
     }

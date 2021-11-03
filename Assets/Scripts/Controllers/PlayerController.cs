@@ -34,6 +34,7 @@ public class PlayerController : BaseController, IExecute
             {PlayerState.Jumping, new PlayerJumpingStateModel()},
             {PlayerState.Move, new PlayerMovingStateModel()},
             {PlayerState.WallRunLeft, new PlayerWallRunLeftModel()},
+            {PlayerState.Slide, new PlayerSlideStateModel()},
             {PlayerState.Dead, new PlayerDeadStateModel()}
         };
     }
@@ -54,9 +55,9 @@ public class PlayerController : BaseController, IExecute
 
     private void UpdateBeganPosition(Vector2 beganPosition)
     {
+        _positionBegan = beganPosition;
         if (_playerView.State == PlayerState.Idle)
         {
-            _positionBegan = beganPosition;
             _playerView.SetState(PlayerState.Move);
         }
     }
@@ -64,14 +65,18 @@ public class PlayerController : BaseController, IExecute
     private void UpdateDeltaPosition(Vector2 deltaPosition)
     {
         _positionDelta = deltaPosition;
+        if (_playerView.State == PlayerState.Idle)
+        {
+            _playerView.SetState(PlayerState.Move);
+        }
     }
 
     private void UpdateEndPosition(Vector2 endPosition)
     {
+        _positionEnd = endPosition;
+        UpdateBeganPosition(Vector2.zero);
         if (_playerView.State == PlayerState.Move)
         {
-            _positionEnd = endPosition;
-            UpdateBeganPosition(Vector2.zero);
             _playerView.SetState(PlayerState.Idle);
         }
     }
