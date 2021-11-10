@@ -35,6 +35,7 @@ public class PlayerController : BaseController, IExecute
             {PlayerState.Move, new PlayerMovingStateModel()},
             {PlayerState.WallRunLeft, new PlayerWallRunLeftModel()},
             {PlayerState.Slide, new PlayerSlideStateModel()},
+            {PlayerState.JumpOver, new PlayerJumpOverStateModel()},
             {PlayerState.Dead, new PlayerDeadStateModel()}
         };
     }
@@ -75,6 +76,7 @@ public class PlayerController : BaseController, IExecute
     {
         _positionEnd = endPosition;
         UpdateBeganPosition(Vector2.zero);
+        UpdateDeltaPosition(Vector2.zero);
         if (_playerView.State == PlayerState.Move)
         {
             _playerView.SetState(PlayerState.Idle);

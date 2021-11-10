@@ -95,7 +95,7 @@ public class PlayerWallRunLeftModel : BasePlayerStateModel
         _timer -= Time.deltaTime;
         if (_timer <= 0)
         {
-            player.SetState(PlayerState.Idle);
+            player.SetState(PlayerState.Move);
         }
     }
 }
