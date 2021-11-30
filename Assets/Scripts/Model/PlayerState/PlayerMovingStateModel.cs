@@ -36,6 +36,11 @@ public class PlayerMovingStateModel : BasePlayerStateModel
         _translatePositionTemp = Vector3.forward * _vectorSpeedMagnitude * player.MovementSpeed * Time.deltaTime;
         player.transform.Translate(_translatePositionTemp);
 
+        if (player.IsWall)
+        {
+            player.transform.Translate(_translatePositionTemp * -1.0f);
+        }
+
         player.SetMovingBlend(_vectorSpeedMagnitude);
         //GameEvents.Current.MoveConnectedEnemy(_rotationTemp, _translatePositionTemp, _magnitude);
     }

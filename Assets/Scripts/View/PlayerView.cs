@@ -10,6 +10,7 @@ public class PlayerView : BaseObjectView
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private float _movementSpeed;
     [SerializeField] private float _jumpForce;
+    [SerializeField] private bool _isWall;
 
     private PlayerStateTriggerView _trigger;
 
@@ -20,6 +21,7 @@ public class PlayerView : BaseObjectView
     public float MovementSpeed => _movementSpeed;
     public float JumpForce => _jumpForce;
     public PlayerStateTriggerView Trigger => _trigger;
+    public bool IsWall => _isWall;
 
 
     private void Awake()
@@ -84,6 +86,11 @@ public class PlayerView : BaseObjectView
     public void SetTrigger(PlayerStateTriggerView trigger)
     {
         _trigger = trigger;
+    }
+
+    public void SetWallState(bool state)
+    {
+        _isWall = state;
     }
 
     public void LevelFail()
