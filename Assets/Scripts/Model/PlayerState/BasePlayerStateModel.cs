@@ -50,6 +50,12 @@ public abstract class BasePlayerStateModel : IPlayerState
             if (_wallHit.transform.gameObject.CompareTag(TagManager.Wall))
             {
                 player.SetWallState(true);
+                CustomDebug.LogWarning("Зина, это стена!");
+            }
+            else if (_wallHit.transform.gameObject.CompareTag(TagManager.Enemy))
+            {
+                player.SetState(PlayerState.FallBack);
+                CustomDebug.LogWarning("Галя, ОТМЕНА!");
             }
         }
         else

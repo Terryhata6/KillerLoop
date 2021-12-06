@@ -36,6 +36,7 @@ public class PlayerController : BaseController, IExecute
             {PlayerState.WallRunLeft, new PlayerWallRunLeftModel()},
             {PlayerState.Slide, new PlayerSlideStateModel()},
             {PlayerState.JumpOver, new PlayerJumpOverStateModel()},
+            {PlayerState.FallBack, new PlayerFallBackStateModel()},
             {PlayerState.Dead, new PlayerDeadStateModel()}
         };
     }

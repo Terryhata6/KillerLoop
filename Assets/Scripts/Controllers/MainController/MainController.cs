@@ -23,7 +23,7 @@ public class MainController : MonoBehaviour
     private void Awake()
     {
         ///----------Services-------------
-        DontDestroyOnLoad(this.gameObject);
+        //DontDestroyOnLoad(this.gameObject);
         
         _controllers.Add(new InputController().SetMainController(this));
         _controllers.Add(new PlayerController().SetMainController(this));

@@ -7,5 +7,6 @@
         WallRunLeft,
         Slide,
         JumpOver,
+        FallBack,
         Dead
     }
