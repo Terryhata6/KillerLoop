@@ -124,4 +124,13 @@ public class UIController : MonoBehaviour
         }
     }
     #endregion
+
+    private void OnDestroy()
+    {
+        UIEvents.Current.OnButtonStartGame -= StartGame;
+        UIEvents.Current.OnButtonPauseGame -= PauseGame;
+        UIEvents.Current.OnButtonResumeGame -= StartGame;
+        UIEvents.Current.OnButtonNextLevel -= NextLevel;
+        UIEvents.Current.OnButtonRestartGame -= RestartGame;
+    }
 }
