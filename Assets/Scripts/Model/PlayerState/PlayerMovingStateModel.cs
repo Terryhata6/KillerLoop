@@ -13,30 +13,59 @@ public class PlayerMovingStateModel : BasePlayerStateModel
     public override void Execute(PlayerController controller, PlayerView player)
     {
         base.Execute(controller, player);
-        FindLand(player);
+        if (controller.PositionBegan == Vector2.zero)
+        {
+            player.SetState(PlayerState.Idle);
+            return;
+        }
+        
+        //FindLand(player);
 
         _movingVector2D = controller.PositionDelta - controller.PositionBegan;
 
-        _magnitude = _movingVector2D.magnitude;
-
-        if (_magnitude > 100)
-        {
-            _magnitude = 100.0f;
-        }
+        CalculateMovingVector3d(_movingVector2D, out _movingVector, out _magnitude);
 
         _vectorSpeedMagnitude = _magnitude * 0.01f;
 
-        _movingVector.x = _movingVector2D.x;
-        _movingVector.z = _movingVector2D.y;
-        _movingVector.y = 0;
-
         _rotationTemp = Quaternion.LookRotation(_movingVector, Vector3.up);
-        player.transform.rotation = _rotationTemp;
-
-        _translatePositionTemp = Vector3.forward * _vectorSpeedMagnitude * player.MovementSpeed * Time.deltaTime;
-        player.transform.Translate(_translatePositionTemp);
+        _translatePositionTemp = player.Forward * _vectorSpeedMagnitude * player.MovementSpeed * Time.deltaTime;
+        
+        player.Rotate(_rotationTemp);
+        player.Move(_translatePositionTemp);
 
         player.SetMovingBlend(_vectorSpeedMagnitude);
         //GameEvents.Current.MoveConnectedEnemy(_rotationTemp, _translatePositionTemp, _magnitude);
+        
+        CheckToJump(player);
+    }
+
+    private void CalculateMovingVector3d(Vector2 vector2d,out Vector3 movingVector3d, out float magnitude)
+    {
+        magnitude = vector2d.magnitude;
+
+        if (magnitude > 100)
+        {
+            magnitude = 100.0f;
+        }
+        movingVector3d.x = vector2d.x;
+        movingVector3d.z = vector2d.y;
+        movingVector3d.y = 0;
+        
+    }
+    
+    private void CheckToJump(PlayerView player)
+    {
+        if (!player.RayCastCheck(player.Position + Vector3.up * 1.5f, player.Forward * 2f + Vector3.down * 4f, 3f, 1 << 11))
+        {
+            Debug.Log("jump");
+            player.StopRun();
+            player.Jump();
+        }
+        else if (player.RayCastCheck(player.Position + Vector3.up * 1.5f, player.Forward * 1f, 1.5f , 1 << 11))
+        {
+            player.StopRun();
+            player.Jump();
+            Debug.Log("jump");
+        }
     }
 }

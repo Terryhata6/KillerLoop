@@ -33,8 +33,9 @@ public class PlayerController : BaseController, IExecute
             {PlayerState.Idle, new PlayerIdleStateModel()},
             {PlayerState.Jumping, new PlayerJumpingStateModel()},
             {PlayerState.Move, new PlayerMovingStateModel()},
-            {PlayerState.WallRunLeft, new PlayerWallRunLeftModel()},
-            {PlayerState.Dead, new PlayerDeadStateModel()}
+            {PlayerState.Dead, new PlayerDeadStateModel()},
+            {PlayerState.WallRun, new PlayerRunWallModel()},
+            {PlayerState.Slide, new PlayerSlideModel()}
         };
     }
 
@@ -50,15 +51,21 @@ public class PlayerController : BaseController, IExecute
     public void SetPlayerViewInstance(PlayerView view)
     {
         _playerView = view;
+        PlayerInit(_playerView);
+    }
+
+    public void PlayerInit(PlayerView player)
+    {
+        player.SetState(PlayerState.Idle);
     }
 
     private void UpdateBeganPosition(Vector2 beganPosition)
     {
-        if (_playerView.State == PlayerState.Idle)
-        {
+        //if (_playerView.State == PlayerState.Idle)
+        //{
             _positionBegan = beganPosition;
-            _playerView.SetState(PlayerState.Move);
-        }
+            //_playerView.SetState(PlayerState.Move);
+       // }
     }
 
     private void UpdateDeltaPosition(Vector2 deltaPosition)
@@ -68,11 +75,12 @@ public class PlayerController : BaseController, IExecute
 
     private void UpdateEndPosition(Vector2 endPosition)
     {
-        if (_playerView.State == PlayerState.Move)
-        {
+        //if (_playerView.State == PlayerState.Move)
+        //{
             _positionEnd = endPosition;
+            UpdateDeltaPosition(Vector2.zero);
             UpdateBeganPosition(Vector2.zero);
-            _playerView.SetState(PlayerState.Idle);
-        }
+            //_playerView.SetState(PlayerState.Idle);
+       // }
     }
 }

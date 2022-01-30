@@ -52,6 +52,7 @@ public class MainController : MonoBehaviour
         //------SceneSettings------
         if (_playerStarterPoint != null)
         {
+            _playerView.transform.position = _playerStarterPoint.position;
             //_playerStarterPoint = FindObjectOfType<PlayerStarterPosition>().transform;
         }
         else

@@ -3,19 +3,23 @@ using Abstractions;
 
 public abstract class BasePlayerStateModel : IPlayerState
 {
-    private RaycastHit _hit;
+    protected RaycastHit _hit;
     private float _footDistance = 1f;
     private Vector3 _raycastOffset = new Vector3(0, 1, 0);
     private float _rayLenght = 2f;
     private float _failVelocity = -10f;
+    private float _temp;
+    private Vector3 _tempVector;
 
 
     public virtual void Execute(PlayerController controller, PlayerView player)
     {
         
     }
-
-    public void FindLand(PlayerView player)
+    
+    
+    
+    protected void FindLand(PlayerView player)
     {
         if (Physics.Raycast(player.transform.position + _raycastOffset, Vector3.down, out _hit, _rayLenght))
         {
