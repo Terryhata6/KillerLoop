@@ -56,7 +56,7 @@ public class PlayerController : BaseController, IExecute
 
     public void PlayerInit(PlayerView player)
     {
-        player.SetState(PlayerState.Idle);
+        player.Stand();
     }
 
     private void UpdateBeganPosition(Vector2 beganPosition)

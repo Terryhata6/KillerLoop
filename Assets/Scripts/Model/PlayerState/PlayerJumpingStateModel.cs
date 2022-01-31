@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 
-
 public class PlayerJumpingStateModel : BasePlayerStateModel
 {
     private Vector3 _tempVector;
@@ -8,13 +7,9 @@ public class PlayerJumpingStateModel : BasePlayerStateModel
     private float _y;
     private float _x;
     private float _timer;
-    private float _landingTime = 1.0f;
     private Vector2 _movingVector2D;
     private Vector3 _movingVector;
     private float _magnitude;
-    private float _vectorSpeedMagnitude;
-    private Quaternion _rotationTemp;
-    private Vector3 _translatePositionTemp;
 
     public override void Execute(PlayerController controller, PlayerView player)
     {
@@ -37,14 +32,9 @@ public class PlayerJumpingStateModel : BasePlayerStateModel
             }
 
             CalculateMovingVector3d(_movingVector2D, out _movingVector, out _magnitude);
-
-            _vectorSpeedMagnitude = _magnitude * 0.01f;
-        
-            _rotationTemp = Quaternion.LookRotation(_movingVector, Vector3.up);
-            _translatePositionTemp = player.Forward * _vectorSpeedMagnitude * player.MovementSpeed * Time.deltaTime;
-        
-            player.Rotate(_rotationTemp);
-            player.Move(_translatePositionTemp);
+            
+            player.Rotate(Quaternion.LookRotation(_movingVector, Vector3.up));
+            player.Move(player.Forward * _magnitude * Time.deltaTime);
             CheckToLand(player);
             CheckForAWall(player);
         }
@@ -58,6 +48,7 @@ public class PlayerJumpingStateModel : BasePlayerStateModel
         {
             magnitude = 100.0f;
         }
+        magnitude *= 0.01f;
         movingVector3d.x = vector2d.x;
         movingVector3d.z = vector2d.y;
         movingVector3d.y = 0;
@@ -70,6 +61,7 @@ public class PlayerJumpingStateModel : BasePlayerStateModel
         {
             Debug.Log("land");
             player.Land();
+            FindLand(player);
             player.Stand();
         }
     }
@@ -81,14 +73,12 @@ public class PlayerJumpingStateModel : BasePlayerStateModel
         if (player.RayCastCheck(player.Position + (_tempVector + Vector3.up) * 0.5f, player.Forward.normalized + Vector3.up, 1f, 1 << 11))
         {
             player.Land();
-            player.WallRun(WallSide.Right);
-            Debug.Log("wallRIGHT");
+            player.WallRun();
         }
         else if (player.RayCastCheck(player.Position - (_tempVector - Vector3.up) * 0.5f, player.Forward.normalized  + Vector3.up, 1f, 1 << 11))
         {
-            Debug.Log("wallleft");
             player.Land();
-            player.WallRun(WallSide.Left);
+            player.WallRun();
         }
     }
 

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerStateTriggerView : BaseObjectView
+public class EngPassObject : BaseObjectView
 {
     [SerializeField] private PlayerState _playerState;
 
@@ -12,8 +12,7 @@ public class PlayerStateTriggerView : BaseObjectView
     {
         if (other.TryGetComponent(out PlayerView player))
         {
-            player.SetState(_playerState);
-            player.SetTrigger(this);
+            
         }
     }
 }

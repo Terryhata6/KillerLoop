@@ -1,6 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerView : BaseObjectView
 {
@@ -10,22 +10,22 @@ public class PlayerView : BaseObjectView
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private float _movementSpeed;
     [SerializeField] private float _jumpForce;
+    [SerializeField] private Image _indicatorImage;
     private bool _jumping;
     private RaycastHit _hit;
     private Vector3 _tempVector;
     private float _iterator = 0f;
     private float _x = -1f;
     private bool _wallRunning;
-    private float _wallSide;
-    private PlayerStateTriggerView _trigger;
+    private Camera _mainCam;
 
+    public Image IndicatorImage => _indicatorImage;
     public RaycastHit Hit => _hit;
     public PlayerState State => _state;
-    public float MovingBlend => _movingBlend;
     public Animator Animator => _animator;
     public Rigidbody Rigidbody => _rigidbody;
-    public float MovementSpeed => _movementSpeed;
-    public float JumpForce => _jumpForce;
+    public Camera MainCam => _mainCam;
+
     public bool Jumping
     {
         get => _jumping;
@@ -36,9 +36,6 @@ public class PlayerView : BaseObjectView
         get => _wallRunning;
         set => _wallRunning = value;
     }
-    public float WallSide => _wallSide;
-
-    public PlayerStateTriggerView Trigger => _trigger;
 
 
     private void Awake()
@@ -47,45 +44,21 @@ public class PlayerView : BaseObjectView
         {
             _rigidbody = GetComponent<Rigidbody>();
         }
-        
+        _mainCam = Camera.main;
         SetRagdoll(false);
     }
 
 
-    public void SetState(PlayerState state)
-    {
-        //switch (state)
-        //{
-        //    case PlayerState.Idle:
-        //        {
-        //            break;
-        //        }
-        //    case PlayerState.Dead:
-        //        {
-        //            break;
-        //        }
-        //    case PlayerState.Jumping:
-        //        {
-        //            break;
-        //        }
-        //    case PlayerState.Move:
-        //        {
-        //            break;
-        //        }
-        //    case PlayerState.WallMove:
-        //        {
-        //            break;
-        //        }
-        //    default: break;
-        //}
-        _state = state;
-    }
+    // public void SetState(PlayerState state)
+    // {
+    //     _state = state;
+    // }
 
     #region Actions
 
     public void Move(Vector3 dir)
     {
-        transform.position += dir;
+        transform.position += dir * _movementSpeed;
     }
 
     public void Rotate(Quaternion dir)
@@ -106,13 +79,12 @@ public class PlayerView : BaseObjectView
         _animator.SetBool("Jump", false);
     }
 
-    public void WallRun(WallSide side)
+    public void WallRun()
     {
         _rigidbody.useGravity = false;
         _wallRunning = false;
         _animator.SetBool("WallRun",true);
         _state = PlayerState.WallRun;
-        _wallSide = (float) side;
     }
 
     public void StopWallRun()
@@ -124,6 +96,10 @@ public class PlayerView : BaseObjectView
     public void StopRun()
     {
         _animator.SetBool("Run", false);
+    }
+    public void Run()
+    {
+        _state = PlayerState.Move;
     }
 
     public void Jump()
@@ -165,11 +141,7 @@ public class PlayerView : BaseObjectView
         _rigidbody.isKinematic = false;
         _animator.enabled = !value;
     }
-
-    public void SetTrigger(PlayerStateTriggerView trigger)
-    {
-        _trigger = trigger;
-    }
+    
 
     public void LevelFail()
     {

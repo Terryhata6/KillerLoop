@@ -5,35 +5,22 @@ public class PlayerMovingStateModel : BasePlayerStateModel
     private Vector3 _movingVector = Vector3.zero;
     private Vector2 _movingVector2D;
     private float _magnitude;
-    private Quaternion _rotationTemp;
-    private Vector3 _translatePositionTemp;
-    private float _vectorSpeedMagnitude;
-
 
     public override void Execute(PlayerController controller, PlayerView player)
     {
         base.Execute(controller, player);
         if (controller.PositionBegan == Vector2.zero)
         {
-            player.SetState(PlayerState.Idle);
+            player.Stand();
             return;
         }
-        
-        //FindLand(player);
 
         _movingVector2D = controller.PositionDelta - controller.PositionBegan;
-
         CalculateMovingVector3d(_movingVector2D, out _movingVector, out _magnitude);
 
-        _vectorSpeedMagnitude = _magnitude * 0.01f;
-
-        _rotationTemp = Quaternion.LookRotation(_movingVector, Vector3.up);
-        _translatePositionTemp = player.Forward * _vectorSpeedMagnitude * player.MovementSpeed * Time.deltaTime;
-        
-        player.Rotate(_rotationTemp);
-        player.Move(_translatePositionTemp);
-
-        player.SetMovingBlend(_vectorSpeedMagnitude);
+        player.Rotate(Quaternion.LookRotation(_movingVector, Vector3.up));
+        player.Move(player.Forward * _magnitude * Time.deltaTime);
+        player.SetMovingBlend(_magnitude);
         //GameEvents.Current.MoveConnectedEnemy(_rotationTemp, _translatePositionTemp, _magnitude);
         
         CheckToJump(player);
@@ -42,15 +29,15 @@ public class PlayerMovingStateModel : BasePlayerStateModel
     private void CalculateMovingVector3d(Vector2 vector2d,out Vector3 movingVector3d, out float magnitude)
     {
         magnitude = vector2d.magnitude;
-
         if (magnitude > 100)
         {
             magnitude = 100.0f;
         }
+        magnitude *= 0.01f;
+        
         movingVector3d.x = vector2d.x;
         movingVector3d.z = vector2d.y;
         movingVector3d.y = 0;
-        
     }
     
     private void CheckToJump(PlayerView player)
