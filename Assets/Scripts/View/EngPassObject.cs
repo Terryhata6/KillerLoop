@@ -1,18 +1,20 @@
+
 using UnityEngine;
+using System.Collections.Generic;
 
 public class EngPassObject : BaseObjectView
 {
-    [SerializeField] private PlayerState _playerState;
+    [SerializeField] private List<Transform> _moveTransforms;
+    private List<Vector3> _movePoints;
 
-    public PlayerState PlayerState => _playerState;
-    public Transform Transform => transform;
-
-
-    private void OnTriggerEnter(Collider other)
+    private void Awake()
     {
-        if (other.TryGetComponent(out PlayerView player))
+        _movePoints = new List<Vector3>();
+        for (int i = 0; i < _moveTransforms.Count; i++)
         {
-            
+            _movePoints.Add(_moveTransforms[i].position);
         }
     }
+
+    public List<Vector3> MovePoints => _movePoints;
 }

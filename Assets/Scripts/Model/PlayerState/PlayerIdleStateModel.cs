@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-
+﻿
 public class PlayerIdleStateModel : BasePlayerStateModel
 {
     public override void Execute(PlayerController controller, PlayerView player)

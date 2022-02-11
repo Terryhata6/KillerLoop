@@ -6,5 +6,6 @@
         Jumping,
         Dead,
         WallRun,
-        Slide
+        Slide,
+        Killing
     }

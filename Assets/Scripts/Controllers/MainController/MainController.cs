@@ -15,6 +15,7 @@ public class MainController : MonoBehaviour
     [SerializeField] private bool                           _useMouse = true;
     [SerializeField] private bool                           _debugTestingScene = false;
     [SerializeField] private string                         _testingSceneName = "";
+    [SerializeField] private List<EnemyView> _tempEnemies; //Не забудь убрать это и доделать спавн врагов - EnterAlt
     private List<BaseController>                            _controllers = new List<BaseController>();
     
     public bool UseMouse => _useMouse;
@@ -28,6 +29,7 @@ public class MainController : MonoBehaviour
         _controllers.Add(new InputController().SetMainController(this));
         _controllers.Add(new PlayerController().SetMainController(this));
         _controllers.Add(new CameraController().SetMainController(this));
+        _controllers.Add(new EnemyController().SetMainController(this));
         
         if (_debugTestingScene)
         {
@@ -39,6 +41,7 @@ public class MainController : MonoBehaviour
         _playerView = _playerPrefab.GetComponent<PlayerView>();
         //_playerController.SetPlayer(_playerView);
         GetController<PlayerController>().SetPlayerViewInstance(_playerView);
+        GetController<EnemyController>().SetEnemies(_tempEnemies);
     }
 
     private void Start()

@@ -9,7 +9,7 @@ public class PlayerMovingStateModel : BasePlayerStateModel
     public override void Execute(PlayerController controller, PlayerView player)
     {
         base.Execute(controller, player);
-        if (controller.PositionBegan == Vector2.zero)
+        if (controller.PositionDelta - controller.PositionBegan == Vector2.zero)
         {
             player.Stand();
             return;
@@ -19,9 +19,8 @@ public class PlayerMovingStateModel : BasePlayerStateModel
         CalculateMovingVector3d(_movingVector2D, out _movingVector, out _magnitude);
 
         player.Rotate(Quaternion.LookRotation(_movingVector, Vector3.up));
-        player.Move(player.Forward * _magnitude * Time.deltaTime);
+        player.Move(Vector3.forward * _magnitude * Time.deltaTime);
         player.SetMovingBlend(_magnitude);
-        //GameEvents.Current.MoveConnectedEnemy(_rotationTemp, _translatePositionTemp, _magnitude);
         
         CheckToJump(player);
     }
@@ -42,17 +41,12 @@ public class PlayerMovingStateModel : BasePlayerStateModel
     
     private void CheckToJump(PlayerView player)
     {
-        if (!player.RayCastCheck(player.Position + Vector3.up * 1.5f, player.Forward * 2f + Vector3.down * 4f, 3f, 1 << 11))
+        if (!player.RayCastCheck(player.Position + Vector3.up * 1.5f, player.Forward * 2f + Vector3.down * 4f, 3f, (1 << 11)|(1<<12))
+        || player.RayCastCheck(player.Position + Vector3.up * 1.5f, player.Forward * 1f, 1.5f , 1 << 11))
         {
             Debug.Log("jump");
             player.StopRun();
             player.Jump();
-        }
-        else if (player.RayCastCheck(player.Position + Vector3.up * 1.5f, player.Forward * 1f, 1.5f , 1 << 11))
-        {
-            player.StopRun();
-            player.Jump();
-            Debug.Log("jump");
         }
     }
 }
