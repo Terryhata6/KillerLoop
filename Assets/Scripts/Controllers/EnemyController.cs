@@ -11,6 +11,9 @@ public class EnemyController : BaseController, IExecute
     public override void Initialize()
     {
         base.Initialize();
+
+        GameEvents.Current.OnEnemyDead += EnemyDead;
+        
         _enemyStates = new Dictionary<EnemyState, BaseEnemyState>
         {
             {EnemyState.Idle, new IdleEnemyState()},
@@ -41,6 +44,14 @@ public class EnemyController : BaseController, IExecute
 
     private void EnemyInit(EnemyView enemy)
     {
-        enemy.Stand(); //State - idle
+        enemy.Run(); //State - move
+    }
+
+    private void EnemyDead(EnemyView enemy)
+    {
+        if (_enemies.Contains(enemy))
+        {
+            _enemies.Remove(enemy);
+        }
     }
 }

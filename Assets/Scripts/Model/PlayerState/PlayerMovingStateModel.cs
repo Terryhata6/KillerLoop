@@ -17,12 +17,13 @@ public class PlayerMovingStateModel : BasePlayerStateModel
 
         _movingVector2D = controller.PositionDelta - controller.PositionBegan;
         CalculateMovingVector3d(_movingVector2D, out _movingVector, out _magnitude);
-
+            Gravity(player);
         player.Rotate(Quaternion.LookRotation(_movingVector, Vector3.up));
         player.Move(Vector3.forward * _magnitude * Time.deltaTime);
         player.SetMovingBlend(_magnitude);
         
         CheckToJump(player);
+        CheckToKill(player);
     }
 
     private void CalculateMovingVector3d(Vector2 vector2d,out Vector3 movingVector3d, out float magnitude)
@@ -42,11 +43,20 @@ public class PlayerMovingStateModel : BasePlayerStateModel
     private void CheckToJump(PlayerView player)
     {
         if (!player.RayCastCheck(player.Position + Vector3.up * 1.5f, player.Forward * 2f + Vector3.down * 4f, 3f, (1 << 11)|(1<<12))
-        || player.RayCastCheck(player.Position + Vector3.up * 1.5f, player.Forward * 1f, 1.5f , 1 << 11))
+        || player.RayCastCheck(player.Position + Vector3.up, player.Forward * 1f, 2f , 1 << 11))
         {
             Debug.Log("jump");
             player.StopRun();
             player.Jump();
+        }
+    }
+    private void CheckToKill(PlayerView player)
+    {
+        if (player.RayCastCheck(player.Position + Vector3.up, player.Forward * 1f, 0.3f , 1 << 13))
+        {
+            Debug.Log("kill");
+            player.StopRun();
+            player.GroundKill();
         }
     }
 }

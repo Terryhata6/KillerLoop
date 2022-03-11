@@ -1,9 +1,10 @@
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Dreamteck.Splines;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class PlayerView : BaseObjectView
 {
@@ -12,9 +13,10 @@ public class PlayerView : BaseObjectView
     [SerializeField] private float _movingBlend = 0;
     [SerializeField] private Animator _animator;
     [SerializeField] private Rigidbody _rigidbody;
-    [SerializeField] private float _movementSpeed;
+    [SerializeField] private float _baseMovementSpeed;
     [SerializeField] private float _jumpForce;
     [SerializeField] private Image _indicatorImage;
+    [SerializeField] private SplineProjector _splineProjector;
     private RaycastHit _hit;
     private Camera _mainCam;
     private EngPassObject _engPassObject;
@@ -24,6 +26,11 @@ public class PlayerView : BaseObjectView
     private Vector3 _tempVector;
     private float _baseY;
     private float _x;
+    private float _timer;
+    private float _timeToKill;
+    private float _movementSpeed;
+    private int _tempInt;
+    private Collider _tempCollider;
     private Vector3 _hitNormal; //для некоторых состояний нужен
     #endregion
     
@@ -33,9 +40,9 @@ public class PlayerView : BaseObjectView
     public Vector3 HitNormal => _hitNormal;
     public PlayerState State => _state;
     public Animator Animator => _animator;
-    public Rigidbody Rigidbody => _rigidbody;
     public Camera MainCam => _mainCam;
-    public List<Vector3> MovingPoints => _movingPoints;
+    public Vector3 SplineDirection => _splineProjector.result.forward;
+    public double SplinePercent => _splineProjector.result.percent;
     #endregion
     
     private void Awake()
@@ -45,10 +52,17 @@ public class PlayerView : BaseObjectView
             Debug.Log("rigidbody not set");
         }
         _mainCam = Camera.main;
-        //SetRagdoll(false);
+        DefaultSpeed();
+        if (_splineProjector)
+        {
+            _splineProjector.enabled = false;
+        }
+        SetRagdoll(false);
     }
 
     #region Actions
+
+    #region Moving
 
     public void Move(Vector3 dir)
     {
@@ -58,6 +72,16 @@ public class PlayerView : BaseObjectView
     public void Move(Vector3 dir, float speed)
     {
         transform.Translate(dir * speed);
+    }
+    
+    public void LookRotation(Vector3 lookVector)
+    {
+        lookVector.y = 0f;
+        if (lookVector.Equals(Vector3.zero))
+        {
+            return;
+        }
+        Rotate(Quaternion.LookRotation(lookVector));
     }
     
     public void Rotate(Quaternion dir)
@@ -74,6 +98,7 @@ public class PlayerView : BaseObjectView
     
     public void Jumping()
     {
+        Debug.Log(_tempVector.y);
         _tempVector.y = (-1.8f * ((_x) * (_x)) + _jumpForce) + _baseY;
         _tempVector.x = Position.x;
         _tempVector.z = Position.z;
@@ -84,7 +109,7 @@ public class PlayerView : BaseObjectView
     public void Stand()
     {
         SetAnimatorBool("Run", true);
-        SetRigidbodyValues(true,false);
+        SetRigidbodyValues(true);
         _state = PlayerState.Idle;
     }
     
@@ -93,25 +118,10 @@ public class PlayerView : BaseObjectView
         SetAnimatorBool("Jump", false);
     }
 
-    public void AirKill()
-    {
-        Kill(Jump);
-    }
-    
-    public void Kill(Action toDo)
-    {
-        SetRigidbodyValues(false,false);
-        _state = PlayerState.Dead;
-        if (_hit.collider.gameObject.TryGetComponent(out _enemy))
-        {
-            StartCoroutine(Kill(_enemy,toDo));
-        }
-    }
-
     public void WallRun()
     {
         _hitNormal = _hit.normal;
-        SetRigidbodyValues(false,false);
+        SetRigidbodyValues(false);
         SetAnimatorBool("WallRun",true);
         _state = PlayerState.WallRun;
     }
@@ -130,28 +140,93 @@ public class PlayerView : BaseObjectView
         _state = PlayerState.Move;
     }
 
-    public void Slide()
+    public void Slide(SplineComputer spline)
     {
-        SetRigidbodyValues(false,true);
+        _splineProjector.enabled = true;
+        _splineProjector.spline = spline;
+        if (_splineProjector.result.percent > 0.5f)
+        {
+            _splineProjector.direction = Spline.Direction.Backward;
+        }
+        else
+        {
+            _splineProjector.direction = Spline.Direction.Forward;
+        }
+        SetRigidbodyValues(true);
+        SetAnimatorBool("EngPass",true);
         _state = PlayerState.Slide;
     }
 
     public void EndSlide()
     {
-        _state = PlayerState.Idle;
-        SetRigidbodyValues(true,false);
+        Debug.Log("endSlide");
+        _splineProjector.enabled = false;
+        _splineProjector.spline = null;
+        SetAnimatorBool("EngPass",false);
+        DefaultSpeed();
+        Stand();
     }
     
     public void Jump()
     {
         SetAnimatorBool("Jump", true);
-        SetRigidbodyValues(false,false);
+        SetRigidbodyValues(false);
         _baseY = Position.y;
         _x = -1f;
         _state = PlayerState.Jumping;
     }
 
     #endregion
+
+    #region Attack
+
+    public void AirKill()
+    {
+        SetAnimatorBool("AirKill",true);
+        Kill(EndAirKill);
+    }
+
+    public void EndAirKill()
+    {
+        SetAnimatorBool("AirKill",false);
+        Jump();
+    }
+
+    public void GroundKill()
+    {
+        _tempInt = Random.Range(1, 3);
+        SetAnimatorBool($"GroundKill{_tempInt}",true);
+        Kill(EndGroundKill);
+    }
+
+    public void EndGroundKill()
+    {
+        SetAnimatorBool($"GroundKill{_tempInt}", false);
+    }
+    
+    public void Kill(Action CurrentAction)
+    {
+        if (_hit.collider.gameObject.TryGetComponent(out _enemy))
+        {
+            SetRigidbodyValues(false);
+            StartCoroutine(Kill(_enemy,CurrentAction));
+        }
+    }
+
+    #endregion
+
+    #endregion
+
+    #region Options
+
+    public void SetSpeed(float speed)
+    {
+        _movementSpeed = speed;
+    }
+    public void DefaultSpeed()
+    {
+        _movementSpeed = _baseMovementSpeed;
+    }
     
     public bool RayCastCheck(Vector3 origin,Vector3 dir, float length, LayerMask layerToCheck)
     {
@@ -168,8 +243,11 @@ public class PlayerView : BaseObjectView
 
     public void SetMovingBlend(float newValue)
     {
-        _movingBlend = newValue;
-        Animator.SetFloat("MovingBlend", _movingBlend);
+        if (_animator)
+        {
+            _movingBlend = newValue;
+            Animator.SetFloat("MovingBlend", _movingBlend);
+        }
     }
 
     private void SetAnimatorBool(string name, bool value)
@@ -180,7 +258,11 @@ public class PlayerView : BaseObjectView
         }
     }
 
-    private void SetRigidbodyValues(bool useGravity, bool isKinematic)
+    private void SetRigidbodyValues(bool isKinematic)
+    {
+        SetRigidbodyValues(false,isKinematic);
+    }
+    private void SetRigidbodyValues(bool useGravity,bool isKinematic)
     {
         if (_rigidbody)
         {
@@ -189,47 +271,47 @@ public class PlayerView : BaseObjectView
         }
     }
 
-    public void SetRagdoll(bool value)
+    private void SetRagdoll(bool value)
     {
         Rigidbody[] bodies = GetComponentsInChildren<Rigidbody>();
-        foreach (Rigidbody body in bodies)
+        for (int i = 0; i < bodies.Length; i++)
         {
-            body.isKinematic = !value;
-            body.transform.GetComponent<Collider>().enabled = value;
+            bodies[i].isKinematic = !value;
+            bodies[i].transform.TryGetComponent(out _tempCollider);
+            _tempCollider.enabled = value;
         }
-        GetComponent<CapsuleCollider>().enabled = !value; 
-        SetRigidbodyValues(true,false);
+        gameObject.TryGetComponent(out _tempCollider);
+        _tempCollider.enabled = !value;
         if (_animator)
         {
             _animator.enabled = !value;
         }
     }
 
-    private void OnCollisionEnter(Collision other)
+    #endregion
+    
+    private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.TryGetComponent(out _engPassObject))
+        if (other.gameObject.TryGetComponent(out _engPassObject) && _engPassObject.Spline && _splineProjector)
         {
-            _movingPoints = _engPassObject.MovePoints;
-            if (_movingPoints.Count > 0)
-            {
-                
-                Slide();
-            }
+            Slide(_engPassObject.Spline);
         }
     }
 
     private IEnumerator Kill(EnemyView enemy, Action toDo)
     {
-        while (enemy && (Position - enemy.Position).magnitude > 0.5f)
-        {
-            transform.position = Vector3.MoveTowards(Position, enemy.Position, Time.deltaTime * _movementSpeed);
-            yield return null;
-        }
         if (enemy)
         {
-            enemy.Dead();
+            enemy.Dead(enemy.Position - Position);
+        }
+
+        _timer = 0.3f;
+        while (_timer >= 0)
+        {
+            _timer -= Time.deltaTime;
         }
         toDo.Invoke();
+        yield return null;
     }
 
     public void LevelFail()

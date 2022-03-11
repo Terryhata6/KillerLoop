@@ -1,4 +1,5 @@
-using System;
+
+using System.Collections;
 using Dreamteck.Splines;
 using UnityEngine;
 
@@ -8,52 +9,81 @@ public class EnemyView : BaseObjectView
       [SerializeField] private float _movingBlend = 0;
       [SerializeField] private Animator _animator;
       [SerializeField] private Rigidbody _rigidbody;
-      [SerializeField] private float _movementSpeed;
+      [SerializeField] private float _baseMovementSpeed;
       [SerializeField] private float _jumpForce;
       [SerializeField] private SplineTracer _splineTracer;
+      [SerializeField] private float _flyAwayPower;
       private bool _canMove;
       private float _baseY;
       private float _x;
       private Vector3 _tempVector;
       private Vector3 _hitNormal;
       private RaycastHit _hit;
+      private float _movementSpeed;
+      private float _timer;
+      private float _timeToDead;
+      private Collider _tempCollider;
 
-      public Vector3 SplineDirection => _splineTracer.result.forward;
+      public Vector3 SplineDirection
+      {
+          get
+          {
+              if (_splineTracer.result.percent >= 1f)
+              {
+                  _canMove = false;
+              }
+              return _splineTracer.result.forward;
+          }
+      }
       public RaycastHit Hit => _hit;
       public Vector3 HitNormal => _hitNormal;
       public EnemyState State => _state;
 
-      private void Start()
+      private void Awake()
       {
-            if (TryGetComponent(out _splineTracer))
+          DefaultSpeed();
+          _timeToDead = 4f;
+          SetRagdoll(false);
+            if (_splineTracer && _splineTracer.spline)
             {
                   _canMove = true;
             }
       }
       
       #region Actions
-
-      public void Trigger()
-      {
-          Debug.Log(_splineTracer.result.forward);
-      }
-      public void Dead()
+    
+      public void Dead(Vector3 flyAwayDirection)
       {
           Debug.Log("EnemyDead" );
-          Destroy(gameObject);
+          GameEvents.Current.EnemyDead(this);
+          gameObject.layer = 9;
+          SetRagdoll(true);
+          FlyAway(flyAwayDirection);
+          StartCoroutine(DeadAnimation());
       }
       
       public void LookRotation(Vector3 lookVector)
       {
-
-            transform.rotation = Quaternion.LookRotation(lookVector, Vector3.up);
+          if (_canMove)
+          {
+              lookVector.y = 0f;
+              if (lookVector == Vector3.zero)
+              {
+                  return;
+              }
+              transform.rotation = Quaternion.LookRotation(lookVector, Vector3.up);
+          }
       }
       
       public void Move(Vector3 dir)
       {
+          Move(dir,_movementSpeed);
+      }
+      public void Move(Vector3 dir, float speed)
+      {
           if (_canMove)
           {
-              transform.Translate(dir * _movementSpeed);
+              transform.Translate(dir * speed);
           }
       }
 
@@ -76,7 +106,7 @@ public class EnemyView : BaseObjectView
           public void Stand()
           {
               SetAnimatorBool("Run", true);
-              SetRigidbodyValues(true,false);
+              SetRigidbodyValues(false,false);
               _state = EnemyState.Idle;
           }
           
@@ -87,6 +117,7 @@ public class EnemyView : BaseObjectView
 
           public void WallRun()
           {
+              Debug.Log("wallrun");
               _hitNormal = _hit.normal;
               SetRigidbodyValues(false,false);
               SetAnimatorBool("WallRun",true);
@@ -105,7 +136,12 @@ public class EnemyView : BaseObjectView
           public void Run()
           {
               Debug.Log("run");
-              _state = EnemyState.Move;
+              if (_canMove)
+              {
+                  SetAnimatorBool("Run", true);
+                  SetRigidbodyValues(false,false);
+                  _state = EnemyState.Move;
+              }
           }
       
           public void Slide()
@@ -117,7 +153,7 @@ public class EnemyView : BaseObjectView
           public void EndSlide()
           {
               _state = EnemyState.Idle;
-              SetRigidbodyValues(true,false);
+              SetRigidbodyValues(false,false);
           }
           
           public void Jump()
@@ -144,10 +180,22 @@ public class EnemyView : BaseObjectView
           }
       #endregion
 
+      public void SetSpeed(float speed)
+      {
+          _movementSpeed = speed;
+      }
+      public void DefaultSpeed()
+      {
+          _movementSpeed = _baseMovementSpeed;
+      }
+      
       public void SetMovingBlend(float newValue)
       {
-          _movingBlend = newValue;
-          _animator.SetFloat("MovingBlend", _movingBlend);
+          if (_animator)
+          {
+              _movingBlend = newValue;
+              _animator.SetFloat("MovingBlend", _movingBlend);
+          }
       }
 
       private void SetAnimatorBool(string name, bool value)
@@ -178,5 +226,43 @@ public class EnemyView : BaseObjectView
           {
               return false;
           }
+      }
+
+
+      private void SetRagdoll(bool value)
+      {
+          Rigidbody[] bodies = GetComponentsInChildren<Rigidbody>();
+          for (int i = 0; i < bodies.Length; i++)
+          {
+              bodies[i].isKinematic = !value;
+              bodies[i].transform.TryGetComponent(out _tempCollider);
+              _tempCollider.enabled = value;
+          }
+
+          gameObject.TryGetComponent(out _tempCollider);
+          _tempCollider.enabled = !value;
+          if (_animator)
+          {
+              _animator.enabled = !value;
+          }
+      }
+
+      public void FlyAway(Vector3 dir)
+      {
+          if (_rigidbody)
+          {
+              _rigidbody.AddForce(dir * _flyAwayPower ,ForceMode.Impulse);
+          }
+      }
+      
+      public IEnumerator DeadAnimation()
+      {
+          _timer = _timeToDead;
+          while (_timer > 0)
+          {
+              _timer -= Time.deltaTime;
+              yield return null;
+          }
+         // Destroy(gameObject);
       }
 }

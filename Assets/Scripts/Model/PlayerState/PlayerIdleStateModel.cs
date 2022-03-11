@@ -8,6 +8,7 @@ public class PlayerIdleStateModel : BasePlayerStateModel
         {
             player.Run();
         }
+        Gravity(player);
         player.SetMovingBlend(0f);
     }    
 }

@@ -46,7 +46,6 @@ public class PlayerJumpingStateModel : BasePlayerStateModel
         {
             Debug.Log("land");
             player.Land();
-            FindLand(player);
             player.Stand();
         }
     }

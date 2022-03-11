@@ -33,7 +33,7 @@ public class PlayerController : BaseController, IExecute
             {PlayerState.Idle, new PlayerIdleStateModel()},
             {PlayerState.Jumping, new PlayerJumpingStateModel()},
             {PlayerState.Move, new PlayerMovingStateModel()},
-            {PlayerState.Dead, new PlayerDeadStateModel()},
+            {PlayerState.Killing, new PlayerKillStateModel()},
             {PlayerState.WallRun, new PlayerRunWallModel()},
             {PlayerState.Slide, new PlayerSlideModel()}
         };

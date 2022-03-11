@@ -11,5 +11,6 @@ public class MoveEnemyState : BaseEnemyState
         enemy.LookRotation(enemy.SplineDirection);
         enemy.Move(Vector3.forward * Time.deltaTime);
         enemy.SetMovingBlend(1f);
+        Gravity(enemy);
     }
 }
