@@ -41,8 +41,8 @@ ModelImporter:
       name: GroundAttack2
       takeName: mixamo.com
       internalID: 0
-      firstFrame: 0
-      lastFrame: 50
+      firstFrame: 11
+      lastFrame: 47
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

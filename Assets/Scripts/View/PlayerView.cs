@@ -98,7 +98,6 @@ public class PlayerView : BaseObjectView
     
     public void Jumping()
     {
-        Debug.Log(_tempVector.y);
         _tempVector.y = (-1.8f * ((_x) * (_x)) + _jumpForce) + _baseY;
         _tempVector.x = Position.x;
         _tempVector.z = Position.z;
@@ -195,13 +194,13 @@ public class PlayerView : BaseObjectView
     public void GroundKill()
     {
         _tempInt = Random.Range(1, 3);
-        SetAnimatorBool($"GroundKill{_tempInt}",true);
+        SetAnimatorBool("GroundKill" + _tempInt.ToString(),true);
         Kill(EndGroundKill);
     }
 
     public void EndGroundKill()
     {
-        SetAnimatorBool($"GroundKill{_tempInt}", false);
+        SetAnimatorBool("GroundKill" + _tempInt.ToString(), false);
     }
     
     public void Kill(Action CurrentAction)
@@ -254,6 +253,7 @@ public class PlayerView : BaseObjectView
     {
         if (_animator)
         {
+            Debug.Log(name);
             _animator.SetBool(name,value);
         }
     }
@@ -302,16 +302,22 @@ public class PlayerView : BaseObjectView
     {
         if (enemy)
         {
-            enemy.Dead(enemy.Position - Position);
+            enemy.Dead();
         }
-
         _timer = 0.3f;
         while (_timer >= 0)
         {
             _timer -= Time.deltaTime;
+            yield return null;
+        }
+        if (enemy)
+        {
+            enemy.DeadAnimation(enemy.Position - Position);
         }
         toDo.Invoke();
-        yield return null;
+
+
+
     }
 
     public void LevelFail()

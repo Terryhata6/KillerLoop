@@ -12,7 +12,14 @@ public class EnemyController : BaseController, IExecute
     {
         base.Initialize();
 
-        GameEvents.Current.OnEnemyDead += EnemyDead;
+        GameEvents.Current.OnEnemyDead += EnemyRemove;
+        
+        LevelEvents.Current.OnLevelStart += Enable;
+        LevelEvents.Current.OnLevelLose += Disable;
+        LevelEvents.Current.OnLevelFinish += Disable;
+        
+        UIEvents.Current.OnButtonPause += Disable;
+        UIEvents.Current.OnButtonResume += Enable;
         
         _enemyStates = new Dictionary<EnemyState, BaseEnemyState>
         {
@@ -25,10 +32,18 @@ public class EnemyController : BaseController, IExecute
 
     public void Execute()
     {
+        if (!_isActive)
+        {
+            return;
+        }
+        
         for (int _index = 0; _index < _enemies.Count; _index++)
         {
             _tempEnemy = _enemies[_index];
-            _enemyStates[_tempEnemy.State].Execute(_tempEnemy);
+            if (_tempEnemy != null)
+            {
+                _enemyStates[_tempEnemy.State].Execute(_tempEnemy);
+            }
         }
     }
 
@@ -47,7 +62,7 @@ public class EnemyController : BaseController, IExecute
         enemy.Run(); //State - move
     }
 
-    private void EnemyDead(EnemyView enemy)
+    private void EnemyRemove(EnemyView enemy)
     {
         if (_enemies.Contains(enemy))
         {

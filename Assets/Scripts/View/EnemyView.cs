@@ -52,11 +52,23 @@ public class EnemyView : BaseObjectView
       
       #region Actions
     
-      public void Dead(Vector3 flyAwayDirection)
+      public void FlyAway(Vector3 dir)
+      {
+          if (_rigidbody)
+          {
+              _rigidbody.AddForce(dir * _flyAwayPower ,ForceMode.Impulse);
+          }
+      }
+      
+      public void Dead()
       {
           Debug.Log("EnemyDead" );
           GameEvents.Current.EnemyDead(this);
           gameObject.layer = 9;
+      }
+
+      public void DeadAnimation(Vector3 flyAwayDirection)
+      {
           SetRagdoll(true);
           FlyAway(flyAwayDirection);
           StartCoroutine(DeadAnimation());
@@ -227,8 +239,7 @@ public class EnemyView : BaseObjectView
               return false;
           }
       }
-
-
+      
       private void SetRagdoll(bool value)
       {
           Rigidbody[] bodies = GetComponentsInChildren<Rigidbody>();
@@ -246,14 +257,6 @@ public class EnemyView : BaseObjectView
               _animator.enabled = !value;
           }
       }
-
-      public void FlyAway(Vector3 dir)
-      {
-          if (_rigidbody)
-          {
-              _rigidbody.AddForce(dir * _flyAwayPower ,ForceMode.Impulse);
-          }
-      }
       
       public IEnumerator DeadAnimation()
       {
@@ -263,6 +266,5 @@ public class EnemyView : BaseObjectView
               _timer -= Time.deltaTime;
               yield return null;
           }
-         // Destroy(gameObject);
       }
 }

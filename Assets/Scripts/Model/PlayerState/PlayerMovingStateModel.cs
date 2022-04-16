@@ -5,6 +5,7 @@ public class PlayerMovingStateModel : BasePlayerStateModel
     private Vector3 _movingVector = Vector3.zero;
     private Vector2 _movingVector2D;
     private float _magnitude;
+    private Vector3 _tempVector;
 
     public override void Execute(PlayerController controller, PlayerView player)
     {
@@ -52,7 +53,10 @@ public class PlayerMovingStateModel : BasePlayerStateModel
     }
     private void CheckToKill(PlayerView player)
     {
-        if (player.RayCastCheck(player.Position + Vector3.up, player.Forward * 1f, 0.3f , 1 << 13))
+        _tempVector.x = player.Forward.z;
+        _tempVector.z = -player.Forward.x;
+        _tempVector.y = 0f;
+        if (player.RayCastCheck(player.Position  + player.Forward * 0.6f + (_tempVector + Vector3.up) * 0.5f, -_tempVector, 1f , 1 << 13))
         {
             Debug.Log("kill");
             player.StopRun();
