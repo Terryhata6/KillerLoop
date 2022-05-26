@@ -1,4 +1,5 @@
 using Cinemachine;
+using Dreamteck.Splines;
 using UnityEngine;
 
 

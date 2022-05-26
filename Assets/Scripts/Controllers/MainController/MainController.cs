@@ -8,17 +8,21 @@ public class MainController : MonoBehaviour
     
     [Header("Player")]
     [SerializeField] private Transform                      _playerStarterPoint;
-    [SerializeField] private GameObject                     _playerPrefab;
     [SerializeField] private PlayerView                     _playerView;
+    [SerializeField] private VirtualCameraView              _virtualCamera;
 
+    [Header("Enemy")]
+    [SerializeField] private List<EnemyView> _tempEnemies; //Не забудь убрать это и доделать спавн врагов - EnterAlt
+    
     [Header("Settings")]
     [SerializeField] private bool                           _useMouse = true;
     [SerializeField] private bool                           _debugTestingScene = false;
     [SerializeField] private string                         _testingSceneName = "";
+    
     private List<BaseController>                            _controllers = new List<BaseController>();
     
     public bool UseMouse => _useMouse;
-    public Transform PlayerTransform => _playerView.transform;
+
     
     private void Awake()
     {
@@ -27,18 +31,20 @@ public class MainController : MonoBehaviour
         
         _controllers.Add(new InputController().SetMainController(this));
         _controllers.Add(new PlayerController().SetMainController(this));
-        _controllers.Add(new CameraController().SetMainController(this));
+        _controllers.Add(new CameraController(_virtualCamera).SetMainController(this));
+        _controllers.Add(new EnemyController().SetMainController(this));
         
         if (_debugTestingScene)
         {
             SceneManager.LoadSceneAsync(_testingSceneName, LoadSceneMode.Additive);
         }
 
-
-        _playerPrefab = Instantiate(Resources.Load<GameObject>("Prefabs/Player/Player"));
-        _playerView = _playerPrefab.GetComponent<PlayerView>();
-        //_playerController.SetPlayer(_playerView);
-        GetController<PlayerController>().SetPlayerViewInstance(_playerView);
+        GetController<CameraController>().SetCameraTarget(_playerView.transform);
+        if (_playerView)
+        {
+            GetController<PlayerController>().SetPlayerViewInstance(_playerView);
+        }
+        GetController<EnemyController>().SetEnemies(_tempEnemies);
     }
 
     private void Start()
@@ -52,6 +58,7 @@ public class MainController : MonoBehaviour
         //------SceneSettings------
         if (_playerStarterPoint != null)
         {
+            _playerView.transform.position = _playerStarterPoint.position;
             //_playerStarterPoint = FindObjectOfType<PlayerStarterPosition>().transform;
         }
         else

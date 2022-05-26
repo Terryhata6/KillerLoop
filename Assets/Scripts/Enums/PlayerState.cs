@@ -4,6 +4,7 @@
         Idle,
         Move,
         Jumping,
-        WallRunLeft,
-        Dead
+        WallRun,
+        Slide,
+        Killing
     }

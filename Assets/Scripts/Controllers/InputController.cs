@@ -7,7 +7,6 @@ public class InputController : BaseController, IExecute
     public InputController()  { }
     
     private bool                 _countQueue = true;
-    private Queue<Vector2>       _queue = new Queue<Vector2>();
     private float                _temporalMagnitude = 0;
     private Vector2              _mouseStartPosition;
     private bool                 _mouseCLickedPreviousFrame = false;
@@ -18,11 +17,17 @@ public class InputController : BaseController, IExecute
 
     
     public float                 TemporalMagnitude = 0;
-    
 
     public override void Initialize()
     {
         base.Initialize();
+
+        LevelEvents.Current.OnLevelStart += Enable;
+        LevelEvents.Current.OnLevelLose += Disable;
+        LevelEvents.Current.OnLevelFinish += Disable;
+        
+        UIEvents.Current.OnButtonPause += Disable;
+        UIEvents.Current.OnButtonResume += Enable;
     }
 
     public void Execute()

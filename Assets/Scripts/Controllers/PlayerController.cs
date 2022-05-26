@@ -27,20 +27,28 @@ public class PlayerController : BaseController, IExecute
         InputEvents.Current.OnTouchBeganEvent += UpdateBeganPosition;
         InputEvents.Current.OnTouchMovedEvent += UpdateDeltaPosition;
         InputEvents.Current.OnTouchEndedEvent += UpdateEndPosition;
-
+        
+        LevelEvents.Current.OnLevelStart += Enable;
+        LevelEvents.Current.OnLevelLose += Disable;
+        LevelEvents.Current.OnLevelFinish += Disable;
+        
+        UIEvents.Current.OnButtonPause += Disable;
+        UIEvents.Current.OnButtonResume += Enable;
+        
         _playerStates = new Dictionary<PlayerState, BasePlayerStateModel>
         {
             {PlayerState.Idle, new PlayerIdleStateModel()},
             {PlayerState.Jumping, new PlayerJumpingStateModel()},
             {PlayerState.Move, new PlayerMovingStateModel()},
-            {PlayerState.WallRunLeft, new PlayerWallRunLeftModel()},
-            {PlayerState.Dead, new PlayerDeadStateModel()}
+            {PlayerState.Killing, new PlayerKillStateModel()},
+            {PlayerState.WallRun, new PlayerRunWallModel()},
+            {PlayerState.Slide, new PlayerSlideModel()}
         };
     }
 
     public void Execute()
     {
-        if (_playerView == null)
+        if (_playerView == null || !IsActive)
         {
             return;
         }
@@ -50,15 +58,17 @@ public class PlayerController : BaseController, IExecute
     public void SetPlayerViewInstance(PlayerView view)
     {
         _playerView = view;
+        PlayerInit(_playerView);
+    }
+
+    public void PlayerInit(PlayerView player)
+    {
+        player.Stand(); //State - idle
     }
 
     private void UpdateBeganPosition(Vector2 beganPosition)
     {
-        if (_playerView.State == PlayerState.Idle)
-        {
-            _positionBegan = beganPosition;
-            _playerView.SetState(PlayerState.Move);
-        }
+        _positionBegan = beganPosition;
     }
 
     private void UpdateDeltaPosition(Vector2 deltaPosition)
@@ -68,11 +78,8 @@ public class PlayerController : BaseController, IExecute
 
     private void UpdateEndPosition(Vector2 endPosition)
     {
-        if (_playerView.State == PlayerState.Move)
-        {
-            _positionEnd = endPosition;
-            UpdateBeganPosition(Vector2.zero);
-            _playerView.SetState(PlayerState.Idle);
-        }
+        _positionEnd = endPosition;
+        UpdateDeltaPosition(Vector2.zero);
+        UpdateBeganPosition(Vector2.zero);
     }
 }

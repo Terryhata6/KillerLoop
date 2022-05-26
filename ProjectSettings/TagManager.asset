@@ -16,9 +16,9 @@ TagManager:
   - RagdollCollidersLive
   - RagdollCollidersDead
   - HoodCloth layer
-  - 
-  - 
-  - 
+  - Ground
+  - EngPass
+  - Enemies
   - 
   - 
   - 
