@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Services.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1
+    path: Assets/Scenes/EnterAltCreed.unity
+    guid: 5da1f0ad981973d44bade901e3a368a5
+  - enabled: 0
     path: Assets/Scenes/AssassinsGreed.unity
     guid: fbd23488b4348ee489eb8a622ae8eb99
   m_configObjects: {}

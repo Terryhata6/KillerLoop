@@ -20,6 +20,7 @@ public class PlayerRunWallModel : BasePlayerStateModel
         if (controller.PositionBegan.Equals(Vector2.zero))
         {
             IdleOnTheWall(player);
+            NotReadyToJump(player);
             return;
         }
         _movingVector2D = controller.PositionDelta - controller.PositionBegan;
@@ -101,8 +102,7 @@ public class PlayerRunWallModel : BasePlayerStateModel
         }
         else if (_timer != 0f)
         {
-            _timer = 0f;
-            player.IndicatorImage.fillAmount = _timer;
+            NotReadyToJump(player);
         }
         return false;
     }
@@ -111,6 +111,12 @@ public class PlayerRunWallModel : BasePlayerStateModel
     {
         player.SetMovingBlend(0f);
         player.Rotate(Quaternion.LookRotation(-player.HitNormal));
+    }
+
+    private void NotReadyToJump(PlayerView player)
+    {
+        _timer = 0f;
+        player.IndicatorImage.fillAmount = _timer;
     }
     
     private void CheckToJump(PlayerView player)

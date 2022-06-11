@@ -28,7 +28,7 @@ public class MainController : MonoBehaviour
     {
         ///----------Services-------------
         DontDestroyOnLoad(this.gameObject);
-        
+        Time.timeScale = 1f;
         _controllers.Add(new InputController().SetMainController(this));
         _controllers.Add(new PlayerController().SetMainController(this));
         _controllers.Add(new CameraController(_virtualCamera).SetMainController(this));
@@ -65,6 +65,7 @@ public class MainController : MonoBehaviour
         {
             CustomDebug.Log($"Нет стартовой точки", this.gameObject);
         }
+        LevelEvents.Current.LevelStart();
     }
 
     private void Update()
