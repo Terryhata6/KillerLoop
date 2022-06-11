@@ -98,7 +98,7 @@ public class PlayerView : BaseObjectView
     
     public void Jumping()
     {
-        _tempVector.y = (-1.8f * ((_x) * (_x)) + _jumpForce) + _baseY;
+        _tempVector.y = (-(_jumpForce-0.2f) * ((_x) * (_x)) + _jumpForce) + _baseY;
         _tempVector.x = Position.x;
         _tempVector.z = Position.z;
         transform.position = _tempVector;

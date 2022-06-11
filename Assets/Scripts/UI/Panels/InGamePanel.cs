@@ -10,8 +10,7 @@ public class InGamePanel : BaseMenuPanel
     [SerializeField] private Button _buttonPause;
         
     private void Awake()
-    { 
-        _buttonPause.onClick.AddListener(UIEvents.Current.ButtonPause);
+    {
     }
         
     public override void Hide()
@@ -30,6 +29,6 @@ public class InGamePanel : BaseMenuPanel
 
     private void OnDestroy()
     {
-        _buttonPause.onClick.RemoveAllListeners();
+
     }
 }
