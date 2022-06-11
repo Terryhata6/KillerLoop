@@ -7,11 +7,9 @@ public abstract class BaseController : IInitialize
     {
        
     }
-    
-    protected bool                  _isActive = true;
-    protected MainController        _main;
-    public MainController Main => _main;
-    
+
+    protected bool _isActive = true;
+
     public bool IsActive => _isActive;
     protected virtual void SetState(bool state)
     {
@@ -33,11 +31,5 @@ public abstract class BaseController : IInitialize
     public virtual void Disable()
     {
         SetState(false);
-    }
-
-    public virtual BaseController SetMainController(MainController main)
-    {
-        _main = main;
-        return this;
     }
 }

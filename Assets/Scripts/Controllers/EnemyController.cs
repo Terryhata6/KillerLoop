@@ -53,13 +53,8 @@ public class EnemyController : BaseController, IExecute
         _enemies = enemies;
         for (int _index = 0; _index < _enemies.Count; _index++)
         {
-            EnemyInit(_enemies[_index]);
+            _enemies[_index].Initialize();
         }
-    }
-
-    private void EnemyInit(EnemyView enemy)
-    {
-        enemy.Run(); //State - move
     }
 
     private void EnemyRemove(EnemyView enemy)

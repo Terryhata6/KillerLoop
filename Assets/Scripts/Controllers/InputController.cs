@@ -36,42 +36,7 @@ public class InputController : BaseController, IExecute
         {
             return;
         }
-        if (!_main.UseMouse)
-        {
-            if (Input.touchCount > 0)
-            {
-                _firstTouch = Input.GetTouch(0);
-                switch (_firstTouch.phase)
-                {
-                    case TouchPhase.Began:
-                        {
-                            InputEvents.Current.TouchBeganEvent(_firstTouch.position);
-                            break;
-                        }
-                    case TouchPhase.Canceled:
-                        {
-                            InputEvents.Current.TouchCancelledEvent();
-                            break;
-                        }
-                    case TouchPhase.Moved:
-                        {
-                            InputEvents.Current.TouchMovedEvent(_firstTouch.position);
-                            break;
-                        }
-                    case TouchPhase.Ended:
-                        {
-                            InputEvents.Current.TouchEndedEvent(_firstTouch.position);
-                            break;
-                        }
-                    case TouchPhase.Stationary:
-                        {
-                            InputEvents.Current.TouchStationaryEvent(_firstTouch.position);
-                            break;
-                        }
-                }
-            }
-        }
-        else
+#if UNITY_EDITOR
         {
             if (_mouseCLickedPreviousFrame)
             {
@@ -108,32 +73,43 @@ public class InputController : BaseController, IExecute
             }
             _mouseOldPosition = _mousePosition;
 
-
-
-/*
-            if (Input.GetMouseButtonDown(0))
-            {
-                _mousePosition =_mouseOldPosition = _mouseStartPosition = Input.mousePosition * .01f;             
-                InputEvents.Current.TouchBeganEvent(_mouseStartPosition);
-            }
-            if (Input.GetMouseButton(0))
-            {
-                _mousePosition = Input.mousePosition * .01f;
-                if (_mousePosition == _mouseOldPosition)
-                {
-                    InputEvents.Current.TouchStationaryEvent();
-                }
-                else
-                {
-                    _mousePosition = _mousePosition - _mouseOldPosition;
-                    InputEvents.Current.TouchMovedEvent(_mousePosition);
-                }
-            }
-            if (Input.GetMouseButtonUp(0))
-            {
-                InputEvents.Current.TouchEndedEvent();
-            }*/
+            return;
         }
+#endif
+
+        if (Input.touchCount > 0)
+            {
+                _firstTouch = Input.GetTouch(0);
+                switch (_firstTouch.phase)
+                {
+                    case TouchPhase.Began:
+                        {
+                            InputEvents.Current.TouchBeganEvent(_firstTouch.position);
+                            break;
+                        }
+                    case TouchPhase.Canceled:
+                        {
+                            InputEvents.Current.TouchCancelledEvent();
+                            break;
+                        }
+                    case TouchPhase.Moved:
+                        {
+                            InputEvents.Current.TouchMovedEvent(_firstTouch.position);
+                            break;
+                        }
+                    case TouchPhase.Ended:
+                        {
+                            InputEvents.Current.TouchEndedEvent(_firstTouch.position);
+                            break;
+                        }
+                    case TouchPhase.Stationary:
+                        {
+                            InputEvents.Current.TouchStationaryEvent(_firstTouch.position);
+                            break;
+                        }
+                }
+            }
+
     }
 
 

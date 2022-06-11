@@ -39,15 +39,16 @@ public class EnemyView : BaseObjectView
       public Vector3 HitNormal => _hitNormal;
       public EnemyState State => _state;
 
-      private void Awake()
+      public void Initialize()
       {
           DefaultSpeed();
           _timeToDead = 4f;
           SetRagdoll(false);
-            if (_splineTracer && _splineTracer.spline)
+          if (_splineTracer && _splineTracer.spline)
             {
-                  _canMove = true;
+                _canMove = true;
             }
+          Run();
       }
       
       #region Actions
@@ -147,7 +148,7 @@ public class EnemyView : BaseObjectView
           }
           public void Run()
           {
-              Debug.Log("run");
+              
               if (_canMove)
               {
                   SetAnimatorBool("Run", true);
