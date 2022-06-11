@@ -6,14 +6,12 @@ using UnityEngine;
 [RequireComponent(typeof(CinemachineVirtualCamera))]
 public class VirtualCameraView : BaseObjectView
 {
-    private CinemachineVirtualCamera _camera;
+    [SerializeField] private CinemachineVirtualCamera _camera;
 
-
-    private void Awake()
+    private void CameraInit()
     {
-        _camera = GetComponent<CinemachineVirtualCamera>();
+        _camera = gameObject.GetComponent<CinemachineVirtualCamera>();
     }
-
 
     public void SetPriority(int priority)
     {
@@ -22,7 +20,15 @@ public class VirtualCameraView : BaseObjectView
 
     public void SetTarget(Transform follow, Transform lookAt)
     {
-        _camera.Follow = follow;
-        _camera.LookAt = lookAt;
+        if (!_camera)
+        {
+            CameraInit();
+        }
+        if (follow && lookAt)
+        {
+            Debug.Log(_camera);
+            _camera.Follow = follow;
+            _camera.LookAt = lookAt;
+        }
     }
 }
