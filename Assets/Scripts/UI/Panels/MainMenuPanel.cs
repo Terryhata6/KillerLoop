@@ -10,7 +10,6 @@ public class MainMenuPanel : BaseMenuPanel
     [SerializeField] private Button _buttonStart;
     private void Awake()
     { 
-        _buttonStart.onClick.AddListener(UIEvents.Current.ButtonStartGame);
     }
         
     public override void Hide()
@@ -29,6 +28,5 @@ public class MainMenuPanel : BaseMenuPanel
 
     private void OnDestroy()
     {
-        _buttonStart.onClick.RemoveAllListeners();
     }
 }
