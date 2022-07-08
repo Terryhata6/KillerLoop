@@ -2,7 +2,9 @@ using System;
 public class UIEvents
 { 
     public static UIEvents Current = new UIEvents();
-    
+
+    #region ButtonActions
+
     public event Action OnButtonStartGame;
     public void ButtonStartGame()
     {
@@ -20,14 +22,14 @@ public class UIEvents
     {
         OnButtonNextLevel?.Invoke();
     }
-    
+
     public event Action OnButtonPause;
 
     public void ButtonPause()
     {
         OnButtonPause?.Invoke();
     }
-    
+
     public event Action OnButtonResume;
 
     public void ButtonResume()
@@ -35,5 +37,5 @@ public class UIEvents
         OnButtonResume?.Invoke();
     }
 
-
+    #endregion
 }

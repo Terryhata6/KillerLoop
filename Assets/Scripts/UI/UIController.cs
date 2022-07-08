@@ -3,9 +3,12 @@ using UnityEngine;
 
 public class UIController : MonoBehaviour
 {
+    #region PrivateFields
+
     [SerializeField] private List<BaseMenuPanel> _menues;
-    [SerializeField] private ParticleSystem _confetti;
-    
+
+    #endregion
+
     public void Awake()
     {
         UIEvents.Current.OnButtonStartGame += StartGame;
@@ -19,6 +22,8 @@ public class UIController : MonoBehaviour
         HideUI();
         OpenGameMenu();
     }
+
+    #region ActionsReaction
 
     private void OpenGameMenu()
     {
@@ -35,13 +40,13 @@ public class UIController : MonoBehaviour
     private void WinLevel()
     {
         //Time.timeScale = 0.0f;
-        SwitchUI(UIState.Win);
+        SwitchUI(UIState.WinLevel);
     }
 
     private void LoseLevel()
     {
         //Time.timeScale = 0.0f;
-        SwitchUI(UIState.Lose);
+        SwitchUI(UIState.LoseLevel);
     }
 
     private void NextLevel()
@@ -55,6 +60,10 @@ public class UIController : MonoBehaviour
         SwitchUI(UIState.MainMenu);
     }
 
+    #endregion
+
+    #region OptionalMethods
+
     private void HideUI()
     {
         for (int i = 0; i < _menues.Count; i++)
@@ -63,7 +72,9 @@ public class UIController : MonoBehaviour
         }
     }
 
-    #region Switch
+    #endregion
+
+    #region SwitchPanels
     private void SwitchUI(UIState state)
     {
         if (_menues.Count == 0)
@@ -78,10 +89,10 @@ public class UIController : MonoBehaviour
             case UIState.InGame:
                 SwitchMenu(typeof(InGamePanel));
                 break;
-            case UIState.Lose:
+            case UIState.LoseLevel:
                 SwitchMenu(typeof(LoseLevelPanel));
                 break;
-            case UIState.Win:
+            case UIState.WinLevel:
                 SwitchMenu(typeof(WinLevelPanel));
                 break;
         }
