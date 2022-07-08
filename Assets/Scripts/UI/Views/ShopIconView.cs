@@ -18,21 +18,15 @@ public class ShopIconView : BaseUiView
 
     #region PublicMethods
 
-    public void AttentionActive()
+    public void SetAttention(bool newGoodsAvaible)
     {
-        if (CheckForComponents())
+       if (newGoodsAvaible)
         {
-            _attentionImage.enabled = true;
-            _attentionAnimation.Play();
+            AttentionActive();
         }
-    }
-
-    public void AttentionDisable()
-    {
-        if (CheckForComponents())
+       else
         {
-            _attentionImage.enabled = false;
-            _attentionAnimation.Stop();
+            AttentionDisable();
         }
     }
 
@@ -43,6 +37,24 @@ public class ShopIconView : BaseUiView
     private bool CheckForComponents()
     {
         return _attentionAnimation && _attentionImage;
+    }
+
+    private void AttentionActive()
+    {
+        if (CheckForComponents())
+        {
+            _attentionImage.enabled = true;
+            _attentionAnimation.Play();
+        }
+    }
+
+    private void AttentionDisable()
+    {
+        if (CheckForComponents())
+        {
+            _attentionImage.enabled = false;
+            _attentionAnimation.Stop();
+        }
     }
 
     #endregion

@@ -14,6 +14,7 @@ public class MainMenuPanel : BaseMenuPanel
     [SerializeField] private List<Animation> _menuAnimations;
     [SerializeField] private Text _moneyCounter;
     [SerializeField] private TargetsPanelView _targetsPanel;
+    [SerializeField] private ShopIconView _shopIcon;
 
     private void Awake()
     { 
@@ -33,9 +34,19 @@ public class MainMenuPanel : BaseMenuPanel
         IsShow = true;
     }
 
-    private void ProcessTargetInfo(TargetsUIInfo info)
+    private void ProcessNewGoodsEvent(bool newGoodsAvaible)
+    {
+        _shopIcon.SetAttention(newGoodsAvaible);
+    }
+
+    private void ProcessLastTargetInfo(TargetsUIInfo info)
     {
         _targetsPanel.AddTargetInfo(info);
+    }
+
+    private void ProcessCurrentTargetInfo(TargetsUIInfo info)
+    {
+        _targetsPanel.SetCurrentTargetName(info);
     }
 
     private void OnDestroy()

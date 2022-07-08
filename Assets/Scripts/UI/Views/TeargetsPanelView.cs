@@ -37,6 +37,33 @@ public class TargetsPanelView : BaseUiView
         }
     }
 
+    public void SetCurrentTargetName(TargetsUIInfo info)
+    {
+        switch (info.LevelType)
+        {
+            case LevelType.Common:
+                {
+                    _currentTargetName.text = $"target {info.LevelNumber}";
+                    break;
+                }
+            case LevelType.Boss:
+                {
+                    _currentTargetName.text = $"target {info.LevelNumber}";
+                    break;
+                }
+            case LevelType.Bonus:
+                {
+                    _currentTargetName.text = $"bonus target";
+                    break;
+                }
+            default:
+                {
+                    _currentTargetName.text = $"unknown target";
+                    break;
+                }
+        }
+    }
+
     #endregion
 
     #region PrivateMethods
