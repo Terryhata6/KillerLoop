@@ -12,8 +12,7 @@ public class PauseGamePanel : BaseMenuPanel
         
     private void Awake()
     { 
-        _buttonRestart.onClick.AddListener(UIEvents.Current.ButtonRestartGame);
-        _buttonResume.onClick.AddListener(UIEvents.Current.ButtonResume);
+
     }
         
     public override void Hide()
@@ -32,7 +31,6 @@ public class PauseGamePanel : BaseMenuPanel
 
     private void OnDestroy()
     {
-        _buttonRestart.onClick.RemoveAllListeners();
-        _buttonResume.onClick.RemoveAllListeners();
+
     }
 }

@@ -11,7 +11,6 @@ public class LoseLevelPanel : BaseMenuPanel
         
     private void Awake()
     { 
-        _buttonRestart.onClick.AddListener(UIEvents.Current.ButtonRestartGame);
     }
         
     public override void Hide()
@@ -30,6 +29,6 @@ public class LoseLevelPanel : BaseMenuPanel
 
     private void OnDestroy()
     {
-        _buttonRestart.onClick.RemoveAllListeners();
+
     }
 }

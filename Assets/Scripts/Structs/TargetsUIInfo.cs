@@ -9,6 +9,7 @@
         _number = Number;
         _type = Type;
     }
+
     #region AccessFields
     public int LevelNumber => _number;
     public LevelType LevelType => _type;

@@ -5,37 +5,55 @@ public class UIEvents
 
     #region ButtonActions
 
-    public event Action OnButtonStartGame;
-    public void ButtonStartGame()
+    #region MainMenuButtonsActions
+
+    public event Action OnStartLevelButton;
+    public void StartLevelButton()
     {
-        OnButtonStartGame?.Invoke();
+        OnStartLevelButton?.Invoke();
     }
 
-    public event Action OnButtonRestartGame;
-    public void ButtonRestartGame()
+    public event Action OnShopMenuButton;
+    public void ShopMenuButton()
     {
-        OnButtonRestartGame?.Invoke();
+        OnShopMenuButton?.Invoke();
     }
 
-    public event Action OnButtonNextLevel;
-    public void ButtonNextLevel()
+    public event Action OnOptionMenuButton;
+    public void OptionMenuButton()
     {
-        OnButtonNextLevel?.Invoke();
+        OnOptionMenuButton?.Invoke();
     }
 
-    public event Action OnButtonPause;
+    #endregion
 
-    public void ButtonPause()
+
+
+    #endregion
+
+    #region ComponentRequires
+
+    #region MenuRequires
+
+    public event Action<IMoneyStorage> OnMoneyStorageRequire;
+    public void MoneyStorageRequire(IMoneyStorage storage)
     {
-        OnButtonPause?.Invoke();
+        OnMoneyStorageRequire?.Invoke(storage);
     }
 
-    public event Action OnButtonResume;
-
-    public void ButtonResume()
+    public event Action<INewGoodsChecker> OnNewGoodsCheckerRequire;
+    public void NewGoodsCheckerRequire(INewGoodsChecker checker)
     {
-        OnButtonResume?.Invoke();
+        OnNewGoodsCheckerRequire?.Invoke(checker);
     }
+
+    public event Action<ITargetInfo> OnTargetInfoRequire;
+    public void TargetInfoRequire(ITargetInfo info)
+    {
+        OnTargetInfoRequire?.Invoke(info);
+    }
+
+    #endregion
 
     #endregion
 }

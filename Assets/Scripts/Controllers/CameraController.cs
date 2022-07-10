@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class CameraController : BaseController
 {
+
     private VirtualCameraView _camera;
     private int _basePriority = 10;
     private int _highPriority = 99;

@@ -7,13 +7,13 @@ public class UIController : MonoBehaviour
 
     [SerializeField] private List<BaseMenuPanel> _menues;
 
+    private List<IService> _services;
+
     #endregion
 
     public void Awake()
     {
-        UIEvents.Current.OnButtonStartGame += StartGame;
-        UIEvents.Current.OnButtonRestartGame += RestartGame;
-        UIEvents.Current.OnButtonNextLevel += NextLevel;
+        _services = new List<IService>();
 
         LevelEvents.Current.OnLevelFinish += WinLevel;
         LevelEvents.Current.OnLevelChanged += OpenGameMenu;
@@ -21,6 +21,22 @@ public class UIController : MonoBehaviour
         
         HideUI();
         OpenGameMenu();
+    }
+
+    public void Start()
+    {
+        SetServices();
+    }
+
+    private void SetServices()
+    {
+        for (int i = 0; i < _menues.Count; i++)
+        {
+            if (_menues[i] is IUseServices)
+            {
+                (_menues[i] as IUseServices).SetServices(_services);
+            }
+        }
     }
 
     #region ActionsReaction

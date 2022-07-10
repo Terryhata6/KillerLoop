@@ -8,7 +8,7 @@ public class TargetIconView : BaseUiView
     #region PrivateFileds
 
     [SerializeField] private Image _icon;
-    [SerializeField] private TextMeshPro _text;
+    [SerializeField] private TextMeshProUGUI _text;
     [SerializeField] private Image _viewImage;
 
     #endregion
@@ -17,7 +17,7 @@ public class TargetIconView : BaseUiView
 
     public bool isActive => _viewImage?.enabled ?? false;
     public Image Icon => _icon;
-    public TextMeshPro Text => _text;
+    public TextMeshProUGUI Text => _text;
     public Image ViewImage => _viewImage;
 
     #endregion

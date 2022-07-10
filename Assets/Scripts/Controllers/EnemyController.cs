@@ -18,9 +18,6 @@ public class EnemyController : BaseController, IExecute
         LevelEvents.Current.OnLevelLose += Disable;
         LevelEvents.Current.OnLevelFinish += Disable;
         
-        UIEvents.Current.OnButtonPause += Disable;
-        UIEvents.Current.OnButtonResume += Enable;
-        
         _enemyStates = new Dictionary<EnemyState, BaseEnemyState>
         {
             {EnemyState.Idle, new IdleEnemyState()},

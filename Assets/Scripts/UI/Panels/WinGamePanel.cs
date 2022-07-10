@@ -11,7 +11,7 @@ public class WinLevelPanel : BaseMenuPanel
         
         private void Awake()
         { 
-                _buttonNextLevel.onClick.AddListener(UIEvents.Current.ButtonNextLevel);
+
         }
         
         public override void Hide()
@@ -30,7 +30,7 @@ public class WinLevelPanel : BaseMenuPanel
 
         private void OnDestroy()
         {
-                _buttonNextLevel.onClick.RemoveAllListeners();
+
         }
         
 }
