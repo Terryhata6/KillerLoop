@@ -103,9 +103,9 @@ public class MainController : MonoBehaviour
         {
             _controllers.Add(controller);
         }
-        if (controller is IContainService)
+        if (controller is IContainServices)
         {
-            _services.Add((controller as IContainService).service);
+            _services.AddRange((controller as IContainServices).services);
         }
     }
 

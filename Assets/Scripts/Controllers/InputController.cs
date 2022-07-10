@@ -5,10 +5,11 @@ public class InputController : BaseController, IExecute
 {
     public InputController()  { }
 
-    private bool _mouseCLickedPreviousFrame = false;
-    private Vector2 _mouseOldPosition;
-    private Vector2 _mousePosition = Vector2.zero;
     private Touch _firstTouch;
+    private bool _mouseCLickedPreviousFrame;
+    private Vector2 _mousePosition;
+    private Vector2 _mouseOldPosition;
+
 
     public override void Initialize()
     {

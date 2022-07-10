@@ -27,33 +27,47 @@ public class UIEvents
 
     #endregion
 
+    #region OptionMenuButtonsActions
 
-
-    #endregion
-
-    #region ComponentRequires
-
-    #region MenuRequires
-
-    public event Action<IMoneyStorage> OnMoneyStorageRequire;
-    public void MoneyStorageRequire(IMoneyStorage storage)
+    public event Action OnExitMenuButton;
+    public void ExitMenuButton()
     {
-        OnMoneyStorageRequire?.Invoke(storage);
+        OnExitMenuButton?.Invoke();
     }
 
-    public event Action<INewGoodsChecker> OnNewGoodsCheckerRequire;
-    public void NewGoodsCheckerRequire(INewGoodsChecker checker)
+    public event Action OnSoundOffButton;
+    public void SoundOffButton()
     {
-        OnNewGoodsCheckerRequire?.Invoke(checker);
+        OnSoundOffButton?.Invoke();
     }
 
-    public event Action<ITargetInfo> OnTargetInfoRequire;
-    public void TargetInfoRequire(ITargetInfo info)
+    public event Action OnSoundOnButton;
+    public void SoundOnButton()
     {
-        OnTargetInfoRequire?.Invoke(info);
+        OnSoundOnButton?.Invoke();
     }
 
     #endregion
+
+    #region LoseMenuButtonsActions
+
+    public event Action OnReviveButton;
+    public void ReviveButton()
+    {
+        OnReviveButton?.Invoke();
+    }
+
+    #endregion
+
+    #endregion
+
+    #region OptionalEvents
+
+    public event Action OnToMainMenu;
+    public void ToMainMenu()
+    {
+        OnToMainMenu?.Invoke();
+    }
 
     #endregion
 }

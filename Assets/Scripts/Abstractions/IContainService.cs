@@ -1,4 +1,6 @@
-﻿public interface IContainService
+﻿using System.Collections.Generic;
+
+public interface IContainServices
 {
-    public IService service { get; }
+    public List<IService> services { get; }
 }

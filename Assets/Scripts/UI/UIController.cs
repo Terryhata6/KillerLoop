@@ -18,25 +18,17 @@ public class UIController : MonoBehaviour
         LevelEvents.Current.OnLevelFinish += WinLevel;
         LevelEvents.Current.OnLevelChanged += OpenGameMenu;
         LevelEvents.Current.OnLevelLose += LoseLevel;
-        
+
+        UIEvents.Current.OnToMainMenu += OpenGameMenu; //Исправь Enter-alt
+        UIEvents.Current.OnReviveButton += OpenGameMenu; //Исправь Enter-alt
+
         HideUI();
-        OpenGameMenu();
+        LoseLevel();
     }
 
     public void Start()
     {
         SetServices();
-    }
-
-    private void SetServices()
-    {
-        for (int i = 0; i < _menues.Count; i++)
-        {
-            if (_menues[i] is IUseServices)
-            {
-                (_menues[i] as IUseServices).SetServices(_services);
-            }
-        }
     }
 
     #region ActionsReaction
@@ -78,8 +70,17 @@ public class UIController : MonoBehaviour
 
     #endregion
 
-    #region OptionalMethods
-
+    #region PrivateMethods
+    private void SetServices()
+    {
+        for (int i = 0; i < _menues.Count; i++)
+        {
+            if (_menues[i] is IUseServices)
+            {
+                (_menues[i] as IUseServices).SetServices(_services);
+            }
+        }
+    }
     private void HideUI()
     {
         for (int i = 0; i < _menues.Count; i++)
