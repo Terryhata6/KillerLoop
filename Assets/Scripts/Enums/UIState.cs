@@ -2,6 +2,8 @@ public enum UIState
 {
     MainMenu,
     InGame,
-    Lose,
-    Win,
+    LoseLevel,
+    WinLevel,
+    OptionsMenu,
+    ShopMenu
 }

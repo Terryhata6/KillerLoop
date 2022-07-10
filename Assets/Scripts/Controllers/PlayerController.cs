@@ -32,9 +32,6 @@ public class PlayerController : BaseController, IExecute
         LevelEvents.Current.OnLevelLose += Disable;
         LevelEvents.Current.OnLevelFinish += Disable;
         
-        UIEvents.Current.OnButtonPause += Disable;
-        UIEvents.Current.OnButtonResume += Enable;
-        
         _playerStates = new Dictionary<PlayerState, BasePlayerStateModel>
         {
             {PlayerState.Idle, new PlayerIdleStateModel()},

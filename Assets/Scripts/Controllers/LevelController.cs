@@ -1,4 +1,3 @@
-public class LevelController
+public class LevelController :BaseController
 {
-        
 }

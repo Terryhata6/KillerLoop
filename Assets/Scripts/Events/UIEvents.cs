@@ -2,38 +2,58 @@ using System;
 public class UIEvents
 { 
     public static UIEvents Current = new UIEvents();
-    
-    public event Action OnButtonStartGame;
-    public void ButtonStartGame()
+
+    #region ButtonActions
+
+    #region MainMenuButtonsActions
+
+    public event Action OnStartLevelButton;
+    public void StartLevelButton()
     {
-        OnButtonStartGame?.Invoke();
+        OnStartLevelButton?.Invoke();
     }
 
-    public event Action OnButtonRestartGame;
-    public void ButtonRestartGame()
+    public event Action OnShopMenuButton;
+    public void ShopMenuButton()
     {
-        OnButtonRestartGame?.Invoke();
+        OnShopMenuButton?.Invoke();
     }
 
-    public event Action OnButtonNextLevel;
-    public void ButtonNextLevel()
+    public event Action OnOptionMenuButton;
+    public void OptionMenuButton()
     {
-        OnButtonNextLevel?.Invoke();
-    }
-    
-    public event Action OnButtonPause;
-
-    public void ButtonPause()
-    {
-        OnButtonPause?.Invoke();
-    }
-    
-    public event Action OnButtonResume;
-
-    public void ButtonResume()
-    {
-        OnButtonResume?.Invoke();
+        OnOptionMenuButton?.Invoke();
     }
 
+    #endregion
 
+
+
+    #endregion
+
+    #region ComponentRequires
+
+    #region MenuRequires
+
+    public event Action<IMoneyStorage> OnMoneyStorageRequire;
+    public void MoneyStorageRequire(IMoneyStorage storage)
+    {
+        OnMoneyStorageRequire?.Invoke(storage);
+    }
+
+    public event Action<INewGoodsChecker> OnNewGoodsCheckerRequire;
+    public void NewGoodsCheckerRequire(INewGoodsChecker checker)
+    {
+        OnNewGoodsCheckerRequire?.Invoke(checker);
+    }
+
+    public event Action<ITargetInfo> OnTargetInfoRequire;
+    public void TargetInfoRequire(ITargetInfo info)
+    {
+        OnTargetInfoRequire?.Invoke(info);
+    }
+
+    #endregion
+
+    #endregion
 }

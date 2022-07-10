@@ -26,7 +26,6 @@ public class VirtualCameraView : BaseObjectView
         }
         if (follow && lookAt)
         {
-            Debug.Log(_camera);
             _camera.Follow = follow;
             _camera.LookAt = lookAt;
         }

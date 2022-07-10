@@ -5,29 +5,34 @@ using UnityEngine.SceneManagement;
 
 public class MainController : MonoBehaviour
 {
-    
+
     [Header("Player")]
-    [SerializeField] private Transform                      _playerStarterPoint;
-    [SerializeField] private PlayerView                     _playerView;
-    [SerializeField] private VirtualCameraView              _virtualCamera;
+    [SerializeField] private Transform _playerStarterPoint;
+    [SerializeField] private PlayerView _playerView;
+    [SerializeField] private VirtualCameraView _virtualCamera;
 
     [Header("Enemy")]
     [SerializeField] private List<EnemyView> _tempEnemies; //Не забудь убрать это и доделать спавн врагов - EnterAlt
-    
+
     [Header("Settings")]
-    [SerializeField] private bool                           _debugTestingScene = false;
-    [SerializeField] private string                         _testingSceneName = "";
-    
-    private List<BaseController>                            _controllers = new List<BaseController>();
+    [SerializeField] private bool _debugTestingScene = false;
+    [SerializeField] private string _testingSceneName = "";
+
+    private List<BaseController> _controllers;
+    private List<IService> _services;
 
     private void Awake()
     {
         ///----------Services-------------
+        _services = new List<IService>();
+        _controllers = new List<BaseController>();
+
         DontDestroyOnLoad(gameObject);
         AddController(new InputController());
         AddController(new PlayerController());
         AddController(new CameraController(_virtualCamera));
         AddController(new EnemyController());
+        AddController(new LevelController());
         
         if (_debugTestingScene)
         {
@@ -40,6 +45,8 @@ public class MainController : MonoBehaviour
             GetController<PlayerController>().SetPlayerViewInstance(_playerView);
         }
         GetController<EnemyController>().SetEnemies(_tempEnemies);
+
+        
     }
 
     private void Start()
@@ -54,7 +61,6 @@ public class MainController : MonoBehaviour
         if (_playerStarterPoint != null)
         {
             _playerView.transform.position = _playerStarterPoint.position;
-            //_playerStarterPoint = FindObjectOfType<PlayerStarterPosition>().transform;
         }
         else
         {
@@ -96,6 +102,10 @@ public class MainController : MonoBehaviour
         if (!_controllers.Contains(controller))
         {
             _controllers.Add(controller);
+        }
+        if (controller is IContainService)
+        {
+            _services.Add((controller as IContainService).service);
         }
     }
 

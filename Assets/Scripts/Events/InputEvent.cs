@@ -21,6 +21,7 @@ public class InputEvents
             OnTouchMovedEvent?.Invoke(mousePos);
         }
         #endregion
+
         #region TouchEndedEvents
         public Action<Vector2> OnTouchEndedEvent;
         public void TouchEndedEvent(Vector2 mousePos)
