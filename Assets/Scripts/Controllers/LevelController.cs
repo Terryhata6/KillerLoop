@@ -1,3 +1,5 @@
-public class LevelController :BaseController
+using System.Collections.Generic;
+
+public class LevelController 
 {
 }

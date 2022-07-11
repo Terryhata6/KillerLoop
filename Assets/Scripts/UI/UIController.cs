@@ -75,10 +75,10 @@ public class UIController : MonoBehaviour
     {
         for (int i = 0; i < _menues.Count; i++)
         {
-            if (_menues[i] is IUseServices)
-            {
-                (_menues[i] as IUseServices).SetServices(_services);
-            }
+            //if (_menues[i] is IUseServices)
+            //{
+            //    (_menues[i] as IUseServices).SetServices(_services);
+            //}
         }
     }
     private void HideUI()

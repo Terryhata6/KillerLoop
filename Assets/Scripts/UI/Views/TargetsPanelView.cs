@@ -22,36 +22,43 @@ public class TargetsPanelView : BaseUiView
     #endregion
 
     #region PublicMethods
-    public void UpdateTargetsIcons()
-    {
-        if (_targetInfoSource != null)
-        {
-            for (int i = _firstTargetNumber; i <= _lastTargetNumber; i++)
-            {
-                _tempTargetInfo = _targetInfoSource.GetTargetInfo(i);
-                AddTargetInfo(_tempTargetInfo);
-            }
-        }
-    }
-
     public void Initialize(ITargetInfo targetInfoSource)
     {
         _indexOffset = _targetsIcons.Count / 2;
-        _targetInfoSource = targetInfoSource;
+        UpdateTargetsInfo(targetInfoSource);
     }
 
-    public void UpdateTargetName()
+    public void UpdateTargetsInfo(ITargetInfo info)
     {
-        if (_targetInfoSource != null)
-        {
-            _tempTargetInfo = _targetInfoSource.GetTargetInfo(_targetInfoSource.CurrentTargetNumber);
-            SetCurrentTargetName(_tempTargetInfo);
-        }
+        _targetInfoSource = info;
+        UpdateTargetsIcons(info);
+        UpdateTargetName(info);
     }
 
     #endregion
 
     #region PrivateMethods
+
+    private void UpdateTargetsIcons(ITargetInfo info)
+    {
+        if (info != null)
+        {
+            for (int i = _firstTargetNumber; i <= _lastTargetNumber; i++)
+            {
+                _tempTargetInfo = info.GetTargetInfo(i);
+                AddTargetInfo(_tempTargetInfo);
+            }
+        }
+    }
+
+    private void UpdateTargetName(ITargetInfo info)
+    {
+        if (info != null)
+        {
+            _tempTargetInfo = info.GetTargetInfo(info.CurrentTargetNumber);
+            SetCurrentTargetName(_tempTargetInfo);
+        }
+    }
 
     private void AddTargetInfo(TargetsUIInfo info)
     {

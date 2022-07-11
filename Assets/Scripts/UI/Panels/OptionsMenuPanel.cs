@@ -5,6 +5,8 @@ public class OptionsMenuPanel : BaseMenuPanel
 {
     #region PrivateFields
 
+    #region Serialized
+
     [Header("Panel")]
     [SerializeField] private GameObject _panel;
 
@@ -12,6 +14,8 @@ public class OptionsMenuPanel : BaseMenuPanel
     [SerializeField] private Button _exitButton;
     [SerializeField] private Button _soundOffButton;
     [SerializeField] private Button _soundOnButton;
+
+    #endregion
 
     #endregion
 
@@ -42,10 +46,10 @@ public class OptionsMenuPanel : BaseMenuPanel
 
     private void Initialize()
     {
-        InitializeButtonEvents();
+        SetButtonEvents();
     }
 
-    private void InitializeButtonEvents()
+    private void SetButtonEvents()
     {
         BindListenerToButton(_exitButton, UIEvents.Current.ExitMenuButton);
         BindListenerToButton(_soundOffButton, UIEvents.Current.SoundOffButton);

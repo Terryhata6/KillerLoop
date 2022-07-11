@@ -3,23 +3,31 @@ using UnityEngine;
 
 public class InputController : BaseController, IExecute
 {
-    public InputController()  { }
+    #region PrivateFields
 
     private Touch _firstTouch;
     private bool _mouseCLickedPreviousFrame;
     private Vector2 _mousePosition;
     private Vector2 _mouseOldPosition;
 
+    #endregion
+
+    public InputController() { }
+
+    #region PublicMethods
+
+    #region IInitialize
 
     public override void Initialize()
     {
         base.Initialize();
 
-        LevelEvents.Current.OnLevelStart += Enable;
-        LevelEvents.Current.OnLevelLose += Disable;
-        LevelEvents.Current.OnLevelFinish += Disable;
+        SetEvents();
     }
 
+    #endregion
+
+    #region IExecute
     public void Execute()
     {
         if (!IsActive)
@@ -99,5 +107,19 @@ public class InputController : BaseController, IExecute
             }
         }
     }
+    #endregion
+
+    #endregion
+
+    #region PrivateMethods
+
+    private void SetEvents()
+    {
+        LevelEvents.Current.OnLevelStart += Enable;
+        LevelEvents.Current.OnLevelLose += Disable;
+        LevelEvents.Current.OnLevelFinish += Disable;
+    }
+
+    #endregion
 
 }

@@ -1,10 +1,12 @@
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class MainController : MonoBehaviour
 {
+    #region PrivateFields
+
+    #region Serialized
 
     [Header("Player")]
     [SerializeField] private Transform _playerStarterPoint;
@@ -18,21 +20,19 @@ public class MainController : MonoBehaviour
     [SerializeField] private bool _debugTestingScene = false;
     [SerializeField] private string _testingSceneName = "";
 
+    #endregion
+
     private List<BaseController> _controllers;
-    private List<IService> _services;
+    private ServiceDistributor _serviceDistributor;
+
+    #endregion
 
     private void Awake()
     {
-        ///----------Services-------------
-        _services = new List<IService>();
-        _controllers = new List<BaseController>();
-
         DontDestroyOnLoad(gameObject);
-        AddController(new InputController());
-        AddController(new PlayerController());
-        AddController(new CameraController(_virtualCamera));
-        AddController(new EnemyController());
-        AddController(new LevelController());
+        _serviceDistributor = new ServiceDistributor();
+        InitializeFields();
+        CreateControllers();
         
         if (_debugTestingScene)
         {
@@ -40,23 +40,17 @@ public class MainController : MonoBehaviour
         }
 
         GetController<CameraController>().SetCameraTarget(_playerView.transform);
-        if (_playerView)
-        {
-            GetController<PlayerController>().SetPlayerViewInstance(_playerView);
-        }
         GetController<EnemyController>().SetEnemies(_tempEnemies);
-
         
     }
 
     private void Start()
     {
-        //------SceneSettings------
-        for (int i = 0; i < _controllers.Count; i++)
-        {
-            _controllers[i].Initialize();
-        }
-        
+        InitializeControllers();
+        SetServicesToDistributor();
+        SetConsumersToDistributor();
+        _serviceDistributor.Distribute();
+
         //------SceneSettings------
         if (_playerStarterPoint != null)
         {
@@ -92,20 +86,68 @@ public class MainController : MonoBehaviour
         }
     }
 
+    #region ServiceMethods
+
+    #region ServiceDistributor
+
+    private void SetServicesToDistributor()
+    {
+        for (int i = 0; i < _controllers.Count; i++)
+        {
+            if (_controllers is IContainServices)
+            {
+                _serviceDistributor.AddServices((_controllers as IContainServices).GetServices());
+            }
+        }
+    }
+    private void SetConsumersToDistributor()
+    {
+        for (int i = 0; i < _controllers.Count; i++)
+        {
+            if (_controllers is IContainConsumers)
+            {
+                _serviceDistributor.AddConsumers((_controllers as IContainConsumers).GetConsumers());
+            }
+        }
+    }
+
+    #endregion
+
+    #region Initialize
+
+    private void InitializeFields()
+    {
+        _controllers = new List<BaseController>();
+    }
+    private void CreateControllers()
+    {
+        AddController(new InputController());
+        AddController(new PlayerController(_playerView));
+        AddController(new CameraController(_virtualCamera));
+        AddController(new EnemyController(_tempEnemies));
+        //AddController(new LevelController());
+    }
+    private void InitializeControllers()
+    {
+        for (int i = 0; i < _controllers.Count; i++)
+        {
+            _controllers[i].Initialize();
+        }
+    }
+
+    #endregion
+
+    #region ControllersManagement
 
     /// <summary>
     /// Add controller in Controller's list
     /// </summary>
     /// <param name="controller"></param>
-    public void AddController(BaseController controller)
+    private void AddController(BaseController controller)
     {
         if (!_controllers.Contains(controller))
         {
             _controllers.Add(controller);
-        }
-        if (controller is IContainServices)
-        {
-            _services.AddRange((controller as IContainServices).services);
         }
     }
 
@@ -113,20 +155,20 @@ public class MainController : MonoBehaviour
     /// Remove controller from Controller's list
     /// </summary>
     /// <param name="controller"></param>
-    public void RemoveController(BaseController controller)
+    private void RemoveController(BaseController controller)
     {
         if (_controllers.Contains(controller))
         {
             _controllers.Remove(controller);
         }
     }
- 
+
     /// <summary>
     /// Return controller's instance from controller's list
     /// </summary>
     /// <param Type="type"></param>
     /// <returns></returns>
-    public T GetController<T>() where T : BaseController
+    private T GetController<T>() where T : BaseController
     {
         foreach (BaseController obj in _controllers)
         {
@@ -138,21 +180,8 @@ public class MainController : MonoBehaviour
         return null;
     }
 
-    private void OnApplicationPause(bool pause)
-    {
-        //GameEvents.Current.GeneralApplicationPause(pause);
-    }
-
-    #region Will Replaced or Deleted
-
-    /// <summary>
-    /// don't forget syntaxis
-    /// </summary>
-    public void stupid()
-    {        
-        //GetController<BaseController>();
-        InputController a = new InputController();
-        a = GetController<InputController>();
-    }
     #endregion
+
+    #endregion
+
 }

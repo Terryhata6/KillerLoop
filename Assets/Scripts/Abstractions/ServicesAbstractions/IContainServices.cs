@@ -2,5 +2,5 @@
 
 public interface IContainServices
 {
-    public List<IService> services { get; }
+    public List<IService> GetServices();
 }

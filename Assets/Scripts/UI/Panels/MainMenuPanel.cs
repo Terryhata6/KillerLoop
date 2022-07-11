@@ -3,9 +3,13 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MainMenuPanel : BaseMenuPanel, IUseServices
+public class MainMenuPanel : BaseMenuPanel, 
+    IServiceConsumer<IMoneyStorage>, IServiceConsumer<INewGoodsChecker>, IServiceConsumer<ITargetInfo>
 {
     #region PrivateFiels
+
+    #region Serialized
+
     [Header("Panel")]
     [SerializeField] private GameObject _panel;
 
@@ -18,7 +22,9 @@ public class MainMenuPanel : BaseMenuPanel, IUseServices
     [SerializeField] private TargetsPanelView _targetsPanel;
     [SerializeField] private ShopIconView _shopIcon;
 
-    //Dependencies
+    #endregion
+
+    //Services
     private IMoneyStorage _moneyStorage;
     private INewGoodsChecker _newGoodsChecker;
     private ITargetInfo _targetInfoSource;
@@ -31,25 +37,6 @@ public class MainMenuPanel : BaseMenuPanel, IUseServices
     }
 
     #region PublicMethods
-
-    public void SetServices(List<IService> services)
-    {
-        for (int i = 0; i < services.Count; i++)
-        {
-            if (services[i] is IMoneyStorage)
-            {
-                _moneyStorage = services[i] as IMoneyStorage;
-            }
-            if (services[i] is INewGoodsChecker)
-            {
-                _newGoodsChecker = services[i] as INewGoodsChecker;
-            }
-            if (services[i] is ITargetInfo)
-            {
-                _targetInfoSource = services[i] as ITargetInfo;
-            }
-        }
-    }
 
     public override void Hide()
     {
@@ -70,17 +57,48 @@ public class MainMenuPanel : BaseMenuPanel, IUseServices
         UpdateMoneyCounter();
     }
 
+    #region IServiceConsumer
+
+    public void UseService(IMoneyStorage service)
+    {
+        _moneyStorage = service;
+        if (IsShow)
+        {
+            UpdateMoneyCounter();
+        }
+    }
+
+    public void UseService(INewGoodsChecker service)
+    {
+        _newGoodsChecker = service;
+        if (IsShow)
+        {
+            ProcessNewGoods();
+        }
+    }
+
+    public void UseService(ITargetInfo service)
+    {
+        _targetInfoSource = service;
+        if (IsShow)
+        {
+            ProcessTargetsInfo();
+        }
+    }
+
+    #endregion
+
     #endregion
 
     #region PrivateMethods
 
     private void Initialize()
     {
-        InitializeButtonEvents();
+        SetButtonEvents();
         _targetsPanel.Initialize(_targetInfoSource);
     }
 
-    private void InitializeButtonEvents()
+    private void SetButtonEvents()
     {
         BindListenerToButton(_shopButton, UIEvents.Current.ShopMenuButton);
         BindListenerToButton(_startButton, UIEvents.Current.StartLevelButton);
@@ -89,7 +107,7 @@ public class MainMenuPanel : BaseMenuPanel, IUseServices
 
     private void ProcessNewGoods()
     {
-        if (_newGoodsChecker != null)
+        if (_newGoodsChecker != null && _shopIcon != null)
         {
             _shopIcon.SetAttention(_newGoodsChecker.NewGoodsAvaible);
         }
@@ -97,8 +115,15 @@ public class MainMenuPanel : BaseMenuPanel, IUseServices
 
     private void ProcessTargetsInfo()
     {
-        _targetsPanel.UpdateTargetName();
-        _targetsPanel.UpdateTargetsIcons();
+        _targetsPanel.UpdateTargetsInfo(_targetInfoSource);
+    }
+
+    private void UpdateMoneyCounter()
+    {
+        if (_moneyStorage != null && _moneyValue != null)
+        {
+            _moneyValue.text = _moneyStorage.MoneyValue.ToString();
+        }
     }
 
     private void StartAnimations()
@@ -120,14 +145,6 @@ public class MainMenuPanel : BaseMenuPanel, IUseServices
             {
                 _menuAnimations[i].Stop();
             }
-        }
-    }
-
-    private void UpdateMoneyCounter()
-    {
-        if (_moneyStorage != null)
-        {
-            _moneyValue.text = _moneyStorage.MoneyValue.ToString();
         }
     }
 

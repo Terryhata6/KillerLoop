@@ -6,12 +6,16 @@ public class LoseLevelPanel : BaseMenuPanel, IWaitingCounter
 {
     #region PrivateFields
 
+    #region Serialized
+
     [Header("Panel")]
     [SerializeField] private GameObject _panel;
 
     [Header("Elements")]
     [SerializeField] private Button _reviveButton;
     [SerializeField] private ReviveCounterView _reviveCounterView;
+
+    #endregion
 
     #endregion
 

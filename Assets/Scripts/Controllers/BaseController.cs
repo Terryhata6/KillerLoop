@@ -1,35 +1,47 @@
-using System.Collections.Generic;
-using UnityEngine;
 
 public abstract class BaseController : IInitialize
 {
+    #region ProtectedFields
+
+    protected bool _isActive = true;
+
+    #endregion
+
+    #region AccessFields
+    public bool IsActive => _isActive;
+
+    #endregion
     public BaseController()
     {
        
     }
 
-    protected bool _isActive = true;
+    #region PublicMethods
 
-    public bool IsActive => _isActive;
+    #region IInitialize
+    public virtual void Initialize()
+    {
+
+    }
+    #endregion
+
+    public virtual void Enable()
+    {
+        SetState(true);
+    }
+
+    public virtual void Disable()
+    {
+        SetState(false);
+    }
+
+    #endregion
+
+    #region ProtectedMethods
     protected virtual void SetState(bool state)
     {
         _isActive = state;
     }
 
-    #region IInitialize
-    public virtual void Initialize()
-    {
-        
-    }
     #endregion
-    
-    public virtual void Enable()
-    {
-        SetState(true);
-    }
-    
-    public virtual void Disable()
-    {
-        SetState(false);
-    }
 }

@@ -1,8 +1,9 @@
-
 using UnityEngine;
 
 public class PlayerRunWallModel : BasePlayerStateModel
 {
+    #region PrivateFields
+
     private Vector3 _movingVector = Vector3.zero;
     private Vector2 _movingVector2D;
     private float _magnitude;
@@ -13,30 +14,38 @@ public class PlayerRunWallModel : BasePlayerStateModel
     private float _timer;
     private float _jumpCounterSpeed = 2f;
 
-    public override void Execute(PlayerController controller, PlayerView player)
+    #endregion
+
+    #region PublicMethods
+
+    public override void Execute(Vector2 positionBegan, Vector2 positionDelta, PlayerView player)
     {
-        base.Execute(controller, player);
-        
-        if (controller.PositionBegan.Equals(Vector2.zero))
+        base.Execute(positionBegan, positionDelta, player);
+
+        if (IdlePosition(positionBegan, positionDelta))
         {
             IdleOnTheWall(player);
             NotReadyToJump(player);
             return;
         }
-        _movingVector2D = controller.PositionDelta - controller.PositionBegan;
+        _movingVector2D = positionDelta - positionBegan;
         if (ReadyToJump(_movingVector2D, player))
         {
             return;
         }
-        CalculateMovingVector3d(_movingVector2D,player.HitNormal, out _movingVector, out _magnitude);
+        CalculateMovingVector3d(_movingVector2D, player.HitNormal, out _movingVector, out _magnitude);
         player.Rotate(Quaternion.LookRotation(_movingVector));
         player.Move(Vector3.forward * Time.deltaTime);
-        player.SetMovingBlend(CalculateMovingBlend(_movingVector,player.HitNormal));
-            
+        player.SetMovingBlend(CalculateMovingBlend(_movingVector, player.HitNormal));
+
         CheckToJump(player);
     }
 
-    private void CalculateMovingVector3d(Vector2 vector2d, Vector3 normal,out Vector3 movingVector3d, out float magnitude)
+    #endregion
+
+    #region PrivateMethods
+
+    private void CalculateMovingVector3d(Vector2 vector2d, Vector3 normal, out Vector3 movingVector3d, out float magnitude)
     {
         magnitude = vector2d.magnitude;
         if (magnitude > 100)
@@ -64,23 +73,23 @@ public class PlayerRunWallModel : BasePlayerStateModel
         }
     }
 
-    private float CalculateMovingBlend( Vector3 movingVector,Vector3 normal)
+    private float CalculateMovingBlend(Vector3 movingVector, Vector3 normal)
     {
         _tempVector.z = -movingVector.x;
         _tempVector.x = movingVector.z;
         _tempVector.y = 0f;
-        if (Vector3.Dot(  normal,_tempVector.normalized) >= _directionTreshold)
+        if (Vector3.Dot(normal, _tempVector.normalized) >= _directionTreshold)
         {
             return -1f;
         }
-        if (Vector3.Dot(normal,-_tempVector.normalized) >= _directionTreshold)
+        if (Vector3.Dot(normal, -_tempVector.normalized) >= _directionTreshold)
         {
             return 1f;
         }
 
         return 0f;
     }
-    
+
     private bool ReadyToJump(Vector2 vector, PlayerView player)
     {
         _tempVector2d.x = player.HitNormal.x;
@@ -118,18 +127,21 @@ public class PlayerRunWallModel : BasePlayerStateModel
         _timer = 0f;
         player.IndicatorImage.fillAmount = _timer;
     }
-    
+
     private void CheckToJump(PlayerView player)
     {
         _tempVector.x = player.Forward.z;
         _tempVector.z = -player.Forward.x;
         _tempVector.y = 0f;
         if (!player.RayCastCheck(player.Position, -player.HitNormal, 2f, 1 << 11)
-        || player.RayCastCheck(player.Position, _movingVector * 1.5f, 2f , 1 << 11))
+        || player.RayCastCheck(player.Position, _movingVector * 1.5f, 2f, 1 << 11))
         {
             player.StopWallRun();
             player.Jump();
             Debug.Log("jump");
         }
     }
+
+    #endregion
+
 }
