@@ -48,13 +48,14 @@ public class ServiceDistributor
             }
         }
     }
-    public void AddConsumer(IServiceConsumer<IService> consumer)
+    public void AddConsumer<T>(IServiceConsumer<T> consumer) where T : IService
     {
+        Debug.Log(consumer);
         if (_consumers != null 
-            && !_consumers.Contains(consumer)
+            && !_consumers.Contains((IServiceConsumer<IService>)consumer)
             && consumer != null)
         {
-            _consumers.Add(consumer);
+            _consumers.Add(IServiceConsumer<IService>)consumer);
         }
     }
     public void AddConsumers(List<IServiceConsumer<IService>> consumers)
@@ -118,7 +119,7 @@ public class ServiceDistributor
         {
             if (services[i] is T)
             {
-                services[i].AddConsumer(consumer);
+                services[i].AddConsumer(consumer as IServiceConsumer<IService>);
             }
         }
     }

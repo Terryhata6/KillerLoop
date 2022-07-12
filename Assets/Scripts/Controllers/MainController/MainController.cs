@@ -19,6 +19,7 @@ public class MainController : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private bool _debugTestingScene = false;
     [SerializeField] private string _testingSceneName = "";
+    [SerializeField] private InGamePanel lala;
 
     #endregion
 
@@ -46,7 +47,9 @@ public class MainController : MonoBehaviour
 
     private void Start()
     {
+        IServiceConsumer < IProgressValuesUpdater > ser = (IServiceConsumer<IProgressValuesUpdater>)lala;
         InitializeControllers();
+        _serviceDistributor.AddConsumer(ser);
         SetServicesToDistributor();
         SetConsumersToDistributor();
         _serviceDistributor.Distribute();
@@ -125,7 +128,7 @@ public class MainController : MonoBehaviour
         AddController(new PlayerController(_playerView));
         AddController(new CameraController(_virtualCamera));
         AddController(new EnemyController(_tempEnemies));
-        //AddController(new LevelController());
+        AddController(new LevelController());
     }
     private void InitializeControllers()
     {
