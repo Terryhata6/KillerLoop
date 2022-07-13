@@ -3,68 +3,77 @@ using UnityEngine;
 
 public class InputController : BaseController, IExecute
 {
-    public InputController()  { }
+    #region PrivateFields
 
-    private bool _mouseCLickedPreviousFrame = false;
-    private Vector2 _mouseOldPosition;
-    private Vector2 _mousePosition = Vector2.zero;
     private Touch _firstTouch;
+    private bool _mouseCLickedPreviousFrame;
+    private Vector2 _mousePosition;
+    private Vector2 _mouseOldPosition;
+
+    #endregion
+
+    public InputController() { }
+
+    #region PublicMethods
+
+    #region IInitialize
 
     public override void Initialize()
     {
         base.Initialize();
 
-        LevelEvents.Current.OnLevelStart += Enable;
-        LevelEvents.Current.OnLevelLose += Disable;
-        LevelEvents.Current.OnLevelFinish += Disable;
+        SetEvents();
     }
 
+    #endregion
+
+    #region IExecute
     public void Execute()
     {
         if (!IsActive)
         {
             return;
         }
-#if UNITY_EDITOR
-        {
-            if (_mouseCLickedPreviousFrame)
-            {
-                if (Input.GetMouseButton(0))
-                {
-                    _mousePosition = Input.mousePosition;
-                    if (_mousePosition == _mouseOldPosition)
-                    {
-                        InputEvents.Current.TouchStationaryEvent(_mousePosition);
-                        //Debug.Log("Cтационарно");
-                    }
-                    else
-                    {
-                        InputEvents.Current.TouchMovedEvent(_mousePosition);
-                        //Debug.Log("Мувд");
-                    }
-                }
-                else
-                {
-                    _mousePosition = Input.mousePosition;
-                    InputEvents.Current.TouchEndedEvent(_mousePosition);
-                    //Debug.Log("Енд");
-                    _mouseCLickedPreviousFrame = false;
-                }
-            }
-            else
-            {
-                if (Input.GetMouseButton(0))
-                {
-                    _mouseCLickedPreviousFrame = true;
-                    InputEvents.Current.TouchBeganEvent(Input.mousePosition);
-                    //Debug.Log("Старт");
-                }
-            }
-            _mouseOldPosition = _mousePosition;
+//#if UNITY_EDITOR
+//        {
+//            if (_mouseCLickedPreviousFrame)
+//            {
+//                if (Input.GetMouseButton(0))
+//                {
+//                    _mousePosition = Input.mousePosition;
+//                    if (_mousePosition == _mouseOldPosition)
+//                    {
+//                        InputEvents.Current.TouchStationaryEvent(_mousePosition);
+//                        //Debug.Log("Cтационарно");
+//                    }
+//                    else
+//                    {
+//                        InputEvents.Current.TouchMovedEvent(_mousePosition);
+//                        //Debug.Log("Мувд");
+//                    }
+//                }
+//                else
+//                {
+//                    _mousePosition = Input.mousePosition;
+//                    InputEvents.Current.TouchEndedEvent(_mousePosition);
+//                    //Debug.Log("Енд");
+//                    _mouseCLickedPreviousFrame = false;
+//                }
+//            }
+//            else
+//            {
+//                if (Input.GetMouseButton(0))
+//                {
+//                    _mouseCLickedPreviousFrame = true;
+//                    InputEvents.Current.TouchBeganEvent(Input.mousePosition);
+//                    //Debug.Log("Старт");
+//                }
+//            }
+//            _mouseOldPosition = _mousePosition;
 
-            return;
-        }
-#endif
+//            return;
+//        }
+//#endif
         if (Input.touchCount > 0)
         {
             _firstTouch = Input.GetTouch(0);
@@ -98,5 +107,21 @@ public class InputController : BaseController, IExecute
             }
         }
     }
+    #endregion
+
+    #endregion
+
+    #region PrivateMethods
+
+    private void SetEvents()
+    {
+        LevelEvents.Current.OnLevelStart += Enable;
+        LevelEvents.Current.OnLevelLose += Disable;
+        LevelEvents.Current.OnLevelFinish += Disable;
+
+        UIEvents.Current.OnToMainMenu += Disable;
+    }
+
+    #endregion
 
 }

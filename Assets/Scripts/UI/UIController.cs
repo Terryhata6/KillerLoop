@@ -5,39 +5,27 @@ public class UIController : MonoBehaviour
 {
     #region PrivateFields
 
-    [SerializeField] private List<BaseMenuPanel> _menues;
+    #region Serialized
 
-    private List<IService> _services;
+    [SerializeField] private List<BaseMenuPanel> _menues;
 
     #endregion
 
-    public void Awake()
-    {
-        _services = new List<IService>();
+    private ServiceDistributor _serviceDistributor;
 
-        LevelEvents.Current.OnLevelFinish += WinLevel;
-        LevelEvents.Current.OnLevelChanged += OpenGameMenu;
-        LevelEvents.Current.OnLevelLose += LoseLevel;
-        
-        HideUI();
-        OpenGameMenu();
+    #endregion
+
+    private void Awake()
+    {
+        Initialize();
     }
 
-    public void Start()
+    private void Start()
     {
-        SetServices();
+        UIEvents.Current.ToMainMenu();
     }
 
-    private void SetServices()
-    {
-        for (int i = 0; i < _menues.Count; i++)
-        {
-            if (_menues[i] is IUseServices)
-            {
-                (_menues[i] as IUseServices).SetServices(_services);
-            }
-        }
-    }
+    #region PrivateMethods
 
     #region ActionsReaction
 
@@ -46,9 +34,17 @@ public class UIController : MonoBehaviour
         SwitchUI(UIState.MainMenu);
     }
 
+    private void RevivePlayer()
+    {
+        SwitchUI(UIState.Revive);
+    }
+
+    private void OpenShopMenu()
+    {
+        SwitchUI(UIState.ShopMenu);
+    }
     private void StartGame()
     {
-        //Time.timeScale = 1.0f;
         SwitchUI(UIState.InGame);
         LevelEvents.Current.LevelStart();
     }
@@ -76,9 +72,59 @@ public class UIController : MonoBehaviour
         SwitchUI(UIState.MainMenu);
     }
 
-    #endregion
+    private void OpenOptionsMenu()
+    {
+        SwitchUI(UIState.OptionsMenu);
+    }
 
-    #region OptionalMethods
+    #endregion
+    private void Initialize()
+    {
+        _serviceDistributor = ServiceDistributor.Current;
+        SetEvents();
+        InitializePanels();
+        SetConsumersToDistributor();
+        HideUI();
+    }
+
+    private void SetEvents()
+    {
+        LevelEvents.Current.OnLevelFinish += WinLevel;
+        LevelEvents.Current.OnLevelChanged += OpenGameMenu;
+        LevelEvents.Current.OnLevelLose += LoseLevel;
+
+        UIEvents.Current.OnToMainMenu += OpenGameMenu; //Исправь Enter-alt
+        UIEvents.Current.OnReviveButton += RevivePlayer;
+        UIEvents.Current.OnStartLevelButton += StartGame;
+        UIEvents.Current.OnExitShopButton += OpenGameMenu;
+        UIEvents.Current.OnExitOptionsButton += OpenGameMenu;
+        UIEvents.Current.OnOptionMenuButton += OpenOptionsMenu;
+        UIEvents.Current.OnShopMenuButton += OpenShopMenu;
+    }
+
+    private void InitializePanels()
+    {
+        for (int i = 0; i < _menues.Count; i++)
+        {
+            _menues[i].Initialize();
+        }
+    }
+
+    private void SetConsumersToDistributor()
+    {
+        if (_serviceDistributor == null)
+        {
+            return;
+        }
+        for (int i = 0; i < _menues.Count; i++)
+        {
+            if (_menues[i] 
+                && _menues[i] is IConsumer)
+            {
+                _serviceDistributor.AddConsumer(_menues[i] as IConsumer);
+            }
+        } 
+    }
 
     private void HideUI()
     {
@@ -109,8 +155,22 @@ public class UIController : MonoBehaviour
                 SwitchMenu(typeof(LoseLevelPanel));
                 break;
             case UIState.WinLevel:
-                SwitchMenu(typeof(WinLevelPanel));
+                SwitchMenu(typeof(WinGamePanel));
                 break;
+            case UIState.Revive:
+                SwitchMenu(typeof(ReviveScreenPanel));
+                break;
+            case UIState.ShopMenu:
+                SwitchMenu(typeof(ShopMenuPanel));
+                break;
+            case UIState.OptionsMenu:
+                SwitchMenu(typeof(OptionsMenuPanel));
+                break;
+            default:
+                {
+                    Debug.Log("Unkown Type of UI Panel");
+                    break;
+                }
         }
     }
     private void SwitchMenu(System.Type type)

@@ -1,14 +1,19 @@
-﻿
+﻿using UnityEngine;
+
 public class PlayerIdleStateModel : BasePlayerStateModel
 {
-    public override void Execute(PlayerController controller, PlayerView player)
+    #region PublicMethods
+
+    public override void Execute(Vector2 positionBegan, Vector2 positionDelta, PlayerView player)
     {
-        base.Execute(controller, player);
-        if (controller.PositionBegan.magnitude > 0f)
+        base.Execute(positionBegan, positionDelta, player);
+        if (PositionChanged(positionBegan))
         {
             player.Run();
         }
-        Gravity(player);
+        GravityEffect(player);
         player.SetMovingBlend(0f);
-    }    
+    }
+
+    #endregion
 }

@@ -3,29 +3,35 @@ using UnityEngine;
 
 public class EnemyController : BaseController, IExecute
 {
+    #region PrivateFields
+
     private List<EnemyView> _enemies;
     private Dictionary<EnemyState, BaseEnemyState> _enemyStates;
     private int _index;
     private EnemyView _tempEnemy;
-    
+
+    #endregion
+
+    public EnemyController (List<EnemyView> enemies)
+    {
+        SetEnemies(enemies);
+    }
+
+    #region PublicMethods
+
+    #region Iinitialize
+
     public override void Initialize()
     {
         base.Initialize();
 
-        GameEvents.Current.OnEnemyDead += EnemyRemove;
-        
-        LevelEvents.Current.OnLevelStart += Enable;
-        LevelEvents.Current.OnLevelLose += Disable;
-        LevelEvents.Current.OnLevelFinish += Disable;
-        
-        _enemyStates = new Dictionary<EnemyState, BaseEnemyState>
-        {
-            {EnemyState.Idle, new IdleEnemyState()},
-            {EnemyState.Jump, new JumpEnemyState()},
-            {EnemyState.Move, new MoveEnemyState()},
-            {EnemyState.WallRun, new WallRunEnemyState()},
-        };
+        SetEvents();
+        CreateStateDictionary();
     }
+
+    #endregion
+
+    #region IExecute
 
     public void Execute()
     {
@@ -33,7 +39,7 @@ public class EnemyController : BaseController, IExecute
         {
             return;
         }
-        
+
         for (int _index = 0; _index < _enemies.Count; _index++)
         {
             _tempEnemy = _enemies[_index];
@@ -44,16 +50,49 @@ public class EnemyController : BaseController, IExecute
         }
     }
 
+    #endregion
+
     public void SetEnemies(List<EnemyView> enemies)
     {
-        _enemies = new List<EnemyView>();
-        _enemies = enemies;
-        for (int _index = 0; _index < _enemies.Count; _index++)
+        if (enemies != null)
         {
-            _enemies[_index].Initialize();
+            Enable();
+            _enemies = enemies;
+            for (int _index = 0; _index < _enemies.Count; _index++)
+            {
+                _enemies[_index].Initialize();
+            }
+        }
+        else
+        {
+            Disable();
         }
     }
 
+    #endregion
+
+    #region PrivateMethods
+
+    private void CreateStateDictionary()
+    {
+        _enemyStates = new Dictionary<EnemyState, BaseEnemyState>
+        {
+            {EnemyState.Idle, new IdleEnemyState()},
+            {EnemyState.Jump, new JumpEnemyState()},
+            {EnemyState.Move, new MoveEnemyState()},
+            {EnemyState.WallRun, new WallRunEnemyState()},
+        };
+    }
+    private void SetEvents()
+    {
+        GameEvents.Current.OnEnemyDead += EnemyRemove;
+
+        LevelEvents.Current.OnLevelStart += Enable;
+        LevelEvents.Current.OnLevelLose += Disable;
+        LevelEvents.Current.OnLevelFinish += Disable;
+
+        UIEvents.Current.OnToMainMenu += Disable;
+    }
     private void EnemyRemove(EnemyView enemy)
     {
         if (_enemies.Contains(enemy))
@@ -61,4 +100,7 @@ public class EnemyController : BaseController, IExecute
             _enemies.Remove(enemy);
         }
     }
+
+    #endregion
+
 }

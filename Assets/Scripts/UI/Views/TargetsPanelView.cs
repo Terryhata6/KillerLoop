@@ -21,47 +21,43 @@ public class TargetsPanelView : BaseUiView
     private TargetsUIInfo _tempTargetInfo;
     #endregion
 
-    private void Awake()
-    {
-        Initialize();
-    }
-
     #region PublicMethods
-    public void UpdateTargetsIcons()
+    public void Initialize(ITargetInfo targetInfoSource)
     {
-        if (_targetInfoSource == null)
-        {
-            RequireTargetInfoSource();
-        }
-        if (_targetInfoSource != null)
-        {
-            for (int i = _firstTargetNumber; i <= _lastTargetNumber; i++)
-            {
-                _tempTargetInfo = _targetInfoSource.GetTargetInfo(i);
-                AddTargetInfo(_tempTargetInfo);
-            }
-        }
+        _indexOffset = _targetsIcons.Count / 2;
+        UpdateTargetsInfo(targetInfoSource);
     }
 
-    public void UpdateTargetName()
+    public void UpdateTargetsInfo(ITargetInfo info)
     {
-        if (_targetInfoSource == null)
-        {
-            RequireTargetInfoSource();
-        }
-        if (_targetInfoSource != null)
-        {
-            _tempTargetInfo = _targetInfoSource.GetTargetInfo(_targetInfoSource.CurrentTargetNumber);
-            SetCurrentTargetName(_tempTargetInfo);
-        }
+        _targetInfoSource = info;
+        UpdateTargetsIcons(info);
+        UpdateTargetName(info);
     }
 
     #endregion
 
     #region PrivateMethods
-    private void Initialize()
+
+    private void UpdateTargetsIcons(ITargetInfo info)
     {
-        _indexOffset = _targetsIcons.Count / 2;
+        if (info != null)
+        {
+            for (int i = _firstTargetNumber; i <= _lastTargetNumber; i++)
+            {
+                _tempTargetInfo = info.GetTargetInfo(i);
+                AddTargetInfo(_tempTargetInfo);
+            }
+        }
+    }
+
+    private void UpdateTargetName(ITargetInfo info)
+    {
+        if (info != null)
+        {
+            _tempTargetInfo = info.GetTargetInfo(info.CurrentTargetNumber);
+            SetCurrentTargetName(_tempTargetInfo);
+        }
     }
 
     private void AddTargetInfo(TargetsUIInfo info)
@@ -78,11 +74,6 @@ public class TargetsPanelView : BaseUiView
                 _targetsIcons[i].CopyValues(_targetsIcons[i + 1]);
             }
         }
-    }
-
-    private void RequireTargetInfoSource()
-    {
-        UIEvents.Current.TargetInfoRequire(_targetInfoSource);
     }
 
     private void SetCurrentTargetName(TargetsUIInfo info)

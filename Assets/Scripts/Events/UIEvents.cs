@@ -27,33 +27,85 @@ public class UIEvents
 
     #endregion
 
+    #region OptionMenuButtonsActions
 
-
-    #endregion
-
-    #region ComponentRequires
-
-    #region MenuRequires
-
-    public event Action<IMoneyStorage> OnMoneyStorageRequire;
-    public void MoneyStorageRequire(IMoneyStorage storage)
+    public event Action OnExitOptionsButton;
+    public void ExitOptionsButton()
     {
-        OnMoneyStorageRequire?.Invoke(storage);
+        OnExitOptionsButton?.Invoke();
     }
 
-    public event Action<INewGoodsChecker> OnNewGoodsCheckerRequire;
-    public void NewGoodsCheckerRequire(INewGoodsChecker checker)
+    public event Action OnSoundOffButton;
+    public void SoundOffButton()
     {
-        OnNewGoodsCheckerRequire?.Invoke(checker);
+        OnSoundOffButton?.Invoke();
     }
 
-    public event Action<ITargetInfo> OnTargetInfoRequire;
-    public void TargetInfoRequire(ITargetInfo info)
+    public event Action OnSoundOnButton;
+    public void SoundOnButton()
     {
-        OnTargetInfoRequire?.Invoke(info);
+        OnSoundOnButton?.Invoke();
     }
 
     #endregion
+
+    #region LoseMenuButtonsActions
+
+    public event Action OnReviveButton;
+    public void ReviveButton()
+    {
+        OnReviveButton?.Invoke();
+    }
+
+    #endregion
+
+    #region WinMenuButtonsActions
+
+    public event Action OnCollectButton;
+    public void CollectButton()
+    {
+        OnCollectButton?.Invoke();
+    }
+
+    public event Action OnCollectX2Button;
+    public void CollectX2Button()
+    {
+        OnCollectX2Button?.Invoke();
+    }
+
+    #endregion
+
+    #region ShopMenuButtonsActions
+
+    public event Action OnExitShopButton;
+    public void ExitShopButton()
+    {
+        OnExitShopButton?.Invoke();
+    }
+
+    public event Action OnGetMoneyButton;
+    public void GetMoneyButton()
+    {
+        OnGetMoneyButton?.Invoke();
+    }
+
+    #endregion
+
+    #endregion
+
+    #region OptionalEvents
+
+    public event Action OnToMainMenu;
+    public void ToMainMenu()
+    {
+        OnToMainMenu?.Invoke();
+    }
+
+    public event Action OnRevive;
+    public void Revive()
+    {
+        OnRevive?.Invoke();
+    }
 
     #endregion
 }

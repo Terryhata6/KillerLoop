@@ -3,9 +3,13 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MainMenuPanel : BaseMenuPanel, IUseServices
+public class MainMenuPanel : BaseMenuPanel, 
+    IServiceConsumer<IMoneyStorage>, IServiceConsumer<INewGoodsChecker>, IServiceConsumer<ITargetInfo>
 {
     #region PrivateFiels
+
+    #region Serialized
+
     [Header("Panel")]
     [SerializeField] private GameObject _panel;
 
@@ -14,34 +18,26 @@ public class MainMenuPanel : BaseMenuPanel, IUseServices
     [SerializeField] private Button _shopButton;
     [SerializeField] private Button _optionsButton;
     [SerializeField] private List<Animation> _menuAnimations;
-    [SerializeField] private TextMeshProUGUI _moneyCounter;
+    [SerializeField] private TextMeshProUGUI _moneyValue;
     [SerializeField] private TargetsPanelView _targetsPanel;
     [SerializeField] private ShopIconView _shopIcon;
 
-    //Dependencies
+    #endregion
+
+    //Services
     private IMoneyStorage _moneyStorage;
     private INewGoodsChecker _newGoodsChecker;
+    private ITargetInfo _targetInfoSource;
 
     #endregion
 
-    private void Start()
-    {
-        Initialize();
-    }
-
     #region PublicMethods
 
-    public void SetServices(List<IService> services)
+    public override void Initialize()
     {
-        for (int i = 0; i < services.Count; i++)
-        {
-            if (services[i] is IMoneyStorage)
-            {
-                Debug.Log("Money");
-            }
-        }
+        SetButtonEvents();
+        _targetsPanel.Initialize(_targetInfoSource);
     }
-
     public override void Hide()
     {
         if (!IsShow) return;
@@ -61,32 +57,51 @@ public class MainMenuPanel : BaseMenuPanel, IUseServices
         UpdateMoneyCounter();
     }
 
+    #region IServiceConsumer
+
+    public void UseService(IMoneyStorage service)
+    {
+        _moneyStorage = service;
+        if (IsShow)
+        {
+            UpdateMoneyCounter();
+        }
+    }
+
+    public void UseService(INewGoodsChecker service)
+    {
+        _newGoodsChecker = service;
+        if (IsShow)
+        {
+            ProcessNewGoods();
+        }
+    }
+
+    public void UseService(ITargetInfo service)
+    {
+        _targetInfoSource = service;
+        if (IsShow)
+        {
+            ProcessTargetsInfo();
+        }
+    }
+
+    #endregion
+
     #endregion
 
     #region PrivateMethods
 
-    private void Initialize()
+    private void SetButtonEvents()
     {
-        InitializeButtonEvents();
-    }
-
-    private void InitializeButtonEvents()
-    {
-        _startButton.onClick.AddListener(UIEvents.Current.StartLevelButton);
-        _shopButton.onClick.AddListener(UIEvents.Current.ShopMenuButton);
-        _optionsButton.onClick.AddListener(UIEvents.Current.OptionMenuButton); 
-    }
-
-
-
-    private void Test(IMoneyStorage yes)
-    {
-        Debug.Log(yes.MoneyValue);
+        BindListenerToButton(_shopButton, UIEvents.Current.ShopMenuButton);
+        BindListenerToButton(_startButton, UIEvents.Current.StartLevelButton);
+        BindListenerToButton(_optionsButton, UIEvents.Current.OptionMenuButton);
     }
 
     private void ProcessNewGoods()
     {
-        if (_newGoodsChecker != null)
+        if (_newGoodsChecker != null && _shopIcon != null)
         {
             _shopIcon.SetAttention(_newGoodsChecker.NewGoodsAvaible);
         }
@@ -94,13 +109,20 @@ public class MainMenuPanel : BaseMenuPanel, IUseServices
 
     private void ProcessTargetsInfo()
     {
-        _targetsPanel.UpdateTargetName();
-        _targetsPanel.UpdateTargetsIcons();
+        _targetsPanel.UpdateTargetsInfo(_targetInfoSource);
+    }
+
+    private void UpdateMoneyCounter()
+    {
+        if (_moneyStorage != null && _moneyValue != null)
+        {
+            _moneyValue.text = _moneyStorage.MoneyValue.ToString();
+        }
     }
 
     private void StartAnimations()
     {
-        if (_menuAnimations.Count > 0)
+        if (_menuAnimations != null)
         {
             for (int i = 0; i < _menuAnimations.Count; i++)
             {
@@ -111,7 +133,7 @@ public class MainMenuPanel : BaseMenuPanel, IUseServices
 
     private void StopAnimations()
     {
-        if (_menuAnimations.Count > 0)
+        if (_menuAnimations != null)
         {
             for (int i = 0; i < _menuAnimations.Count; i++)
             {
@@ -120,19 +142,11 @@ public class MainMenuPanel : BaseMenuPanel, IUseServices
         }
     }
 
-    private void UpdateMoneyCounter()
-    {
-        if (_moneyStorage != null)
-        {
-            _moneyCounter.text = _moneyStorage.MoneyValue.ToString();
-        }
-    }
-
     private void OnDestroy()
     {
-        _startButton.onClick.RemoveAllListeners();
-        _shopButton.onClick.RemoveAllListeners();
-        _optionsButton.onClick.RemoveAllListeners();
+        RemoveListenersFromButton(_shopButton);
+        RemoveListenersFromButton(_startButton);
+        RemoveListenersFromButton(_optionsButton);
     }
 
     #endregion

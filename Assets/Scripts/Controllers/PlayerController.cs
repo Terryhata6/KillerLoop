@@ -3,35 +3,60 @@ using UnityEngine;
 
 public class PlayerController : BaseController, IExecute
 {
+    #region PrivateFields
+
     private PlayerView _playerView;
     private Vector2 _positionDelta = Vector2.zero;
     private Vector2 _positionBegan = Vector2.zero;
     private Vector2 _positionEnd = Vector2.zero;
     private Dictionary<PlayerState, BasePlayerStateModel> _playerStates;
 
-    public Vector2 PositionDelta => _positionDelta;
-    public Vector2 PositionBegan => _positionBegan;
-    public Vector2 PositionEnd => _positionEnd;
+    #endregion
 
-
-    public PlayerController()
+    public PlayerController(PlayerView player)
     {
-
+        SetPlayerView(player);
     }
 
-
+    #region PublicMethods
 
     public override void Initialize()
     {
         base.Initialize();
-        InputEvents.Current.OnTouchBeganEvent += UpdateBeganPosition;
-        InputEvents.Current.OnTouchMovedEvent += UpdateDeltaPosition;
-        InputEvents.Current.OnTouchEndedEvent += UpdateEndPosition;
-        
-        LevelEvents.Current.OnLevelStart += Enable;
-        LevelEvents.Current.OnLevelLose += Disable;
-        LevelEvents.Current.OnLevelFinish += Disable;
-        
+        SetEvents();
+        CreateStateDictionary();
+    }
+
+    public void Execute()
+    {
+        if (!_playerView || !IsActive)
+        {
+            return;
+        }
+        _playerStates[_playerView.State].Execute(_positionBegan, _positionDelta, _playerView);
+    }
+
+    #endregion
+
+    #region PrivateMethods
+
+    private void SetPlayerView(PlayerView view)
+    {
+        if (view)
+        {
+            Enable();
+            _playerView = view;
+            PlayerInit(_playerView);
+        }
+        else
+        {
+            Disable();
+            Debug.Log("Oops! Player view not set");
+        }
+    }
+
+    private void CreateStateDictionary()
+    {
         _playerStates = new Dictionary<PlayerState, BasePlayerStateModel>
         {
             {PlayerState.Idle, new PlayerIdleStateModel()},
@@ -43,22 +68,29 @@ public class PlayerController : BaseController, IExecute
         };
     }
 
-    public void Execute()
+    private void SetEvents()
     {
-        if (_playerView == null || !IsActive)
-        {
-            return;
-        }
-        _playerStates[_playerView.State].Execute(this, _playerView);
+        InputEvents.Current.OnTouchBeganEvent += UpdateBeganPosition;
+        InputEvents.Current.OnTouchMovedEvent += UpdateDeltaPosition;
+        InputEvents.Current.OnTouchEndedEvent += UpdateEndPosition;
+
+        LevelEvents.Current.OnLevelStart += Enable;
+        LevelEvents.Current.OnLevelLose += Disable;
+        LevelEvents.Current.OnLevelFinish += Disable;
     }
 
-    public void SetPlayerViewInstance(PlayerView view)
+    private void DeleteEvents()
     {
-        _playerView = view;
-        PlayerInit(_playerView);
+        InputEvents.Current.OnTouchBeganEvent -= UpdateBeganPosition;
+        InputEvents.Current.OnTouchMovedEvent -= UpdateDeltaPosition;
+        InputEvents.Current.OnTouchEndedEvent -= UpdateEndPosition;
+
+        LevelEvents.Current.OnLevelStart -= Enable;
+        LevelEvents.Current.OnLevelLose -= Disable;
+        LevelEvents.Current.OnLevelFinish -= Disable;
     }
 
-    public void PlayerInit(PlayerView player)
+    private void PlayerInit(PlayerView player)
     {
         player.Stand(); //State - idle
     }
@@ -79,4 +111,7 @@ public class PlayerController : BaseController, IExecute
         UpdateDeltaPosition(Vector2.zero);
         UpdateBeganPosition(Vector2.zero);
     }
+
+    #endregion
+
 }
