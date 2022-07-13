@@ -90,6 +90,8 @@ public class EnemyController : BaseController, IExecute
         LevelEvents.Current.OnLevelStart += Enable;
         LevelEvents.Current.OnLevelLose += Disable;
         LevelEvents.Current.OnLevelFinish += Disable;
+
+        UIEvents.Current.OnToMainMenu += Disable;
     }
     private void EnemyRemove(EnemyView enemy)
     {

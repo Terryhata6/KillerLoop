@@ -45,7 +45,7 @@ public class OptionsMenuPanel : BaseMenuPanel
 
     private void SetButtonEvents()
     {
-        BindListenerToButton(_exitButton, UIEvents.Current.ExitMenuButton);
+        BindListenerToButton(_exitButton, UIEvents.Current.ExitOptionsButton);
         BindListenerToButton(_soundOffButton, UIEvents.Current.SoundOffButton);
         BindListenerToButton(_soundOnButton, UIEvents.Current.SoundOnButton);
         BindListenerToButton(_soundOffButton, ChangeSoundButton);

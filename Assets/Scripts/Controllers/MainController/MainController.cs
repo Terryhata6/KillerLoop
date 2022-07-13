@@ -19,7 +19,6 @@ public class MainController : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private bool _debugTestingScene = false;
     [SerializeField] private string _testingSceneName = "";
-    [SerializeField] private InGamePanel lala;
 
     #endregion
 
@@ -31,7 +30,7 @@ public class MainController : MonoBehaviour
     private void Awake()
     {
         DontDestroyOnLoad(gameObject);
-        _serviceDistributor = new ServiceDistributor();
+        _serviceDistributor = ServiceDistributor.Current;
         InitializeFields();
         CreateControllers();
         
@@ -47,9 +46,7 @@ public class MainController : MonoBehaviour
 
     private void Start()
     {
-        IConsumer ser = lala;
         InitializeControllers();
-        _serviceDistributor.AddConsumer(ser);
         SetServicesToDistributor();
         SetConsumersToDistributor();
         _serviceDistributor.Distribute();

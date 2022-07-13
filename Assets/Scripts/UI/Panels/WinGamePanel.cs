@@ -32,7 +32,7 @@ public class WinGamePanel : BaseMenuPanel,
     private int _enemyBeaten;
     private int _multiplier;
     private int _incrementValue;
-    private float _incrementMultiplier;
+    private const float _incrementMultiplier = 0.005f;
 
     #endregion
 
@@ -41,7 +41,7 @@ public class WinGamePanel : BaseMenuPanel,
     public override void Initialize()
     {
         _countingPeriod = 0.05f;
-        _incrementMultiplier = 0.005f;
+
         ResetValues();
         SetButtonEvents();
     }
@@ -53,6 +53,7 @@ public class WinGamePanel : BaseMenuPanel,
         IsShow = false;
         StopAnimations();
         ResetValues();
+        StopAllCoroutines();
     }
 
     public override void Show()
@@ -159,6 +160,19 @@ public class WinGamePanel : BaseMenuPanel,
         }
     }
 
+    private void MoneyIncrement(int value)
+    {
+        if (_currentMoney + value < _moneyAdded)
+        {
+            _currentMoney += value;
+        }
+        else
+        {
+            _currentMoney = _moneyAdded;
+        }
+        UpdateMoneyCounterValue(_currentMoney);
+    }
+
     #region UIUpdates
 
     private void UpdateAllValues()
@@ -169,7 +183,6 @@ public class WinGamePanel : BaseMenuPanel,
     }
     private void UpdateMoneyCounter()
     {
-        _moneyAdded = 10000;
         if (_moneyAdded > _currentMoney)
         {
             StartCoroutine(CountingMoney());
@@ -197,19 +210,6 @@ public class WinGamePanel : BaseMenuPanel,
         {
             _moneyCollected.text = $"+{value}";
         }
-    }
-
-    private void MoneyIncrement(int value)
-    {
-        if (_currentMoney + value < _moneyAdded)
-        {
-            _currentMoney += value;
-        }
-        else
-        {
-            _currentMoney = _moneyAdded;
-        }
-        UpdateMoneyCounterValue(_currentMoney);
     }
 
     #endregion
@@ -249,11 +249,7 @@ public class WinGamePanel : BaseMenuPanel,
         _incrementValue = (int)((_moneyAdded - _currentMoney) * _incrementMultiplier);
         while (_currentMoney < _moneyAdded)
         {
-            _timer += Time.deltaTime;
-            if (_timer >= _countingPeriod)
-            {
-                MoneyIncrement(_incrementValue);
-            }
+            MoneyIncrement(_incrementValue);
             yield return null;
         }
         if (_waitingToCloseMenu)

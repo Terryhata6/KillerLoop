@@ -4,13 +4,15 @@ using UnityEngine;
 
 public class ServiceDistributor 
 {
+    public static ServiceDistributor Current = new ServiceDistributor();
+
     #region PrivateFields
 
     private List<IService> _services;
     private List<IConsumer> _consumers;
 
-    private List<IService> _tempServices;
-    private List<IConsumer> _tempConsumers;
+    private List<IContainConsumers> _consumersSources;
+    private List<IContainServices> _servicesSources;
 
     #endregion
 
@@ -21,19 +23,11 @@ public class ServiceDistributor
     {
         _services = services;
         _consumers = consumers;
+        _consumersSources = new List<IContainConsumers>();
+        _servicesSources = new List<IContainServices>();
     }
 
     #region PublicMethods
-
-    public void AddService(IService service)
-    {
-        if (_services != null 
-            && !_services.Contains(service)
-            && service!= null)
-        {
-            _services.Add(service);
-        }
-    }
     public void AddServices(List<IService> services)
     {
         if (_services != null && services != null)
@@ -49,13 +43,16 @@ public class ServiceDistributor
     }
     public void AddConsumer(IConsumer consumer)
     {
-        if (_consumers != null 
-            && !_consumers.Contains(consumer)
-            && consumer != null)
+        if (_consumers != null && consumer != null)
         {
-            _consumers.Add(consumer);
+            if (consumer != null 
+                && !_consumers.Contains(consumer))
+            {
+                _consumers.Add(consumer);
+            }
         }
     }
+
     public void AddConsumers(List<IConsumer> consumers)
     {
         if (_consumers != null && consumers != null)
@@ -72,6 +69,7 @@ public class ServiceDistributor
 
     public void Distribute()
     {
+        Prepare();
         if (_services != null && _consumers != null )
         {
             SetConsumersToServices<IMoneyStorage>(_consumers, _services);
@@ -88,6 +86,28 @@ public class ServiceDistributor
     #endregion
 
     #region PrivateMethods
+
+    private void Prepare()
+    {
+        PrepareConsumers();
+        PrepareServices();
+    }
+
+    private void PrepareServices()
+    {
+        for (int i = 0; i < _servicesSources.Count; i++)
+        {
+            AddServices(_servicesSources[i].GetServices());
+        }
+    }
+
+    private void PrepareConsumers()
+    {
+        for (int i = 0; i < _consumersSources.Count; i++)
+        {
+            AddConsumers(_consumersSources[i].GetConsumers());
+        }
+    }
 
     private void SetConsumersToServices<T>(List<IConsumer> consumers, List<IService> services ) where T : IService
     {

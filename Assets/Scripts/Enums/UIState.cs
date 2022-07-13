@@ -5,5 +5,6 @@ public enum UIState
     LoseLevel,
     WinLevel,
     OptionsMenu,
-    ShopMenu
+    ShopMenu,
+    Revive
 }

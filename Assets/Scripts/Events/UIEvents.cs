@@ -29,10 +29,10 @@ public class UIEvents
 
     #region OptionMenuButtonsActions
 
-    public event Action OnExitMenuButton;
-    public void ExitMenuButton()
+    public event Action OnExitOptionsButton;
+    public void ExitOptionsButton()
     {
-        OnExitMenuButton?.Invoke();
+        OnExitOptionsButton?.Invoke();
     }
 
     public event Action OnSoundOffButton;
@@ -75,6 +75,22 @@ public class UIEvents
 
     #endregion
 
+    #region ShopMenuButtonsActions
+
+    public event Action OnExitShopButton;
+    public void ExitShopButton()
+    {
+        OnExitShopButton?.Invoke();
+    }
+
+    public event Action OnGetMoneyButton;
+    public void GetMoneyButton()
+    {
+        OnGetMoneyButton?.Invoke();
+    }
+
+    #endregion
+
     #endregion
 
     #region OptionalEvents
@@ -83,6 +99,12 @@ public class UIEvents
     public void ToMainMenu()
     {
         OnToMainMenu?.Invoke();
+    }
+
+    public event Action OnRevive;
+    public void Revive()
+    {
+        OnRevive?.Invoke();
     }
 
     #endregion

@@ -5,17 +5,27 @@ public class UIController : MonoBehaviour
 {
     #region PrivateFields
 
-    [SerializeField] private List<BaseMenuPanel> _menues;
+    #region Serialized
 
-    private List<IService> _services;
+    [SerializeField] private List<BaseMenuPanel> _menues;
 
     #endregion
 
-    public void Awake()
+    private ServiceDistributor _serviceDistributor;
+
+    #endregion
+
+    private void Awake()
     {
         Initialize();
-        WinLevel();
     }
+
+    private void Start()
+    {
+        UIEvents.Current.ToMainMenu();
+    }
+
+    #region PrivateMethods
 
     #region ActionsReaction
 
@@ -24,11 +34,19 @@ public class UIController : MonoBehaviour
         SwitchUI(UIState.MainMenu);
     }
 
+    private void RevivePlayer()
+    {
+        SwitchUI(UIState.Revive);
+    }
+
+    private void OpenShopMenu()
+    {
+        SwitchUI(UIState.ShopMenu);
+    }
     private void StartGame()
     {
-        //Time.timeScale = 1.0f;
         SwitchUI(UIState.InGame);
-  //      LevelEvents.Current.LevelStart();
+        LevelEvents.Current.LevelStart();
     }
 
     private void WinLevel()
@@ -54,15 +72,18 @@ public class UIController : MonoBehaviour
         SwitchUI(UIState.MainMenu);
     }
 
+    private void OpenOptionsMenu()
+    {
+        SwitchUI(UIState.OptionsMenu);
+    }
+
     #endregion
-
-    #region PrivateMethods
-
     private void Initialize()
     {
-        InitializeFields();
+        _serviceDistributor = ServiceDistributor.Current;
         SetEvents();
         InitializePanels();
+        SetConsumersToDistributor();
         HideUI();
     }
 
@@ -73,12 +94,12 @@ public class UIController : MonoBehaviour
         LevelEvents.Current.OnLevelLose += LoseLevel;
 
         UIEvents.Current.OnToMainMenu += OpenGameMenu; //Исправь Enter-alt
-        UIEvents.Current.OnReviveButton += OpenGameMenu; //Исправь Enter-alt
-    }
-
-    private void InitializeFields()
-    {
-        _services = new List<IService>();
+        UIEvents.Current.OnReviveButton += RevivePlayer;
+        UIEvents.Current.OnStartLevelButton += StartGame;
+        UIEvents.Current.OnExitShopButton += OpenGameMenu;
+        UIEvents.Current.OnExitOptionsButton += OpenGameMenu;
+        UIEvents.Current.OnOptionMenuButton += OpenOptionsMenu;
+        UIEvents.Current.OnShopMenuButton += OpenShopMenu;
     }
 
     private void InitializePanels()
@@ -87,6 +108,22 @@ public class UIController : MonoBehaviour
         {
             _menues[i].Initialize();
         }
+    }
+
+    private void SetConsumersToDistributor()
+    {
+        if (_serviceDistributor == null)
+        {
+            return;
+        }
+        for (int i = 0; i < _menues.Count; i++)
+        {
+            if (_menues[i] 
+                && _menues[i] is IConsumer)
+            {
+                _serviceDistributor.AddConsumer(_menues[i] as IConsumer);
+            }
+        } 
     }
 
     private void HideUI()
@@ -120,6 +157,20 @@ public class UIController : MonoBehaviour
             case UIState.WinLevel:
                 SwitchMenu(typeof(WinGamePanel));
                 break;
+            case UIState.Revive:
+                SwitchMenu(typeof(ReviveScreenPanel));
+                break;
+            case UIState.ShopMenu:
+                SwitchMenu(typeof(ShopMenuPanel));
+                break;
+            case UIState.OptionsMenu:
+                SwitchMenu(typeof(OptionsMenuPanel));
+                break;
+            default:
+                {
+                    Debug.Log("Unkown Type of UI Panel");
+                    break;
+                }
         }
     }
     private void SwitchMenu(System.Type type)
