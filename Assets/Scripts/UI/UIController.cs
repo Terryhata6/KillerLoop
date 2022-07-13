@@ -13,22 +13,8 @@ public class UIController : MonoBehaviour
 
     public void Awake()
     {
-        _services = new List<IService>();
-
-        LevelEvents.Current.OnLevelFinish += WinLevel;
-        LevelEvents.Current.OnLevelChanged += OpenGameMenu;
-        LevelEvents.Current.OnLevelLose += LoseLevel;
-
-        UIEvents.Current.OnToMainMenu += OpenGameMenu; //Исправь Enter-alt
-        UIEvents.Current.OnReviveButton += OpenGameMenu; //Исправь Enter-alt
-
-        HideUI();
-        LoseLevel();
-    }
-
-    public void Start()
-    {
-        SetServices();
+        Initialize();
+        WinLevel();
     }
 
     #region ActionsReaction
@@ -42,7 +28,7 @@ public class UIController : MonoBehaviour
     {
         //Time.timeScale = 1.0f;
         SwitchUI(UIState.InGame);
-        LevelEvents.Current.LevelStart();
+  //      LevelEvents.Current.LevelStart();
     }
 
     private void WinLevel()
@@ -71,16 +57,38 @@ public class UIController : MonoBehaviour
     #endregion
 
     #region PrivateMethods
-    private void SetServices()
+
+    private void Initialize()
+    {
+        InitializeFields();
+        SetEvents();
+        InitializePanels();
+        HideUI();
+    }
+
+    private void SetEvents()
+    {
+        LevelEvents.Current.OnLevelFinish += WinLevel;
+        LevelEvents.Current.OnLevelChanged += OpenGameMenu;
+        LevelEvents.Current.OnLevelLose += LoseLevel;
+
+        UIEvents.Current.OnToMainMenu += OpenGameMenu; //Исправь Enter-alt
+        UIEvents.Current.OnReviveButton += OpenGameMenu; //Исправь Enter-alt
+    }
+
+    private void InitializeFields()
+    {
+        _services = new List<IService>();
+    }
+
+    private void InitializePanels()
     {
         for (int i = 0; i < _menues.Count; i++)
         {
-            //if (_menues[i] is IUseServices)
-            //{
-            //    (_menues[i] as IUseServices).SetServices(_services);
-            //}
+            _menues[i].Initialize();
         }
     }
+
     private void HideUI()
     {
         for (int i = 0; i < _menues.Count; i++)
@@ -110,7 +118,7 @@ public class UIController : MonoBehaviour
                 SwitchMenu(typeof(LoseLevelPanel));
                 break;
             case UIState.WinLevel:
-                SwitchMenu(typeof(WinLevelPanel));
+                SwitchMenu(typeof(WinGamePanel));
                 break;
         }
     }

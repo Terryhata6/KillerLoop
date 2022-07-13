@@ -2,5 +2,5 @@
 
 public interface IContainConsumers
 {
-    public List<IServiceConsumer<IService>> GetConsumers();
+    public List<IConsumer> GetConsumers();
 }

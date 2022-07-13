@@ -34,46 +34,46 @@ public class InputController : BaseController, IExecute
         {
             return;
         }
-#if UNITY_EDITOR
-        {
-            if (_mouseCLickedPreviousFrame)
-            {
-                if (Input.GetMouseButton(0))
-                {
-                    _mousePosition = Input.mousePosition;
-                    if (_mousePosition == _mouseOldPosition)
-                    {
-                        InputEvents.Current.TouchStationaryEvent(_mousePosition);
-                        //Debug.Log("Cтационарно");
-                    }
-                    else
-                    {
-                        InputEvents.Current.TouchMovedEvent(_mousePosition);
-                        //Debug.Log("Мувд");
-                    }
-                }
-                else
-                {
-                    _mousePosition = Input.mousePosition;
-                    InputEvents.Current.TouchEndedEvent(_mousePosition);
-                    //Debug.Log("Енд");
-                    _mouseCLickedPreviousFrame = false;
-                }
-            }
-            else
-            {
-                if (Input.GetMouseButton(0))
-                {
-                    _mouseCLickedPreviousFrame = true;
-                    InputEvents.Current.TouchBeganEvent(Input.mousePosition);
-                    //Debug.Log("Старт");
-                }
-            }
-            _mouseOldPosition = _mousePosition;
+//#if UNITY_EDITOR
+//        {
+//            if (_mouseCLickedPreviousFrame)
+//            {
+//                if (Input.GetMouseButton(0))
+//                {
+//                    _mousePosition = Input.mousePosition;
+//                    if (_mousePosition == _mouseOldPosition)
+//                    {
+//                        InputEvents.Current.TouchStationaryEvent(_mousePosition);
+//                        //Debug.Log("Cтационарно");
+//                    }
+//                    else
+//                    {
+//                        InputEvents.Current.TouchMovedEvent(_mousePosition);
+//                        //Debug.Log("Мувд");
+//                    }
+//                }
+//                else
+//                {
+//                    _mousePosition = Input.mousePosition;
+//                    InputEvents.Current.TouchEndedEvent(_mousePosition);
+//                    //Debug.Log("Енд");
+//                    _mouseCLickedPreviousFrame = false;
+//                }
+//            }
+//            else
+//            {
+//                if (Input.GetMouseButton(0))
+//                {
+//                    _mouseCLickedPreviousFrame = true;
+//                    InputEvents.Current.TouchBeganEvent(Input.mousePosition);
+//                    //Debug.Log("Старт");
+//                }
+//            }
+//            _mouseOldPosition = _mousePosition;
 
-            return;
-        }
-#endif
+//            return;
+//        }
+//#endif
         if (Input.touchCount > 0)
         {
             _firstTouch = Input.GetTouch(0);

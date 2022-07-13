@@ -19,12 +19,12 @@ public class LoseLevelPanel : BaseMenuPanel, IWaitingCounter
 
     #endregion
 
-    private void Start()
-    {
-        Initialize();
-    }
-
     #region PublicMethods
+
+    public override void Initialize()
+    {
+        SetButtonEvents();
+    }
 
     public override void Hide()
     {
@@ -53,12 +53,7 @@ public class LoseLevelPanel : BaseMenuPanel, IWaitingCounter
 
     #region PrivateMethods
 
-    private void Initialize()
-    {
-        InitializeButtonEvents();
-    }
-
-    private void InitializeButtonEvents()
+    private void SetButtonEvents()
     {
         BindListenerToButton(_reviveButton, StopReviveCounter);
         BindListenerToButton(_reviveButton, UIEvents.Current.ReviveButton);

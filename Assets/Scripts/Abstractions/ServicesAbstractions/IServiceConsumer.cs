@@ -1,6 +1,6 @@
 ﻿
 
-public interface IServiceConsumer<T> where T : IService
+public interface IServiceConsumer<T> : IConsumer where T : IService
 {
     public void UseService(T service);
 }

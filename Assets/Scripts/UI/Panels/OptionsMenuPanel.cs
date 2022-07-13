@@ -19,13 +19,12 @@ public class OptionsMenuPanel : BaseMenuPanel
 
     #endregion
 
-    private void Start()
-    {
-        Initialize();
-    }
-
     #region PublicMethods
 
+    public override void Initialize()
+    {
+        SetButtonEvents();
+    }
     public override void Hide()
     {
         if (!IsShow) return;
@@ -43,11 +42,6 @@ public class OptionsMenuPanel : BaseMenuPanel
     #endregion
 
     #region PrivateMethods
-
-    private void Initialize()
-    {
-        SetButtonEvents();
-    }
 
     private void SetButtonEvents()
     {

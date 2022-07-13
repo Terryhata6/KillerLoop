@@ -59,6 +59,22 @@ public class UIEvents
 
     #endregion
 
+    #region WinMenuButtonsActions
+
+    public event Action OnCollectButton;
+    public void CollectButton()
+    {
+        OnCollectButton?.Invoke();
+    }
+
+    public event Action OnCollectX2Button;
+    public void CollectX2Button()
+    {
+        OnCollectX2Button?.Invoke();
+    }
+
+    #endregion
+
     #endregion
 
     #region OptionalEvents

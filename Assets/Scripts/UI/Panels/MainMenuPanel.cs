@@ -31,13 +31,13 @@ public class MainMenuPanel : BaseMenuPanel,
 
     #endregion
 
-    private void Start()
-    {
-        Initialize();
-    }
-
     #region PublicMethods
 
+    public override void Initialize()
+    {
+        SetButtonEvents();
+        _targetsPanel.Initialize(_targetInfoSource);
+    }
     public override void Hide()
     {
         if (!IsShow) return;
@@ -92,12 +92,6 @@ public class MainMenuPanel : BaseMenuPanel,
 
     #region PrivateMethods
 
-    private void Initialize()
-    {
-        SetButtonEvents();
-        _targetsPanel.Initialize(_targetInfoSource);
-    }
-
     private void SetButtonEvents()
     {
         BindListenerToButton(_shopButton, UIEvents.Current.ShopMenuButton);
@@ -128,7 +122,7 @@ public class MainMenuPanel : BaseMenuPanel,
 
     private void StartAnimations()
     {
-        if (_menuAnimations.Count > 0)
+        if (_menuAnimations != null)
         {
             for (int i = 0; i < _menuAnimations.Count; i++)
             {
@@ -139,7 +133,7 @@ public class MainMenuPanel : BaseMenuPanel,
 
     private void StopAnimations()
     {
-        if (_menuAnimations.Count > 0)
+        if (_menuAnimations != null)
         {
             for (int i = 0; i < _menuAnimations.Count; i++)
             {

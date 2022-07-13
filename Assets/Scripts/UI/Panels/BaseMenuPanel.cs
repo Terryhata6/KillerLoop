@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public abstract class BaseMenuPanel : MonoBehaviour
+public abstract class BaseMenuPanel : MonoBehaviour, IInitialize
 {
     #region ProtectedFields
 
@@ -11,6 +11,10 @@ public abstract class BaseMenuPanel : MonoBehaviour
 
     #region PublicMethods
 
+    public virtual void Initialize()
+    {
+
+    }
     public abstract void Hide();
     public abstract void Show();
 

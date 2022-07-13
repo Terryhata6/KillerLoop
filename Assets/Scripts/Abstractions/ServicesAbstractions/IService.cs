@@ -1,5 +1,5 @@
 ﻿
 public interface IService
 {
-    public void AddConsumer(IServiceConsumer<IService> consumer);
+    public abstract void AddConsumer(IConsumer consumer);
 }

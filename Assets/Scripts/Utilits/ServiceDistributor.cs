@@ -7,18 +7,17 @@ public class ServiceDistributor
     #region PrivateFields
 
     private List<IService> _services;
-    private List<IServiceConsumer<IService>> _consumers;
+    private List<IConsumer> _consumers;
 
     private List<IService> _tempServices;
-    private List<IServiceConsumer<IService>> _tempConsumers;
-
+    private List<IConsumer> _tempConsumers;
 
     #endregion
 
-    public ServiceDistributor() : this(new List<IService>(), new List<IServiceConsumer<IService>>())
+    public ServiceDistributor() : this(new List<IService>(), new List<IConsumer>())
     {
     }
-    public ServiceDistributor(List<IService> services, List<IServiceConsumer<IService>> consumers)
+    public ServiceDistributor(List<IService> services, List<IConsumer> consumers)
     {
         _services = services;
         _consumers = consumers;
@@ -48,17 +47,16 @@ public class ServiceDistributor
             }
         }
     }
-    public void AddConsumer<T>(IServiceConsumer<T> consumer) where T : IService
+    public void AddConsumer(IConsumer consumer)
     {
-        Debug.Log(consumer);
         if (_consumers != null 
-            && !_consumers.Contains((IServiceConsumer<IService>)consumer)
+            && !_consumers.Contains(consumer)
             && consumer != null)
         {
-            _consumers.Add(IServiceConsumer<IService>)consumer);
+            _consumers.Add(consumer);
         }
     }
-    public void AddConsumers(List<IServiceConsumer<IService>> consumers)
+    public void AddConsumers(List<IConsumer> consumers)
     {
         if (_consumers != null && consumers != null)
         {
@@ -91,7 +89,7 @@ public class ServiceDistributor
 
     #region PrivateMethods
 
-    private void SetConsumersToServices<T>(List<IServiceConsumer<IService>> consumers, List<IService> services ) where T : IService
+    private void SetConsumersToServices<T>(List<IConsumer> consumers, List<IService> services ) where T : IService
     {
         for (int i = 0; i < services.Count; i++)
         {
@@ -102,7 +100,7 @@ public class ServiceDistributor
         }
     }
 
-    private void SetConsumersToService<T>(List<IServiceConsumer<IService>> consumers, T service) where T : IService
+    private void SetConsumersToService<T>(List<IConsumer> consumers, T service) where T : IService
     {
         for (int j = 0; j < consumers.Count; j++)
         {
@@ -119,7 +117,7 @@ public class ServiceDistributor
         {
             if (services[i] is T)
             {
-                services[i].AddConsumer(consumer as IServiceConsumer<IService>);
+                services[i].AddConsumer(consumer);
             }
         }
     }

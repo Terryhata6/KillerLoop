@@ -47,7 +47,7 @@ public class MainController : MonoBehaviour
 
     private void Start()
     {
-        IServiceConsumer < IProgressValuesUpdater > ser = (IServiceConsumer<IProgressValuesUpdater>)lala;
+        IConsumer ser = lala;
         InitializeControllers();
         _serviceDistributor.AddConsumer(ser);
         SetServicesToDistributor();
@@ -97,9 +97,9 @@ public class MainController : MonoBehaviour
     {
         for (int i = 0; i < _controllers.Count; i++)
         {
-            if (_controllers is IContainServices)
+            if (_controllers[i] is IContainServices)
             {
-                _serviceDistributor.AddServices((_controllers as IContainServices).GetServices());
+                _serviceDistributor.AddServices((_controllers[i] as IContainServices).GetServices());
             }
         }
     }

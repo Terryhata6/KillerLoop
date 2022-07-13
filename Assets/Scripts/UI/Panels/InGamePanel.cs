@@ -18,7 +18,7 @@ public class InGamePanel : BaseMenuPanel,
     [SerializeField] private TextMeshProUGUI _enemyBeatenCounter;
     [SerializeField] private TextMeshProUGUI _moneyCollectedCounter;
     [SerializeField] private Slider _targetProgress;
-    [SerializeField] private Image _playerProgress;
+    [SerializeField] private Slider _playerProgress;
 
     #endregion
 
@@ -27,7 +27,7 @@ public class InGamePanel : BaseMenuPanel,
 
     #endregion
 
-    private void Start()
+    private void Awake()
     {
         //CreateValuesDictionary();
     }
@@ -121,6 +121,10 @@ public class InGamePanel : BaseMenuPanel,
 
     private void UpdateTargetName(TargetsUIInfo info)
     {
+        if (!_targetName)
+        {
+            return;
+        }
         switch (info.LevelType)
         {
             case LevelType.Common:
@@ -196,7 +200,7 @@ public class InGamePanel : BaseMenuPanel,
     private void UpdateMoneyCollectedCounter(float value)
     {
         if (value % 1 == 0
-            && _moneyCollectedCounter != null)
+            && _moneyCollectedCounter)
         {
             _moneyCollectedCounter.text = value.ToString();
         }
@@ -209,7 +213,7 @@ public class InGamePanel : BaseMenuPanel,
     private void UpdateEnemyBeatenCounter(float value)
     {
         if (value % 1 == 0
-            && _enemyBeatenCounter != null)
+            && _enemyBeatenCounter)
         {
             _enemyBeatenCounter.text = value.ToString();
         }
@@ -223,7 +227,7 @@ public class InGamePanel : BaseMenuPanel,
     {
         if (value >= 0
             && value <= 1
-            && _targetProgress != null)
+            && _targetProgress)
         {
             _targetProgress.value = value;
         }
@@ -237,9 +241,9 @@ public class InGamePanel : BaseMenuPanel,
     {
         if (value >= 0
             && value <= 1
-            && _playerProgress != null)
+            && _playerProgress)
         {
-            _playerProgress.fillAmount = value;
+            _playerProgress.value = value;
         }
         else
         {
