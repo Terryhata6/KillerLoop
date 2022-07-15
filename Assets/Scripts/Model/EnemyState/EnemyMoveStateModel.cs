@@ -1,9 +1,8 @@
 using UnityEngine;
 
-public class MoveEnemyState : BaseEnemyState
+public class EnemyMoveStateModel: BaseEnemyStateModel
 {
-    private Vector2 _movingVector2D;
-    private float _magnitude;
+    #region PublicMethods
 
     public override void Execute(EnemyView enemy)
     {
@@ -11,6 +10,9 @@ public class MoveEnemyState : BaseEnemyState
         enemy.LookRotation(enemy.SplineDirection);
         enemy.Move(Vector3.forward * Time.deltaTime);
         enemy.SetMovingBlend(1f);
-        Gravity(enemy);
+        GravityEffect(enemy);
     }
+
+    #endregion
+
 }

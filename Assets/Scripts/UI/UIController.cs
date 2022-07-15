@@ -66,23 +66,20 @@ public class UIController : MonoBehaviour
         LevelEvents.Current.ChangeLevel();
     }
 
-    private void RestartGame()
-    {
-        LevelEvents.Current.LevelRestart();
-        SwitchUI(UIState.MainMenu);
-    }
-
     private void OpenOptionsMenu()
     {
         SwitchUI(UIState.OptionsMenu);
     }
 
     #endregion
+
+    #region Initialize
+
     private void Initialize()
     {
-        _serviceDistributor = ServiceDistributor.Current;
         SetEvents();
         InitializePanels();
+        SetServiceDistributor();
         SetConsumersToDistributor();
         HideUI();
     }
@@ -100,6 +97,13 @@ public class UIController : MonoBehaviour
         UIEvents.Current.OnExitOptionsButton += OpenGameMenu;
         UIEvents.Current.OnOptionMenuButton += OpenOptionsMenu;
         UIEvents.Current.OnShopMenuButton += OpenShopMenu;
+        UIEvents.Current.OnCollectButton += NextLevel;
+        UIEvents.Current.OnCollectX2Button += NextLevel;
+    }
+
+    private void SetServiceDistributor()
+    {
+        _serviceDistributor = ServiceDistributor.Instance;
     }
 
     private void InitializePanels()
@@ -109,6 +113,8 @@ public class UIController : MonoBehaviour
             _menues[i].Initialize();
         }
     }
+
+    #endregion
 
     private void SetConsumersToDistributor()
     {

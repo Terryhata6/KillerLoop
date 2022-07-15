@@ -5,6 +5,6 @@
         Move,
         Jumping,
         WallRun,
-        Slide,
-        Killing
+        Slide, 
+        Inactive
     }

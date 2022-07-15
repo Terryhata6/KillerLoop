@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class MainMenuPanel : BaseMenuPanel, 
-    IServiceConsumer<IMoneyStorage>, IServiceConsumer<INewGoodsChecker>, IServiceConsumer<ITargetInfo>
+    IServiceConsumer<IMoneyStorage>, IServiceConsumer<INewGoodsChecker>, 
+    IServiceConsumer<ITargetInfo>
 {
     #region PrivateFiels
 

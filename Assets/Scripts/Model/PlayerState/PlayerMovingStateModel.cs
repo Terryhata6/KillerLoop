@@ -57,7 +57,6 @@ public class PlayerMovingStateModel : BasePlayerStateModel
         || player.RayCastCheck(player.Position + Vector3.up, player.Forward * 1f, 2f, 1 << 11))
         {
             Debug.Log("jump");
-            player.StopRun();
             player.Jump();
         }
     }
@@ -69,7 +68,6 @@ public class PlayerMovingStateModel : BasePlayerStateModel
         if (player.RayCastCheck(player.Position + player.Forward * 0.6f + (_tempVector + Vector3.up) * 0.5f, -_tempVector, 1f, 1 << 13))
         {
             Debug.Log("kill");
-            player.StopRun();
             player.GroundKill();
         }
     }

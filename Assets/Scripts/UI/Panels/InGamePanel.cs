@@ -1,10 +1,11 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Collections.Generic;
 
 public class InGamePanel : BaseMenuPanel,
-    IServiceConsumer<IProgressValuesUpdater>, IServiceConsumer<ITargetInfo>
+    IServiceConsumer<IBeatenEnemyCounter>, IServiceConsumer<ITargetInfo>,
+    IServiceConsumer<ICollectedMoneyCounter>, IServiceConsumer<IPlayerDistanceUpdater>,
+    IServiceConsumer<ITargetDistanceUpdater>
 {
     #region PrivateFields
 
@@ -22,7 +23,6 @@ public class InGamePanel : BaseMenuPanel,
 
     #endregion
 
-//    private Dictionary<ProgressValueType, float> _progressValues;
     private TargetsUIInfo _currentTargetInfo;
 
     #endregion
@@ -46,34 +46,54 @@ public class InGamePanel : BaseMenuPanel,
         if (IsShow) return;
         _panel.gameObject.SetActive(true);
         IsShow = true;
-        ResetProgressValues();
-        //UpdateAllProgressValues();
+        ResetUIValues();
     }
 
     #region IServiceConsumer
 
-    public void UseService(IProgressValuesUpdater service)
+    public void UseService(IBeatenEnemyCounter service)
     {
-        if (service != null)
+        if (service == null || !IsShow)
         {
-            for (int i = 0; i < service.ProgressValues.Length; i++)
-            {
-                SetProgressValue(service.ProgressValues[i]);
-            }
+            return;
         }
+        UpdateEnemyBeatenCounter(service.EnemyBeaten);
+    }
+
+    public void UseService(ICollectedMoneyCounter service)
+    {
+        if (service == null || !IsShow)
+        {
+            return;
+        }
+        UpdateMoneyCollectedCounter(service.MoneyCollected);
+    }
+
+    public void UseService(ITargetDistanceUpdater service)
+    {
+        if (service == null || !IsShow)
+        {
+            return;
+        }
+        UpdateTargetDistance(service.Distance);
+    }
+
+    public void UseService(IPlayerDistanceUpdater service)
+    {
+        if (service == null || !IsShow)
+        {
+            return;
+        }
+        UpdatePlayerDistance(service.Distance);
     }
 
     public void UseService(ITargetInfo service)
     {
-        if (service != null)
+        if (service == null || !IsShow)
         {
-            _currentTargetInfo = service.GetTargetInfo(service.CurrentTargetNumber);
+            return;
         }
-        if (IsShow)
-        {
-            UpdateTargetName(_currentTargetInfo);
-        }
-
+        UpdateTargetName(service.GetTargetInfo(service.CurrentTargetNumber));
     }
 
     #endregion
@@ -81,41 +101,6 @@ public class InGamePanel : BaseMenuPanel,
     #endregion
 
     #region PrivateMethods
-
-    //private void CreateValuesDictionary()
-    //{
-    //    _progressValues = new Dictionary<ProgressValueType, float>(4) 
-    //    {
-    //        {ProgressValueType.EnemyBeaten, 0f},
-    //        {ProgressValueType.MoneyCollected, 0f},
-    //        {ProgressValueType.PlayerDistance, 0f},
-    //        {ProgressValueType.TargetDistance, 0f},
-
-    //    };
-    //}
-
-    //private float GetProgressValue(ProgressValueType type)
-    //{
-    //    if (!_progressValues.ContainsKey(type)
-    //        || _progressValues == null)
-    //    {
-    //        return 0f;
-    //    }
-
-    //    return _progressValues[type];
-    //}
-    private void SetProgressValue(ProgressValue value)
-    {
-        //if (_progressValues != null 
-        //    && _progressValues.ContainsKey(value.ValueType))
-        //{
-        //    _progressValues[value.ValueType] = value.Value;
-        //}
-        if (IsShow)
-        {
-            UpdateProgressValue(value);
-        }
-    }
 
     #region UIUpdates
 
@@ -150,54 +135,15 @@ public class InGamePanel : BaseMenuPanel,
         }
     }
 
-    private void ResetProgressValues()
+    private void ResetUIValues()
     {
-        UpdateMoneyCollectedCounter(0f);
-        UpdateEnemyBeatenCounter(0f);
-        UpdateTargetProgress(0f);
-        UpdatePlayerProgress(0f);
+        UpdateMoneyCollectedCounter(0);
+        UpdateEnemyBeatenCounter(0);
+        UpdateTargetDistance(0f);
+        UpdatePlayerDistance(0f);
     }
 
-    private void UpdateProgressValue(ProgressValue value)
-    {
-        switch (value.ValueType)
-        {
-            case ProgressValueType.EnemyBeaten:
-                {
-                    UpdateEnemyBeatenCounter(value.Value);
-                    break;
-                }
-            case ProgressValueType.MoneyCollected:
-                {
-                    UpdateMoneyCollectedCounter(value.Value);
-                    break;
-                }
-            case ProgressValueType.PlayerDistance:
-                {
-                    UpdatePlayerProgress(value.Value);
-                    break;
-                }
-            case ProgressValueType.TargetDistance:
-                {
-                    UpdateTargetProgress(value.Value);
-                    break;
-                }
-            default:
-                {
-                    break;
-                }
-        }
-    }
-
-    //private void UpdateAllProgressValues()
-    //{
-    //    UpdateMoneyCollectedCounter(GetProgressValue(ProgressValueType.MoneyCollected));
-    //    UpdateEnemyBeatenCounter(GetProgressValue(ProgressValueType.EnemyBeaten));
-    //    UpdateTargetProgress(GetProgressValue(ProgressValueType.TargetDistance));
-    //    UpdatePlayerProgress(GetProgressValue(ProgressValueType.PlayerDistance));
-    //}
-
-    private void UpdateMoneyCollectedCounter(float value)
+    private void UpdateMoneyCollectedCounter(int value)
     {
         if (value % 1 == 0
             && _moneyCollectedCounter)
@@ -210,7 +156,7 @@ public class InGamePanel : BaseMenuPanel,
         }
     }
 
-    private void UpdateEnemyBeatenCounter(float value)
+    private void UpdateEnemyBeatenCounter(int value)
     {
         if (value % 1 == 0
             && _enemyBeatenCounter)
@@ -223,7 +169,7 @@ public class InGamePanel : BaseMenuPanel,
         }
     }
 
-    private void UpdateTargetProgress(float value)
+    private void UpdateTargetDistance(float value)
     {
         if (value >= 0
             && value <= 1
@@ -237,7 +183,7 @@ public class InGamePanel : BaseMenuPanel,
         }
     }
 
-    private void UpdatePlayerProgress(float value)
+    private void UpdatePlayerDistance(float value)
     {
         if (value >= 0
             && value <= 1

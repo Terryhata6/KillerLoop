@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ServiceDistributor 
+public class ServiceDistributor : Singleton<ServiceDistributor>
 {
-    public static ServiceDistributor Current = new ServiceDistributor();
-
     #region PrivateFields
 
     private List<IService> _services;
@@ -25,6 +23,8 @@ public class ServiceDistributor
         _consumers = consumers;
         _consumersSources = new List<IContainConsumers>();
         _servicesSources = new List<IContainServices>();
+        Instance = this;
+        Debug.Log("Service Distributor is Ready");
     }
 
     #region PublicMethods
@@ -41,11 +41,12 @@ public class ServiceDistributor
             }
         }
     }
+
     public void AddConsumer(IConsumer consumer)
     {
         if (_consumers != null && consumer != null)
         {
-            if (consumer != null 
+            if (consumer != null
                 && !_consumers.Contains(consumer))
             {
                 _consumers.Add(consumer);
@@ -70,16 +71,53 @@ public class ServiceDistributor
     public void Distribute()
     {
         Prepare();
-        if (_services != null && _consumers != null )
+        if (_services != null && _consumers != null)
         {
             SetConsumersToServices<IMoneyStorage>(_consumers, _services);
             SetConsumersToServices<INewGoodsChecker>(_consumers, _services);
             SetConsumersToServices<ITargetInfo>(_consumers, _services);
-            SetConsumersToServices<IProgressValuesUpdater>(_consumers, _services);
+            SetConsumersToServices<IBeatenEnemyCounter>(_consumers, _services);
+            SetConsumersToServices<ICollectedMoneyCounter>(_consumers, _services);
+            SetConsumersToServices<IPlayerDistanceUpdater>(_consumers, _services);
+            SetConsumersToServices<ITargetDistanceUpdater>(_consumers, _services);
         }
         else
         {
             Debug.Log("Miss services or consumers");
+        }
+    }
+
+    public void FindServicesForConsumer<T>(IServiceConsumer<T> consumer) where T : IService
+    {
+        if (!_consumers.Contains(consumer))
+        {
+            _consumers.Add(consumer);
+        }
+        SetConsumerToServices(consumer, _services);
+    }
+
+    public void FindConsumersForService<T>(T service) where T : IService
+    {
+        if (!_services.Contains(service))
+        {
+            _services.Add(service);
+        }
+        SetConsumersToService(_consumers, service);
+    }
+
+    public void RemoveService(IService service)
+    {
+        if (_services.Contains(service))
+        {
+            _services.Remove(service);
+        }
+    }
+
+    public void RemoveConsumer(IConsumer consumer)
+    {
+        if (_consumers.Contains(consumer))
+        {
+            _consumers.Remove(consumer);
         }
     }
 
@@ -109,7 +147,7 @@ public class ServiceDistributor
         }
     }
 
-    private void SetConsumersToServices<T>(List<IConsumer> consumers, List<IService> services ) where T : IService
+    private void SetConsumersToServices<T>(List<IConsumer> consumers, List<IService> services) where T : IService
     {
         for (int i = 0; i < services.Count; i++)
         {
@@ -122,6 +160,10 @@ public class ServiceDistributor
 
     private void SetConsumersToService<T>(List<IConsumer> consumers, T service) where T : IService
     {
+        if (service == null)
+        {
+            return;
+        }
         for (int j = 0; j < consumers.Count; j++)
         {
             if (consumers[j] is IServiceConsumer<T>)
@@ -133,6 +175,10 @@ public class ServiceDistributor
 
     private void SetConsumerToServices<T>(IServiceConsumer<T> consumer, List<IService> services) where T : IService
     {
+        if (consumer == null)
+        {
+            return;
+        }
         for (int i = 0; i < services.Count; i++)
         {
             if (services[i] is T)
