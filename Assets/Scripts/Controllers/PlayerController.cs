@@ -46,7 +46,7 @@ public class PlayerController : BaseController, IExecute
         {
             Enable();
             _playerView = view;
-            PlayerInit(_playerView);
+            PlayerInitialize(_playerView);
         }
         else
         {
@@ -62,9 +62,9 @@ public class PlayerController : BaseController, IExecute
             {PlayerState.Idle, new PlayerIdleStateModel()},
             {PlayerState.Jumping, new PlayerJumpingStateModel()},
             {PlayerState.Move, new PlayerMovingStateModel()},
-            {PlayerState.Killing, new PlayerKillStateModel()},
             {PlayerState.WallRun, new PlayerRunWallModel()},
-            {PlayerState.Slide, new PlayerSlideModel()}
+            {PlayerState.Slide, new PlayerSlideModel()},
+            {PlayerState.Inactive, new PlayerInactiveStateModel()}
         };
     }
 
@@ -77,6 +77,8 @@ public class PlayerController : BaseController, IExecute
         LevelEvents.Current.OnLevelStart += Enable;
         LevelEvents.Current.OnLevelLose += Disable;
         LevelEvents.Current.OnLevelFinish += Disable;
+
+        UIEvents.Current.OnToMainMenu += Disable;
     }
 
     private void DeleteEvents()
@@ -88,11 +90,13 @@ public class PlayerController : BaseController, IExecute
         LevelEvents.Current.OnLevelStart -= Enable;
         LevelEvents.Current.OnLevelLose -= Disable;
         LevelEvents.Current.OnLevelFinish -= Disable;
+
+        UIEvents.Current.OnToMainMenu -= Disable;
     }
 
-    private void PlayerInit(PlayerView player)
+    private void PlayerInitialize(PlayerView player)
     {
-        player.Stand(); //State - idle
+        player.Initialize();
     }
 
     private void UpdateBeganPosition(Vector2 beganPosition)

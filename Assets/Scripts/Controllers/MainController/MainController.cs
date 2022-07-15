@@ -30,7 +30,7 @@ public class MainController : MonoBehaviour
     private void Awake()
     {
         DontDestroyOnLoad(gameObject);
-        _serviceDistributor = ServiceDistributor.Current;
+        _serviceDistributor = ServiceDistributor.Instance;
         InitializeFields();
         CreateControllers();
         
@@ -40,7 +40,6 @@ public class MainController : MonoBehaviour
         }
 
         GetController<CameraController>().SetCameraTarget(_playerView.transform);
-        GetController<EnemyController>().SetEnemies(_tempEnemies);
         
     }
 

@@ -1,27 +1,24 @@
-namespace Utilits
+public class Singleton<T> where T : new()
 {
-    public class Singleton<T> where T : new()
-    {
-        private static T _instance;
+    private static T _instance;
 
-        public static T Instance
+    public static T Instance
+    {
+        get
         {
-            get
+            if (_instance == null)
             {
-                if (_instance.Equals(null))
-                {
-                    return new T();
-                }
-                else
-                {
-                    return _instance;
-                }
+                return new T();
             }
-            protected set
+            else
             {
-                _instance = value;
+                return _instance;
             }
         }
-        
+        protected set
+        {
+            _instance = value;
+        }
     }
+
 }

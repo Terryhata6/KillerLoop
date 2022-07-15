@@ -4,8 +4,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class WinGamePanel : BaseMenuPanel, 
-    IServiceConsumer<IProgressValuesUpdater>, IServiceConsumer<IMultiplierCounter>
+public class WinGamePanel : BaseMenuPanel,
+    IServiceConsumer<IBeatenEnemyCounter>, IServiceConsumer<ICollectedMoneyCounter>,
+    IServiceConsumer<IMultiplierCounter>
 {
     #region PrivateFields
 
@@ -18,17 +19,15 @@ public class WinGamePanel : BaseMenuPanel,
     [SerializeField] private Button _collectX2Button;
     [SerializeField] private Button _collectButton;
     [SerializeField] private List<Animation> _animations;
-    [SerializeField] private TextMeshProUGUI _enemyBeatenValue;
-    [SerializeField] private TextMeshProUGUI _multiplierValue;
-    [SerializeField] private TextMeshProUGUI _moneyCollected;
+    [SerializeField] private TextMeshProUGUI _enemyBeatenUI;
+    [SerializeField] private TextMeshProUGUI _multiplierUI;
+    [SerializeField] private TextMeshProUGUI _moneyCollectedUI;
 
     #endregion
 
-    private float _timer;
-    private float _countingPeriod;
     private bool _waitingToCloseMenu;
     private int _currentMoney;
-    private int _moneyAdded;
+    private int _moneyCollected;
     private int _enemyBeaten;
     private int _multiplier;
     private int _incrementValue;
@@ -40,8 +39,6 @@ public class WinGamePanel : BaseMenuPanel,
 
     public override void Initialize()
     {
-        _countingPeriod = 0.05f;
-
         ResetValues();
         SetButtonEvents();
     }
@@ -68,17 +65,6 @@ public class WinGamePanel : BaseMenuPanel,
 
     #region IServiceConsumer
 
-    public void UseService(IProgressValuesUpdater service)
-    {
-        if (service != null)
-        {
-            for (int i = 0; i < service.ProgressValues.Length; i++)
-            {
-                SetProgressValue(service.ProgressValues[i]);
-            }
-        }
-    }
-
     public void UseService(IMultiplierCounter service)
     {
         if (service != null)
@@ -87,39 +73,41 @@ public class WinGamePanel : BaseMenuPanel,
         }
     }
 
+    public void UseService(IBeatenEnemyCounter service)
+    {
+        if (service != null)
+        {
+            SetBeatenEnemyValue(service.EnemyBeaten);
+        }
+    }
+
+    public void UseService(ICollectedMoneyCounter service)
+    {
+        if (service != null)
+        {
+            SetCollectedMoneyValue(service.MoneyCollected);
+        }
+    }
+
     #endregion
 
     #endregion
 
     #region PrivateMethods
-    private void SetProgressValue(ProgressValue value)
-    {
-        switch (value.ValueType)
-        {
-            case ProgressValueType.EnemyBeaten:
-                {
-                    _enemyBeaten = (int)value.Value;
-                    break;
-                }
-            case ProgressValueType.MoneyCollected:
-                {
-                    _moneyAdded = (int)value.Value;
-                    if (IsShow)
-                    {
-                        UpdateMoneyCounter();
-                    }
-                    break;
-                }
-            default:
-                {
-                    break;
-                }
-        }
-    }
 
     private void SetMultiplier(float value)
     {
         _multiplier = (int)value;
+    }
+
+    private void SetBeatenEnemyValue(int value)
+    {
+        _enemyBeaten = value;
+    }
+
+    private void SetCollectedMoneyValue(int value)
+    {
+        _moneyCollected = value;
     }
 
     private void ResetValues()
@@ -162,13 +150,13 @@ public class WinGamePanel : BaseMenuPanel,
 
     private void MoneyIncrement(int value)
     {
-        if (_currentMoney + value < _moneyAdded)
+        if (_currentMoney + value < _moneyCollected)
         {
             _currentMoney += value;
         }
         else
         {
-            _currentMoney = _moneyAdded;
+            _currentMoney = _moneyCollected;
         }
         UpdateMoneyCounterValue(_currentMoney);
     }
@@ -181,34 +169,36 @@ public class WinGamePanel : BaseMenuPanel,
         UpdateMultiplierCounter(_multiplier);
         UpdateEnemyBeatenValue(_enemyBeaten);
     }
+
     private void UpdateMoneyCounter()
     {
-        if (_moneyAdded > _currentMoney)
+        if (_moneyCollected > _currentMoney)
         {
             StartCoroutine(CountingMoney());
         }
     }
+
     private void UpdateMultiplierCounter(int value)
     {
-        if (_multiplierValue)
+        if (_multiplierUI)
         {
-            _multiplierValue.text = $"x{value}";
+            _multiplierUI.text = $"x{value}";
         }
     }
 
     private void UpdateEnemyBeatenValue(int value)
     {
-        if (_enemyBeatenValue)
+        if (_enemyBeatenUI)
         {
-            _enemyBeatenValue.text = (value).ToString();
+            _enemyBeatenUI.text = (value).ToString();
         }
     }
 
     private void UpdateMoneyCounterValue(int value)
     {
-        if (_moneyCollected)
+        if (_moneyCollectedUI)
         {
-            _moneyCollected.text = $"+{value}";
+            _moneyCollectedUI.text = $"+{value}";
         }
     }
 
@@ -246,8 +236,8 @@ public class WinGamePanel : BaseMenuPanel,
 
     private IEnumerator CountingMoney()
     {
-        _incrementValue = (int)((_moneyAdded - _currentMoney) * _incrementMultiplier);
-        while (_currentMoney < _moneyAdded)
+        _incrementValue = (int)((_moneyCollected - _currentMoney) * _incrementMultiplier);
+        while (_currentMoney < _moneyCollected)
         {
             MoneyIncrement(_incrementValue);
             yield return null;

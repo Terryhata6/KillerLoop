@@ -16,7 +16,7 @@ public class PlayerJumpingStateModel : BasePlayerStateModel
     public override void Execute(Vector2 positionBegan, Vector2 positionDelta, PlayerView player)
     {
         base.Execute(positionBegan, positionDelta, player);
-        player.Jumping();
+        player.Flying();
         if (PositionChanged(positionBegan))
         {
             _movingVector2D = positionDelta - positionBegan;
@@ -54,7 +54,6 @@ public class PlayerJumpingStateModel : BasePlayerStateModel
         if (player.RayCastCheck(player.Position + Vector3.up, Vector3.down, 1.1f, 1 << 11 | (1 << 12)))
         {
             Debug.Log("land");
-            player.Land();
             player.Stand();
         }
     }
@@ -68,7 +67,6 @@ public class PlayerJumpingStateModel : BasePlayerStateModel
         || player.RayCastCheck(player.Position, _movingVector + Vector3.down, 1.1f, 1 << 13))
         {
             Debug.Log("kill");
-            player.Land();
             player.AirKill();
         }
     }
@@ -81,7 +79,6 @@ public class PlayerJumpingStateModel : BasePlayerStateModel
         if (player.RayCastCheck(player.Position + (_tempVector + Vector3.up) * 0.5f, player.Forward.normalized + Vector3.up, 1f, 1 << 11)
         || player.RayCastCheck(player.Position - (_tempVector - Vector3.up) * 0.5f, player.Forward.normalized + Vector3.up, 1f, 1 << 11))
         {
-            player.Land();
             player.MovePlayerToWall(player.Hit.point, player.Hit.normal);
             player.WallRun();
         }

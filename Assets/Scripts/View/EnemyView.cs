@@ -5,14 +5,21 @@ using UnityEngine;
 
 public class EnemyView : BaseObjectView
 {
-    [SerializeField] private EnemyState _state = EnemyState.Idle;
-    [SerializeField] private float _movingBlend = 0;
+    #region PrivateFields
+
+    #region Serialized
+
     [SerializeField] private Animator _animator;
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private float _baseMovementSpeed;
     [SerializeField] private float _jumpForce;
-    [SerializeField] private SplineTracer _splineTracer;
+    [SerializeField] protected SplineTracer _splineTracer;
     [SerializeField] private float _flyAwayPower;
+
+    #endregion
+
+    private EnemyState _state = EnemyState.Idle;
+    private float _movingBlend = 0;
     private bool _canMove;
     private float _baseY;
     private float _x;
@@ -23,6 +30,11 @@ public class EnemyView : BaseObjectView
     private float _timer;
     private float _timeToDead;
     private Collider _tempCollider;
+
+    #endregion
+
+    #region AccessFields
+
 
     public Vector3 SplineDirection
     {
@@ -39,6 +51,15 @@ public class EnemyView : BaseObjectView
     public Vector3 HitNormal => _hitNormal;
     public EnemyState State => _state;
 
+    #endregion
+
+    private void Awake()
+    {
+        _state = EnemyState.Inactive;
+    }
+
+    #region PublicMethods
+
     public override void Initialize()
     {
         base.Initialize();
@@ -54,80 +75,7 @@ public class EnemyView : BaseObjectView
 
     #region Actions
 
-    public void FlyAway(Vector3 dir)
-    {
-        if (_rigidbody)
-        {
-            _rigidbody.AddForce(dir * _flyAwayPower, ForceMode.Impulse);
-        }
-    }
-
-    public void Dead()
-    {
-        Debug.Log("EnemyDead");
-        GameEvents.Current.EnemyDead(this);
-        gameObject.layer = 9;
-    }
-
-    public void DeadAnimation(Vector3 flyAwayDirection)
-    {
-        SetRagdoll(true);
-        FlyAway(flyAwayDirection);
-        StartCoroutine(DeadAnimation());
-    }
-
-    public void LookRotation(Vector3 lookVector)
-    {
-        if (_canMove)
-        {
-            lookVector.y = 0f;
-            if (lookVector == Vector3.zero)
-            {
-                return;
-            }
-            transform.rotation = Quaternion.LookRotation(lookVector, Vector3.up);
-        }
-    }
-
-    public void Move(Vector3 dir)
-    {
-        Move(dir, _movementSpeed);
-    }
-    public void Move(Vector3 dir, float speed)
-    {
-        if (_canMove)
-        {
-            transform.Translate(dir * speed);
-        }
-    }
-
-    public void MoveEnemyToWall(Vector3 hitPoint, Vector3 hitNormal)
-    {
-        _tempVector = Vector3.Project(Position, hitPoint) + hitNormal * 0.3f;
-        _tempVector.y = Position.y;
-        transform.position = _tempVector;
-    }
-
-    public void Jumping()
-    {
-        _tempVector.y = (-(_jumpForce - 0.2f) * ((_x) * (_x)) + _jumpForce) + _baseY;
-        _tempVector.x = Position.x;
-        _tempVector.z = Position.z;
-        transform.position = _tempVector;
-        _x += Time.deltaTime * 1.3f;
-    }
-
-    public void Stand()
-    {
-        SetAnimatorBool("Run", true);
-        SetRigidbodyValues(false, false);
-        _state = EnemyState.Idle;
-    }
-
-    public void Land()
-    {
-        SetAnimatorBool("Jump", false);
-    }
+    #region StartAction
 
     public void WallRun()
     {
@@ -135,7 +83,61 @@ public class EnemyView : BaseObjectView
         _hitNormal = _hit.normal;
         SetRigidbodyValues(false, false);
         SetAnimatorBool("WallRun", true);
-        _state = EnemyState.WallRun;
+        ChangeActionState(EnemyState.WallRun);
+    }
+
+    public void Run()
+    {
+        if (_canMove)
+        {
+            SetAnimatorBool("Run", true);
+            SetRigidbodyValues(false, false);
+            ChangeActionState(EnemyState.Move);
+        }
+    }
+
+    public void Slide()
+    {
+        SetRigidbodyValues(false, true);
+        ChangeActionState(EnemyState.Slide);
+    }
+
+    public void Stand()
+    {
+        SetAnimatorBool("Run", true);
+        SetRigidbodyValues(false, false);
+        ChangeActionState(EnemyState.Idle);
+    }
+
+    public void Jump()
+    {
+        SetAnimatorBool("Jump", true);
+        SetRigidbodyValues(false, false);
+        _baseY = Position.y;
+        _x = -1f;
+        ChangeActionState(EnemyState.Jump);
+    }
+
+    public void EndSlide()
+    {
+        ChangeActionState(EnemyState.Idle);
+        SetRigidbodyValues(false, false);
+    }
+
+    #endregion
+
+    #region StopAction
+
+    public void Land()
+    {
+        SetAnimatorBool("Jump", false);
+    }
+
+    public void Dead()
+    {
+        Debug.Log("EnemyDead");
+        GameEvents.Current.EnemyDead(this);
+        gameObject.layer = 9;
     }
 
     public void StopWallRun()
@@ -147,36 +149,58 @@ public class EnemyView : BaseObjectView
     {
         SetAnimatorBool("Run", false);
     }
-    public void Run()
-    {
 
+    #endregion
+
+    public void LookRotation(Vector3 lookVector)
+    {
         if (_canMove)
         {
-            SetAnimatorBool("Run", true);
-            SetRigidbodyValues(false, false);
-            _state = EnemyState.Move;
+            lookVector.y = 0f;
+            if (lookVector == Vector3.zero)
+            {
+                return;
+            }
+            _transform.rotation = Quaternion.LookRotation(lookVector, Vector3.up);
         }
     }
 
-    public void Slide()
+    public virtual void Move(Vector3 dir)
     {
-        SetRigidbodyValues(false, true);
-        _state = EnemyState.Slide;
+        MoveWithSpeed(dir, _movementSpeed);
     }
 
-    public void EndSlide()
+    public void MoveWithSpeed(Vector3 dir, float speed)
     {
-        _state = EnemyState.Idle;
-        SetRigidbodyValues(false, false);
+        if (_canMove)
+        {
+            _transform.Translate(dir * speed);
+        }
     }
 
-    public void Jump()
+    public void Flying()
     {
-        SetAnimatorBool("Jump", true);
-        SetRigidbodyValues(false, false);
-        _baseY = Position.y;
-        _x = -1f;
-        _state = EnemyState.Jump;
+        _tempVector.y = (-(_jumpForce - 0.2f) * ((_x) * (_x)) + _jumpForce) + _baseY;
+        _tempVector.x = Position.x;
+        _tempVector.z = Position.z;
+        _transform.position = _tempVector;
+        _x += Time.deltaTime * 1.3f;
+    }
+
+    public void PushAway(Vector3 flyAwayDirection)
+    {
+        SetRagdoll(true);
+        FlyAway(flyAwayDirection);
+        StartCoroutine(DeadAnimation());
+    }
+
+    public void FlyAway(Vector3 dir)
+    {
+        if (_rigidbody)
+        {
+            _rigidbody.AddForce(dir * _flyAwayPower, ForceMode.Impulse);
+            Debug.Log(_rigidbody.velocity);
+        }
     }
 
     public void CheckForAWall()
@@ -187,17 +211,20 @@ public class EnemyView : BaseObjectView
         if (RayCastCheck(Position + (_tempVector + Vector3.up) * 0.5f, Forward.normalized + Vector3.up, 1f, 1 << 11)
             || RayCastCheck(Position - (_tempVector - Vector3.up) * 0.5f, Forward.normalized + Vector3.up, 1f, 1 << 11))
         {
-            Land();
             MoveEnemyToWall(Hit.point, Hit.normal);
             WallRun();
         }
     }
+
     #endregion
+
+    #region OptionalMethods
 
     public void SetSpeed(float speed)
     {
         _movementSpeed = speed;
     }
+
     public void DefaultSpeed()
     {
         _movementSpeed = _baseMovementSpeed;
@@ -209,6 +236,88 @@ public class EnemyView : BaseObjectView
         {
             _movingBlend = newValue;
             _animator.SetFloat("MovingBlend", _movingBlend);
+        }
+    }
+
+    public bool RayCastCheck(Vector3 origin, Vector3 dir, float length, LayerMask layerToCheck)
+    {
+        Debug.DrawRay(origin, dir.normalized * length, Color.blue);
+        if (Physics.Raycast(origin, dir, out _hit, length, layerToCheck))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    #endregion
+
+    #region Coroutine
+
+    public IEnumerator DeadAnimation()
+    {
+        _timer = _timeToDead;
+        while (_timer > 0)
+        {
+            _timer -= Time.deltaTime;
+            yield return null;
+        }
+    }
+
+    #endregion
+
+    #endregion
+
+    #region PrivateMethods
+
+    private void MoveEnemyToWall(Vector3 hitPoint, Vector3 hitNormal)
+    {
+        _tempVector = Vector3.Project(Position, hitPoint) + hitNormal * 0.3f;
+        _tempVector.y = Position.y;
+        _transform.position = _tempVector;
+    }
+
+    private void ChangeActionState(EnemyState state)
+    {
+        StopCurrentAction();
+        _state = state;
+    }
+
+    private void StopCurrentAction()
+    {
+        switch (_state)
+        {
+            case EnemyState.Jump:
+                {
+                    Land();
+                    break;
+                }
+            case EnemyState.Move:
+                {
+                    StopRun();
+                    break;
+                }
+            case EnemyState.Idle:
+                {
+                    StopRun();
+                    break;
+                }
+            case EnemyState.Slide:
+                {
+                    EndSlide();
+                    break;
+                }
+            case EnemyState.WallRun:
+                {
+                    StopWallRun();
+                    break;
+                }
+            default:
+                {
+                    break;
+                }
         }
     }
 
@@ -226,19 +335,6 @@ public class EnemyView : BaseObjectView
         {
             _rigidbody.useGravity = useGravity;
             _rigidbody.isKinematic = isKinematic;
-        }
-    }
-
-    public bool RayCastCheck(Vector3 origin, Vector3 dir, float length, LayerMask layerToCheck)
-    {
-        Debug.DrawRay(origin, dir.normalized * length, Color.blue);
-        if (Physics.Raycast(origin, dir, out _hit, length, layerToCheck))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
         }
     }
 
@@ -260,13 +356,5 @@ public class EnemyView : BaseObjectView
         }
     }
 
-    public IEnumerator DeadAnimation()
-    {
-        _timer = _timeToDead;
-        while (_timer > 0)
-        {
-            _timer -= Time.deltaTime;
-            yield return null;
-        }
-    }
+    #endregion
 }

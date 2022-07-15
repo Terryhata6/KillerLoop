@@ -6,5 +6,6 @@
         Jump,
         Dead,
         WallRun,
-        Slide
+        Slide,
+        Inactive
     }

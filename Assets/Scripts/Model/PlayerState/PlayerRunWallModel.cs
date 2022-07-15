@@ -102,7 +102,6 @@ public class PlayerRunWallModel : BasePlayerStateModel
             player.IndicatorImage.fillAmount = _timer;
             if (_timer >= 1f)
             {
-                player.StopWallRun();
                 player.Jump();
                 player.IndicatorImage.fillAmount = 0f;
                 _timer = 0f;
@@ -136,7 +135,6 @@ public class PlayerRunWallModel : BasePlayerStateModel
         if (!player.RayCastCheck(player.Position, -player.HitNormal, 2f, 1 << 11)
         || player.RayCastCheck(player.Position, _movingVector * 1.5f, 2f, 1 << 11))
         {
-            player.StopWallRun();
             player.Jump();
             Debug.Log("jump");
         }

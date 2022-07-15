@@ -6,74 +6,189 @@ using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
-public class PlayerView : BaseObjectView
+public class PlayerView : BaseObjectView, IPlayerDistanceUpdater
 {
-    #region PrivateFiels
-    [SerializeField] private PlayerState _state = PlayerState.Idle;
-    [SerializeField] private float _movingBlend = 0;
+    #region PrivateFields
+
+    #region Serialized
+
     [SerializeField] private Animator _animator;
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private float _baseMovementSpeed;
     [SerializeField] private float _jumpForce;
     [SerializeField] private Image _indicatorImage;
-    [SerializeField] private SplineProjector _splineProjector;
+    [SerializeField] private SplineProjector _roadSpline;
+    [SerializeField] private SplineProjector _engPassSplineProjector;
+
+    #endregion
+
+    private PlayerState _state = PlayerState.Idle;
+    private float _movingBlend = 0;
     private RaycastHit _hit;
     private Camera _mainCam;
     private EngPassObject _engPassObject;
-    private List<Vector3> _movingPoints;
-    private bool _readyToKill;
     private EnemyView _enemy;
     private Vector3 _tempVector;
     private float _baseY;
     private float _x;
     private float _timer;
-    private float _timeToKill;
     private float _movementSpeed;
     private int _tempInt;
+    private float _killingAnimationTime = 0.03f;
     private Collider _tempCollider;
     private Vector3 _hitNormal; //для некоторых состояний нужен
+
     #endregion
-    
-    #region  AccessFields
+
+    #region AccessFields
+
     public Image IndicatorImage => _indicatorImage;
     public RaycastHit Hit => _hit;
     public Vector3 HitNormal => _hitNormal;
     public PlayerState State => _state;
     public Animator Animator => _animator;
     public Camera MainCam => _mainCam;
-    public Vector3 SplineDirection => _splineProjector.result.forward;
-    public double SplinePercent => _splineProjector.result.percent;
+    public Vector3 SplineDirection => _engPassSplineProjector.result.forward;
+    public double SplinePercent => _engPassSplineProjector.result.percent;
+
     #endregion
-    
+
     private void Awake()
     {
-        if (_rigidbody == null)
-        {
-            Debug.Log("rigidbody not set");
-        }
-        _mainCam = Camera.main;
-        DefaultSpeed();
-        if (_splineProjector)
-        {
-            _splineProjector.enabled = false;
-        }
-        SetRagdoll(false);
+      //  _state = PlayerState.Inactive;
     }
 
     #region Actions
 
-    #region Moving
+    #region StartAction
+
+    public void Run()
+    {
+        ChangeActionState(PlayerState.Move);
+    }
+
+    public void Slide(SplineComputer spline)
+    {
+        _engPassSplineProjector.enabled = true;
+        _engPassSplineProjector.spline = spline;
+        if (_engPassSplineProjector.result.percent > 0.5f)
+        {
+            _engPassSplineProjector.direction = Spline.Direction.Backward;
+        }
+        else
+        {
+            _engPassSplineProjector.direction = Spline.Direction.Forward;
+        }
+        SetRigidbodyValues(true);
+        SetAnimatorBool("EngPass", true);
+        ChangeActionState(PlayerState.Slide);
+    }
+
+    public void Jump()
+    {
+        SetAnimatorBool("Jump", true);
+        SetRigidbodyValues(false);
+        _baseY = Position.y;
+        _x = -1f;
+        ChangeActionState(PlayerState.Jumping);
+    }
+
+    public void Stand()
+    {
+        SetAnimatorBool("Run", true);
+        SetRigidbodyValues(true);
+        ChangeActionState(PlayerState.Idle);
+    }
+
+    public void WallRun()
+    {
+        _hitNormal = _hit.normal;
+        SetRigidbodyValues(false);
+        SetAnimatorBool("WallRun", true);
+        ChangeActionState(PlayerState.WallRun);
+    }
+
+    #endregion
+
+    #region EndAction
+
+    private void Land()
+    {
+        SetAnimatorBool("Jump", false);
+    }
+
+    private void StopWallRun()
+    {
+        SetAnimatorBool("WallRun", false);
+    }
+
+    private void StopRun()
+    {
+        SetAnimatorBool("Run", false);
+    }
+
+    private void EndSlide()
+    {
+        Debug.Log("endSlide");
+        _engPassSplineProjector.enabled = false;
+        _engPassSplineProjector.spline = null;
+        SetAnimatorBool("EngPass", false);
+        DefaultSpeed();
+        Stand();
+    }
+
+    #endregion
+
+    #region Attack
+
+    public void AirKill()
+    {
+        SetAnimatorBool("AirKill", true);
+        Kill(EndAirKill);
+    }
+
+    private void EndAirKill()
+    {
+        SetAnimatorBool("AirKill", false);
+        Jump();
+    }
+
+    public void GroundKill()
+    {
+        _tempInt = Random.Range(1, 3);
+        SetAnimatorBool("GroundKill" + _tempInt.ToString(), true);
+        Kill(EndGroundKill);
+    }
+
+    private void EndGroundKill()
+    {
+        SetAnimatorBool("GroundKill" + _tempInt.ToString(), false);
+    }
+
+    private void Kill(Action CurrentAction)
+    {
+        if (_hit.collider.gameObject.TryGetComponent(out _enemy))
+        {
+            SetRigidbodyValues(false);
+            KillEnemy(_enemy);
+            StartCoroutine(KillAnimation(_enemy, CurrentAction));
+        }
+    }
+
+    #endregion
+
 
     public void Move(Vector3 dir)
     {
-        Move(dir, _movementSpeed);
+        MoveWithSpeed(dir, _movementSpeed);
+        UpdateConsumersInfo();
     }
 
-    public void Move(Vector3 dir, float speed)
+    public void MoveWithSpeed(Vector3 dir, float speed)
     {
-        transform.Translate(dir * speed);
+        _transform.Translate(dir * speed);
     }
-    
+
     public void LookRotation(Vector3 lookVector)
     {
         lookVector.y = 0f;
@@ -83,154 +198,59 @@ public class PlayerView : BaseObjectView
         }
         Rotate(Quaternion.LookRotation(lookVector));
     }
-    
+
     public void Rotate(Quaternion dir)
     {
-        transform.rotation = dir;
+        _transform.rotation = dir;
     }
 
     public void MovePlayerToWall(Vector3 hitPoint, Vector3 hitNormal)
     {
         _tempVector = Vector3.Project(Position, hitPoint) + hitNormal * 0.3f;
         _tempVector.y = Position.y;
-        transform.position = _tempVector;
+        _transform.position = _tempVector;
     }
-    
-    public void Jumping()
+
+    public void Flying()
     {
-        _tempVector.y = (-(_jumpForce-0.2f) * ((_x) * (_x)) + _jumpForce) + _baseY;
+        _tempVector.y = (-(_jumpForce - 0.2f) * ((_x) * (_x)) + _jumpForce) + _baseY;
         _tempVector.x = Position.x;
         _tempVector.z = Position.z;
-        transform.position = _tempVector;
+        _transform.position = _tempVector;
         _x += Time.deltaTime * 1.3f;
     }
-    
-    public void Stand()
-    {
-        SetAnimatorBool("Run", true);
-        SetRigidbodyValues(true);
-        _state = PlayerState.Idle;
-    }
-    
-    public void Land()
-    {
-        SetAnimatorBool("Jump", false);
-    }
 
-    public void WallRun()
-    {
-        _hitNormal = _hit.normal;
-        SetRigidbodyValues(false);
-        SetAnimatorBool("WallRun",true);
-        _state = PlayerState.WallRun;
-    }
+    #endregion
 
-    public void StopWallRun()
-    {
-        SetAnimatorBool("WallRun",false);
-    }
-    
-    public void StopRun()
-    {
-        SetAnimatorBool("Run", false);
-    }
-    public void Run()
-    {
-        _state = PlayerState.Move;
-    }
+    #region PublicMethods
 
-    public void Slide(SplineComputer spline)
+    public override void Initialize()
     {
-        _splineProjector.enabled = true;
-        _splineProjector.spline = spline;
-        if (_splineProjector.result.percent > 0.5f)
-        {
-            _splineProjector.direction = Spline.Direction.Backward;
-        }
-        else
-        {
-            _splineProjector.direction = Spline.Direction.Forward;
-        }
-        SetRigidbodyValues(true);
-        SetAnimatorBool("EngPass",true);
-        _state = PlayerState.Slide;
-    }
+        base.Initialize();
 
-    public void EndSlide()
-    {
-        Debug.Log("endSlide");
-        _splineProjector.enabled = false;
-        _splineProjector.spline = null;
-        SetAnimatorBool("EngPass",false);
-        DefaultSpeed();
+        InitializePlayerDistanceService();
+        CheckRigidbody();
+        InitializeFields();
+        SetRagdoll(false);
         Stand();
     }
-    
-    public void Jump()
-    {
-        SetAnimatorBool("Jump", true);
-        SetRigidbodyValues(false);
-        _baseY = Position.y;
-        _x = -1f;
-        _state = PlayerState.Jumping;
-    }
 
-    #endregion
-
-    #region Attack
-
-    public void AirKill()
-    {
-        SetAnimatorBool("AirKill",true);
-        Kill(EndAirKill);
-    }
-
-    public void EndAirKill()
-    {
-        SetAnimatorBool("AirKill",false);
-        Jump();
-    }
-
-    public void GroundKill()
-    {
-        _tempInt = Random.Range(1, 3);
-        SetAnimatorBool("GroundKill" + _tempInt.ToString(),true);
-        Kill(EndGroundKill);
-    }
-
-    public void EndGroundKill()
-    {
-        SetAnimatorBool("GroundKill" + _tempInt.ToString(), false);
-    }
-    
-    public void Kill(Action CurrentAction)
-    {
-        if (_hit.collider.gameObject.TryGetComponent(out _enemy))
-        {
-            SetRigidbodyValues(false);
-            StartCoroutine(Kill(_enemy,CurrentAction));
-        }
-    }
-
-    #endregion
-
-    #endregion
-
-    #region Options
+    #region Optional
 
     public void SetSpeed(float speed)
     {
         _movementSpeed = speed;
     }
+
     public void DefaultSpeed()
     {
         _movementSpeed = _baseMovementSpeed;
     }
-    
-    public bool RayCastCheck(Vector3 origin,Vector3 dir, float length, LayerMask layerToCheck)
+
+    public bool RayCastCheck(Vector3 origin, Vector3 dir, float length, LayerMask layerToCheck)
     {
-        Debug.DrawRay(origin , dir.normalized * length, Color.blue);
-        if (Physics.Raycast(origin , dir, out _hit, length, layerToCheck))
+        Debug.DrawRay(origin, dir.normalized * length, Color.blue);
+        if (Physics.Raycast(origin, dir, out _hit, length, layerToCheck))
         {
             return true;
         }
@@ -249,20 +269,95 @@ public class PlayerView : BaseObjectView
         }
     }
 
+    #endregion
+
+    #endregion
+
+    #region PrivateMethods
+
+    #region Initialize
+
+    private void CheckRigidbody()
+    {
+        if (_rigidbody == null)
+        {
+            Debug.Log("rigidbody not set");
+        }
+    }
+    private void InitializeFields()
+    {
+        if (_engPassSplineProjector)
+        {
+            _engPassSplineProjector.enabled = false;
+        }
+        else
+        {
+            Debug.Log("EngPassProjector missing");
+        }
+        _mainCam = Camera.main;
+        DefaultSpeed();
+    }
+
+    #endregion
+
+    private void ChangeActionState(PlayerState state)
+    {
+        StopCurrentAction();
+        _state = state;
+    }
+
+    private void StopCurrentAction()
+    {
+        switch (_state)
+        {
+            case PlayerState.Jumping:
+                {
+                    Land();
+                    break;
+                }
+            case PlayerState.Move:
+                {
+                    StopRun();
+                    break;
+                }
+            case PlayerState.Idle:
+                {
+                    StopRun();
+                    break;
+                }
+            case PlayerState.Slide:
+                {
+                    EndSlide();
+                    break;
+                }
+            case PlayerState.WallRun:
+                {
+                    StopWallRun();
+                    break;
+                }
+            default:
+                {
+                    break;
+                }
+        }
+    }
+
+    #region Optional
+
     private void SetAnimatorBool(string name, bool value)
     {
         if (_animator)
         {
-            Debug.Log(name);
-            _animator.SetBool(name,value);
+            _animator.SetBool(name, value);
         }
     }
 
     private void SetRigidbodyValues(bool isKinematic)
     {
-        SetRigidbodyValues(false,isKinematic);
+        SetRigidbodyValues(false, isKinematic);
     }
-    private void SetRigidbodyValues(bool useGravity,bool isKinematic)
+
+    private void SetRigidbodyValues(bool useGravity, bool isKinematic)
     {
         if (_rigidbody)
         {
@@ -288,40 +383,109 @@ public class PlayerView : BaseObjectView
         }
     }
 
-    #endregion
-    
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.TryGetComponent(out _engPassObject) && _engPassObject.Spline && _splineProjector)
-        {
-            Slide(_engPassObject.Spline);
-        }
-    }
-
-    private IEnumerator Kill(EnemyView enemy, Action toDo)
+    private void KillEnemy(EnemyView enemy)
     {
         if (enemy)
         {
             enemy.Dead();
         }
-        _timer = 0.3f;
+    }
+
+    private void PushAwayEnemy(EnemyView enemy)
+    {
+        if (enemy)
+        {
+            enemy.PushAway(enemy.Position - Position);
+        }
+    }
+
+    #endregion
+
+    #region Coroutine
+
+    private IEnumerator KillAnimation(EnemyView enemy, Action toDo)
+    {
+        _timer = _killingAnimationTime;
         while (_timer >= 0)
         {
             _timer -= Time.deltaTime;
             yield return null;
         }
-        if (enemy)
-        {
-            enemy.DeadAnimation(enemy.Position - Position);
-        }
+        PushAwayEnemy(enemy);
         toDo.Invoke();
-
-
-
     }
 
-    public void LevelFail()
+    #endregion
+
+    #region OnTriggerEnter
+
+    private void OnTriggerEnter(Collider other)
     {
-        CustomDebug.Log("Level Failed");
+        if (other.gameObject.TryGetComponent(out _engPassObject)
+            && _engPassObject.Spline
+            && _engPassSplineProjector)
+        {
+            Slide(_engPassObject.Spline);
+        }
     }
+
+    #endregion
+
+    private void OnDestroy()
+    {
+        ServiceDistributor.Instance.RemoveService(this);
+    }
+
+    #endregion
+
+    #region IPlayerDistanceUpdater
+
+    public List<IServiceConsumer<IPlayerDistanceUpdater>> _consumers;
+
+    public float Distance => (float)_roadSpline?.result.percent;
+
+    public void AddConsumer(IConsumer consumer)
+    {
+        if (consumer != null
+            && consumer is IServiceConsumer<IPlayerDistanceUpdater>)
+        {
+            SetConsumer(consumer as IServiceConsumer<IPlayerDistanceUpdater>);
+        }
+    }
+
+    private void InitializePlayerDistanceService()
+    {
+        _consumers = new List<IServiceConsumer<IPlayerDistanceUpdater>>();
+        ServiceDistributor.Instance.FindConsumersForService(this);
+    }
+
+    private void SetConsumer(IServiceConsumer<IPlayerDistanceUpdater> consumer)
+    {
+        if (!_consumers.Contains(consumer))
+        {
+            _consumers.Add(consumer);
+        }
+    }
+
+    private void UpdateConsumersInfo()
+    {
+        for (int i = 0; i < _consumers.Count; i++)
+        {
+            UpdateConsumerInfo(_consumers[i]);
+        }
+    }
+
+    private void UpdateConsumerInfo(IServiceConsumer<IPlayerDistanceUpdater> consumer)
+    {
+        if (consumer != null)
+        {
+            consumer.UseService(this);
+        }
+        else
+        {
+            ServiceDistributor.Instance.RemoveConsumer(consumer);
+        }
+    }
+
+    #endregion
 }
