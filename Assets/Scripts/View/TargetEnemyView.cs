@@ -1,28 +1,17 @@
 
-using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 
-public class TargetEnemyView : EnemyView, ITargetDistanceUpdater
+public class TargetEnemyView : EnemyView,
+    ITargetDistanceUpdater //Service
 {
-    #region PrivateFields
-
-    private List<IServiceConsumer<ITargetDistanceUpdater>> _consumers;
-
-    #endregion
-
-    #region AccessFields
-
-    public float Distance => (float)_splineTracer?.result.percent;
-
-    #endregion
 
     #region PublicMethods
 
     public override void Initialize()
     {
         base.Initialize();
-        _consumers = new List<IServiceConsumer<ITargetDistanceUpdater>>();
-        ServiceDistributor.Instance.FindConsumersForService(this);
+        InitializeService();
     }
 
     public override void Move(Vector3 dir)
@@ -31,49 +20,43 @@ public class TargetEnemyView : EnemyView, ITargetDistanceUpdater
         UpdateConsumersInfo();
     }
 
-    public void AddConsumer(IConsumer consumer)
+    public override IEnumerator DeadAnimation()
     {
-        if (consumer != null
-            && consumer is IServiceConsumer<ITargetDistanceUpdater>)
-        {
-            SetConsumer(consumer as IServiceConsumer<ITargetDistanceUpdater>);
-        }
+        yield return base.DeadAnimation();
+        LevelEvents.Current.LevelWin();
     }
+
     #endregion
 
     #region PrivateMethods
 
-    private void UpdateConsumersInfo()
-    {
-        for (int i = 0; i < _consumers.Count; i++)
-        {
-            UpdateConsumerInfo(_consumers[i]);
-        }
-    }
-
-    private void UpdateConsumerInfo(IServiceConsumer<ITargetDistanceUpdater> consumer)
-    {
-        if (consumer == null)
-        {
-            _consumers.Remove(consumer);
-        }
-        else
-        {
-            consumer.UseService(this);
-        }
-    }
-
-    private void SetConsumer(IServiceConsumer<ITargetDistanceUpdater> consumer)
-    {
-        if (!_consumers.Contains(consumer))
-        {
-            _consumers.Add(consumer);
-        }
-    }
-
     private void OnDestroy()
     {
         ServiceDistributor.Instance.RemoveService(this);
+    }
+
+    #endregion
+
+    #region IService
+
+    private BaseService<ITargetDistanceUpdater> _serviceHelper;
+
+    public float Distance => (float)_splineTracer?.result.percent;
+
+    public void AddConsumer(IConsumer consumer)
+    {
+        _serviceHelper?.AddConsumer(consumer);
+    }
+
+    private void InitializeService()
+    {
+        _serviceHelper = new BaseService<ITargetDistanceUpdater>(this);
+        _serviceHelper.FindConsumers();
+    }
+
+    private void UpdateConsumersInfo()
+    {
+        _serviceHelper?.ServeConsumers();
     }
 
     #endregion

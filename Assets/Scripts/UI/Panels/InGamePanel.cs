@@ -47,6 +47,7 @@ public class InGamePanel : BaseMenuPanel,
         _panel.gameObject.SetActive(true);
         IsShow = true;
         ResetUIValues();
+        UpdateTargetName(_currentTargetInfo);
     }
 
     #region IServiceConsumer
@@ -89,11 +90,10 @@ public class InGamePanel : BaseMenuPanel,
 
     public void UseService(ITargetInfo service)
     {
-        if (service == null || !IsShow)
+        if (service != null)
         {
-            return;
+            _currentTargetInfo = service.GetTargetInfo(service.CurrentTargetNumber);
         }
-        UpdateTargetName(service.GetTargetInfo(service.CurrentTargetNumber));
     }
 
     #endregion
@@ -114,12 +114,12 @@ public class InGamePanel : BaseMenuPanel,
         {
             case LevelType.Common:
                 {
-                    _targetName.text = $"target {info.LevelNumber}";
+                    _targetName.text = $"target {info.TargetId}";
                     break;
                 }
             case LevelType.Boss:
                 {
-                    _targetName.text = $"target {info.LevelNumber}";
+                    _targetName.text = $"target {info.TargetId}";
                     break;
                 }
             case LevelType.Bonus:

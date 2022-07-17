@@ -64,7 +64,7 @@ public class EnemyView : BaseObjectView
     {
         base.Initialize();
         DefaultSpeed();
-        _timeToDead = 4f;
+        _timeToDead = 0.5f;
         SetRagdoll(false);
         if (_splineTracer && _splineTracer.spline)
         {
@@ -133,11 +133,18 @@ public class EnemyView : BaseObjectView
         SetAnimatorBool("Jump", false);
     }
 
-    public void Dead()
+    public virtual void Dead()
     {
         Debug.Log("EnemyDead");
         GameEvents.Current.EnemyDead(this);
+        ChangeActionState(EnemyState.Inactive);
         gameObject.layer = 9;
+    }
+
+    public void DeadWithRagdoll()
+    {
+        Dead();
+        StartCoroutine(DeadAnimation());
     }
 
     public void StopWallRun()
@@ -189,7 +196,6 @@ public class EnemyView : BaseObjectView
 
     public void PushAway(Vector3 flyAwayDirection)
     {
-        SetRagdoll(true);
         FlyAway(flyAwayDirection);
         StartCoroutine(DeadAnimation());
     }
@@ -256,8 +262,9 @@ public class EnemyView : BaseObjectView
 
     #region Coroutine
 
-    public IEnumerator DeadAnimation()
+    public virtual IEnumerator DeadAnimation()
     {
+        SetRagdoll(true);
         _timer = _timeToDead;
         while (_timer > 0)
         {
@@ -281,6 +288,7 @@ public class EnemyView : BaseObjectView
 
     private void ChangeActionState(EnemyState state)
     {
+        Debug.Log(state);
         StopCurrentAction();
         _state = state;
     }

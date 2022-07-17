@@ -6,7 +6,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
-public class PlayerView : BaseObjectView, IPlayerDistanceUpdater
+public class PlayerView : BaseObjectView, 
+    IPlayerDistanceUpdater //Service
 {
     #region PrivateFields
 
@@ -55,7 +56,7 @@ public class PlayerView : BaseObjectView, IPlayerDistanceUpdater
 
     private void Awake()
     {
-      //  _state = PlayerState.Inactive;
+        ChangeActionState(PlayerState.Inactive);
     }
 
     #region Actions
@@ -177,7 +178,6 @@ public class PlayerView : BaseObjectView, IPlayerDistanceUpdater
 
     #endregion
 
-
     public void Move(Vector3 dir)
     {
         MoveWithSpeed(dir, _movementSpeed);
@@ -220,19 +220,49 @@ public class PlayerView : BaseObjectView, IPlayerDistanceUpdater
         _x += Time.deltaTime * 1.3f;
     }
 
+    public void Dead()
+    {
+        Debug.Log("PlayerDead");
+        SetRagdoll(true);
+        ChangeActionState(PlayerState.Inactive);
+        SetAliveLayer(false);
+        LevelEvents.Current.LevelLose();
+    }
+
+    public Vector3 SaveRevivePosition()
+    {
+        return _roadSpline?.result.position ?? Vector3.zero;
+    }
+
+    public void LoadRevivePosition(Vector3 revivePos)
+    {
+        _tempVector = revivePos;
+        _tempVector.y = 2f;
+        _transform.position = _tempVector;
+        _transform.rotation = Quaternion.identity;
+    }
+
     #endregion
 
     #region PublicMethods
 
-    public override void Initialize()
+    public void Initialize(PlayerLevelInfo info)
     {
         base.Initialize();
 
-        InitializePlayerDistanceService();
+        InitializeService();
         CheckRigidbody();
         InitializeFields();
         SetRagdoll(false);
+        SetAliveLayer(true);
+        SetRoadSpline(info.RoadSpline);
         Stand();
+        Debug.Log("Player Loaded");
+    }
+
+    public override void Initialize()
+    {
+        Initialize(new PlayerLevelInfo());
     }
 
     #region Optional
@@ -284,6 +314,7 @@ public class PlayerView : BaseObjectView, IPlayerDistanceUpdater
             Debug.Log("rigidbody not set");
         }
     }
+
     private void InitializeFields()
     {
         if (_engPassSplineProjector)
@@ -343,6 +374,26 @@ public class PlayerView : BaseObjectView, IPlayerDistanceUpdater
     }
 
     #region Optional
+
+    private void SetRoadSpline(SplineComputer roadSpline)
+    {
+        if (roadSpline)
+        {
+            _roadSpline.spline = roadSpline;
+        }
+    }
+
+    private void SetAliveLayer(bool alive)
+    {
+        if (alive)
+        {
+            gameObject.layer = 8;
+        }
+        else
+        {
+            gameObject.layer = 9;
+        }
+    }
 
     private void SetAnimatorBool(string name, bool value)
     {
@@ -438,53 +489,26 @@ public class PlayerView : BaseObjectView, IPlayerDistanceUpdater
 
     #endregion
 
-    #region IPlayerDistanceUpdater
+    #region IService
 
-    public List<IServiceConsumer<IPlayerDistanceUpdater>> _consumers;
+    private BaseService<IPlayerDistanceUpdater> _serviceHelper;
 
     public float Distance => (float)_roadSpline?.result.percent;
 
     public void AddConsumer(IConsumer consumer)
     {
-        if (consumer != null
-            && consumer is IServiceConsumer<IPlayerDistanceUpdater>)
-        {
-            SetConsumer(consumer as IServiceConsumer<IPlayerDistanceUpdater>);
-        }
+        _serviceHelper?.AddConsumer(consumer);
     }
 
-    private void InitializePlayerDistanceService()
+    private void InitializeService()
     {
-        _consumers = new List<IServiceConsumer<IPlayerDistanceUpdater>>();
-        ServiceDistributor.Instance.FindConsumersForService(this);
-    }
-
-    private void SetConsumer(IServiceConsumer<IPlayerDistanceUpdater> consumer)
-    {
-        if (!_consumers.Contains(consumer))
-        {
-            _consumers.Add(consumer);
-        }
+        _serviceHelper = new BaseService<IPlayerDistanceUpdater>(this);
+        _serviceHelper.FindConsumers();
     }
 
     private void UpdateConsumersInfo()
     {
-        for (int i = 0; i < _consumers.Count; i++)
-        {
-            UpdateConsumerInfo(_consumers[i]);
-        }
-    }
-
-    private void UpdateConsumerInfo(IServiceConsumer<IPlayerDistanceUpdater> consumer)
-    {
-        if (consumer != null)
-        {
-            consumer.UseService(this);
-        }
-        else
-        {
-            ServiceDistributor.Instance.RemoveConsumer(consumer);
-        }
+        _serviceHelper?.ServeConsumers();
     }
 
     #endregion

@@ -58,37 +58,6 @@ public class MainMenuPanel : BaseMenuPanel,
         UpdateMoneyCounter();
     }
 
-    #region IServiceConsumer
-
-    public void UseService(IMoneyStorage service)
-    {
-        _moneyStorage = service;
-        if (IsShow)
-        {
-            UpdateMoneyCounter();
-        }
-    }
-
-    public void UseService(INewGoodsChecker service)
-    {
-        _newGoodsChecker = service;
-        if (IsShow)
-        {
-            ProcessNewGoods();
-        }
-    }
-
-    public void UseService(ITargetInfo service)
-    {
-        _targetInfoSource = service;
-        if (IsShow)
-        {
-            ProcessTargetsInfo();
-        }
-    }
-
-    #endregion
-
     #endregion
 
     #region PrivateMethods
@@ -148,6 +117,37 @@ public class MainMenuPanel : BaseMenuPanel,
         RemoveListenersFromButton(_shopButton);
         RemoveListenersFromButton(_startButton);
         RemoveListenersFromButton(_optionsButton);
+    }
+
+    #endregion
+
+    #region IServiceConsumer
+
+    public void UseService(IMoneyStorage service)
+    {
+        _moneyStorage = service;
+        if (IsShow)
+        {
+            UpdateMoneyCounter();
+        }
+    }
+
+    public void UseService(INewGoodsChecker service)
+    {
+        _newGoodsChecker = service;
+        if (IsShow)
+        {
+            ProcessNewGoods();
+        }
+    }
+
+    public void UseService(ITargetInfo service)
+    {
+        _targetInfoSource = service;
+        if (IsShow)
+        {
+            ProcessTargetsInfo();
+        }
     }
 
     #endregion

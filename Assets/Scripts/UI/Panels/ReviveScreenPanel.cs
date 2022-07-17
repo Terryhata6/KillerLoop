@@ -56,6 +56,7 @@ public class ReviveScreenPanel : BaseMenuPanel
     private void ResetValues()
     {
         _currentTime = (int)_revivingTime;
+        UpdateCounterValue(_currentTime);
     }
 
     private void DecrementTime()
@@ -66,7 +67,7 @@ public class ReviveScreenPanel : BaseMenuPanel
 
     private void Revive()
     {
-        UIEvents.Current.Revive();
+        LevelEvents.Current.LevelContinue();
     }
 
     #region UIUpdates

@@ -13,4 +13,25 @@ public class GameEvents
     }
 
     #endregion
+
+    #region PlayerEvents
+
+    public event Action OnRevive;
+    public void Revive()
+    {
+        OnRevive?.Invoke();
+    }
+
+    #endregion
+
+    #region Global
+
+    public Action OnGameStart;
+
+    public void GameStart()
+    {
+        OnGameStart?.Invoke();
+    }
+
+    #endregion
 }

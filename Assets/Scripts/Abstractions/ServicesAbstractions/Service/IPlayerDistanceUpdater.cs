@@ -1,5 +1,5 @@
 ﻿
-public interface IPlayerDistanceUpdater : IService
+public interface IPlayerSpawner : IService
 {
-    public float Distance { get;}
+    public PlayerView CurrentPlayer { get;}
 }

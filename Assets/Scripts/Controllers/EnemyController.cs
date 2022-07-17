@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyController : BaseController, IExecute, IContainServices, IBeatenEnemyCounter
+public class EnemyController : BaseController, IExecute, 
+    IBeatenEnemyCounter, //Service
+    IServiceConsumer<IEnemiesLevelInfoUpdater> //Consumer
 {
     #region PrivateFields
 
@@ -9,17 +11,13 @@ public class EnemyController : BaseController, IExecute, IContainServices, IBeat
     private Dictionary<EnemyState, BaseEnemyStateModel> _enemyStates;
     private int _index;
     private EnemyView _tempEnemy;
-    private List<IServiceConsumer<IBeatenEnemyCounter>> _beatenEnemyConsumers;
-    private List<IService> _services;
     private int _enemyBeaten;
-
-    public int EnemyBeaten => _enemyBeaten;
 
     #endregion
 
-    public EnemyController (List<EnemyView> enemies)
+    public EnemyController () : base()
     {
-        SetNewEnemies(enemies);    
+        Disable();    
     }
 
     #region PublicMethods
@@ -33,6 +31,7 @@ public class EnemyController : BaseController, IExecute, IContainServices, IBeat
         SetEvents();
         CreateStateDictionary();
         InitializeFields();
+        InitializeService();
     }
 
     #endregion
@@ -58,34 +57,6 @@ public class EnemyController : BaseController, IExecute, IContainServices, IBeat
 
     #endregion
 
-    public List<IService> GetServices()
-    {
-        return _services;
-    }
-
-    public void AddConsumer(IConsumer consumer)
-    {
-        if (consumer != null 
-            && consumer is IServiceConsumer<IBeatenEnemyCounter>)
-        {
-            SetBeatenEnemyConsumer(consumer as IServiceConsumer<IBeatenEnemyCounter>);
-        }
-    }
-    public void SetNewEnemies(List<EnemyView> enemies)
-    {
-        if (enemies != null)
-        {
-            Enable();
-            _enemies = enemies;
-            ResetFields();
-            InitializeEnemies(_enemies);
-        }
-        else
-        {
-            Disable();
-        }
-    }
-
     #endregion
 
     #region PrivateMethods
@@ -109,24 +80,44 @@ public class EnemyController : BaseController, IExecute, IContainServices, IBeat
         GameEvents.Current.OnEnemyDead += EnemyRemove;
 
         LevelEvents.Current.OnLevelStart += Enable;
+        LevelEvents.Current.OnLevelContinue += Enable;
         LevelEvents.Current.OnLevelLose += Disable;
-        LevelEvents.Current.OnLevelFinish += Disable;
+        LevelEvents.Current.OnLevelWin += Disable;
 
         UIEvents.Current.OnToMainMenu += Disable;
+        UIEvents.Current.OnReviveButton += DisableEnemiesAnimation;
     }
 
     private void InitializeFields()
     {
-        _services = new List<IService>();
-        _beatenEnemyConsumers = new List<IServiceConsumer<IBeatenEnemyCounter>>();
         if (_enemies == null)
         {
             _enemies = new List<EnemyView>();
         }
-        _services.Add(this);
     }
 
     #endregion
+
+
+    private void LoadNewEnemies(List<EnemyView> enemies)
+    {
+        if (enemies != null)
+        {
+            SetEnemies(enemies);
+            ResetFields();
+            InitializeEnemies(_enemies);
+            Debug.Log("Enemies loaded");
+        }
+        else
+        {
+            Debug.Log("Oops! Enemies missing");
+        }
+    }
+
+    private void SetEnemies(List<EnemyView> enemies)
+    {
+        _enemies = enemies;
+    }
 
     private void InitializeEnemies(List<EnemyView> enemies)
     {
@@ -161,22 +152,47 @@ public class EnemyController : BaseController, IExecute, IContainServices, IBeat
         ServeEnemyBeatenConsumers();
     }
 
-    private void ServeEnemyBeatenConsumers()
+    private void DisableEnemiesAnimation()
     {
-        for (_index = 0; _index < _beatenEnemyConsumers.Count; _index++)
+        for (int i = 0; i < _enemies.Count; i++)
         {
-            if (_beatenEnemyConsumers[_index] != null)
-            {
-                _beatenEnemyConsumers[_index].UseService(this);
-            }
+            _enemies[i].SetMovingBlend(0f);
         }
     }
 
-    private void SetBeatenEnemyConsumer(IServiceConsumer<IBeatenEnemyCounter> consumer)
+    #endregion
+
+    #region IService
+
+    private BaseService<IBeatenEnemyCounter> _serviceHelper;
+
+    public int EnemyBeaten => _enemyBeaten;
+
+    public void AddConsumer(IConsumer consumer)
     {
-        if (!_beatenEnemyConsumers.Contains(consumer))
+        _serviceHelper?.AddConsumer(consumer);
+    }
+
+    private void InitializeService()
+    {
+        _serviceHelper = new BaseService<IBeatenEnemyCounter>(this);
+        _serviceHelper.FindConsumers();
+    }
+
+    private void ServeEnemyBeatenConsumers()
+    {
+        _serviceHelper?.ServeConsumers();
+    }
+
+    #endregion
+
+    #region IServiceConsumer
+
+    public void UseService(IEnemiesLevelInfoUpdater service)
+    {
+        if (service != null)
         {
-            _beatenEnemyConsumers.Add(consumer);
+            LoadNewEnemies(service.EnemiesInfo.Enemies);
         }
     }
 

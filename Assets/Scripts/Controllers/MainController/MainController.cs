@@ -9,12 +9,11 @@ public class MainController : MonoBehaviour
     #region Serialized
 
     [Header("Player")]
-    [SerializeField] private Transform _playerStarterPoint;
-    [SerializeField] private PlayerView _playerView;
+    [SerializeField] private PlayerView _playerPrefab;
     [SerializeField] private VirtualCameraView _virtualCamera;
 
-    [Header("Enemy")]
-    [SerializeField] private List<EnemyView> _tempEnemies; //Не забудь убрать это и доделать спавн врагов - EnterAlt
+    [Header("Levels")]
+    [SerializeField] private List<LevelView> _levels;
 
     [Header("Settings")]
     [SerializeField] private bool _debugTestingScene = false;
@@ -23,6 +22,7 @@ public class MainController : MonoBehaviour
     #endregion
 
     private List<BaseController> _controllers;
+    private List<IExecute> _executeControllers;
     private ServiceDistributor _serviceDistributor;
 
     #endregion
@@ -37,75 +37,37 @@ public class MainController : MonoBehaviour
         if (_debugTestingScene)
         {
             SceneManager.LoadSceneAsync(_testingSceneName, LoadSceneMode.Additive);
-        }
-
-        GetController<CameraController>().SetCameraTarget(_playerView.transform);
-        
+        }       
     }
 
     private void Start()
     {
         InitializeControllers();
-        SetServicesToDistributor();
+        SetExecuteControllers();
         SetConsumersToDistributor();
         _serviceDistributor.Distribute();
-
-        //------SceneSettings------
-        if (_playerStarterPoint != null)
-        {
-            _playerView.transform.position = _playerStarterPoint.position;
-        }
-        else
-        {
-            CustomDebug.Log($"Нет стартовой точки", this.gameObject);
-        }
+        GameEvents.Current.GameStart();
     }
 
     private void Update()
     {        
-        for (int i = 0; i < _controllers.Count; i++)
+        for (int i = 0; i < _executeControllers.Count; i++)
         {
-            if (_controllers[i] is IExecute)
-            {
-                (_controllers[i] as IExecute).Execute();
-            }
-        }
-        
-        
-    }
-
-    private void LateUpdate()
-    {        
-        for (int i = 0; i < _controllers.Count; i++)
-        {
-            if (_controllers[i] is ILateExecute)
-            {
-                (_controllers[i] as ILateExecute).LateExecute();
-            }
-        }
+            _executeControllers[i].Execute();
+        }   
     }
 
     #region ServiceMethods
 
     #region ServiceDistributor
 
-    private void SetServicesToDistributor()
-    {
-        for (int i = 0; i < _controllers.Count; i++)
-        {
-            if (_controllers[i] is IContainServices)
-            {
-                _serviceDistributor.AddServices((_controllers[i] as IContainServices).GetServices());
-            }
-        }
-    }
     private void SetConsumersToDistributor()
     {
         for (int i = 0; i < _controllers.Count; i++)
         {
-            if (_controllers is IContainConsumers)
+            if (_controllers[i] is IConsumer)
             {
-                _serviceDistributor.AddConsumers((_controllers as IContainConsumers).GetConsumers());
+                _serviceDistributor.AddConsumer((_controllers[i] as IConsumer));
             }
         }
     }
@@ -117,20 +79,42 @@ public class MainController : MonoBehaviour
     private void InitializeFields()
     {
         _controllers = new List<BaseController>();
+        _executeControllers = new List<IExecute>();
     }
+
     private void CreateControllers()
     {
         AddController(new InputController());
-        AddController(new PlayerController(_playerView));
+        AddController(new PlayerController(_playerPrefab));
         AddController(new CameraController(_virtualCamera));
-        AddController(new EnemyController(_tempEnemies));
-        AddController(new LevelController());
+        AddController(new EnemyController());
+        AddController(new LevelController(_levels));
     }
+
     private void InitializeControllers()
     {
         for (int i = 0; i < _controllers.Count; i++)
         {
             _controllers[i].Initialize();
+        }
+    }
+
+    private void SetExecuteControllers()
+    {
+        for (int i = 0; i < _controllers.Count; i++)
+        {
+            if (_controllers[i] is IExecute)
+            {
+                SetExecuteController(_controllers[i] as IExecute);
+            }
+        }
+    }
+
+    private void SetExecuteController(IExecute controller)
+    {
+        if (!_executeControllers.Contains(controller))
+        {
+            _executeControllers.Add(controller);
         }
     }
 

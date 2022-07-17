@@ -9,9 +9,6 @@ public class ServiceDistributor : Singleton<ServiceDistributor>
     private List<IService> _services;
     private List<IConsumer> _consumers;
 
-    private List<IContainConsumers> _consumersSources;
-    private List<IContainServices> _servicesSources;
-
     #endregion
 
     public ServiceDistributor() : this(new List<IService>(), new List<IConsumer>())
@@ -21,8 +18,6 @@ public class ServiceDistributor : Singleton<ServiceDistributor>
     {
         _services = services;
         _consumers = consumers;
-        _consumersSources = new List<IContainConsumers>();
-        _servicesSources = new List<IContainServices>();
         Instance = this;
         Debug.Log("Service Distributor is Ready");
     }
@@ -42,15 +37,23 @@ public class ServiceDistributor : Singleton<ServiceDistributor>
         }
     }
 
+    public void AddService(IService service)
+    {
+        if (_services != null
+            && service != null
+            && !_services.Contains(service))
+        {
+            _services.Add(service);
+        }
+    }
+
     public void AddConsumer(IConsumer consumer)
     {
-        if (_consumers != null && consumer != null)
+        if (_consumers != null 
+            && consumer != null
+            && !_consumers.Contains(consumer))
         {
-            if (consumer != null
-                && !_consumers.Contains(consumer))
-            {
-                _consumers.Add(consumer);
-            }
+            _consumers.Add(consumer);
         }
     }
 
@@ -70,7 +73,6 @@ public class ServiceDistributor : Singleton<ServiceDistributor>
 
     public void Distribute()
     {
-        Prepare();
         if (_services != null && _consumers != null)
         {
             SetConsumersToServices<IMoneyStorage>(_consumers, _services);
@@ -80,6 +82,7 @@ public class ServiceDistributor : Singleton<ServiceDistributor>
             SetConsumersToServices<ICollectedMoneyCounter>(_consumers, _services);
             SetConsumersToServices<IPlayerDistanceUpdater>(_consumers, _services);
             SetConsumersToServices<ITargetDistanceUpdater>(_consumers, _services);
+            SetConsumersToServices<IPlayerSpawner>(_consumers, _services);
         }
         else
         {
@@ -89,19 +92,13 @@ public class ServiceDistributor : Singleton<ServiceDistributor>
 
     public void FindServicesForConsumer<T>(IServiceConsumer<T> consumer) where T : IService
     {
-        if (!_consumers.Contains(consumer))
-        {
-            _consumers.Add(consumer);
-        }
+        AddConsumer(consumer);
         SetConsumerToServices(consumer, _services);
     }
 
     public void FindConsumersForService<T>(T service) where T : IService
     {
-        if (!_services.Contains(service))
-        {
-            _services.Add(service);
-        }
+        AddService(service);
         SetConsumersToService(_consumers, service);
     }
 
@@ -124,28 +121,6 @@ public class ServiceDistributor : Singleton<ServiceDistributor>
     #endregion
 
     #region PrivateMethods
-
-    private void Prepare()
-    {
-        PrepareConsumers();
-        PrepareServices();
-    }
-
-    private void PrepareServices()
-    {
-        for (int i = 0; i < _servicesSources.Count; i++)
-        {
-            AddServices(_servicesSources[i].GetServices());
-        }
-    }
-
-    private void PrepareConsumers()
-    {
-        for (int i = 0; i < _consumersSources.Count; i++)
-        {
-            AddConsumers(_consumersSources[i].GetConsumers());
-        }
-    }
 
     private void SetConsumersToServices<T>(List<IConsumer> consumers, List<IService> services) where T : IService
     {

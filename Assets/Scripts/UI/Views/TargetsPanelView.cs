@@ -19,12 +19,14 @@ public class TargetsPanelView : BaseUiView
 
     //temp
     private TargetsUIInfo _tempTargetInfo;
+    private List<TargetsUIInfo> _tempTargetsInfos;
     #endregion
 
     #region PublicMethods
     public void Initialize(ITargetInfo targetInfoSource)
     {
         _indexOffset = _targetsIcons.Count / 2;
+        _tempTargetsInfos = new List<TargetsUIInfo>(_targetsIcons.Count);
         UpdateTargetsInfo(targetInfoSource);
     }
 
@@ -43,11 +45,12 @@ public class TargetsPanelView : BaseUiView
     {
         if (info != null)
         {
+            _tempTargetsInfos.Clear();
             for (int i = _firstTargetNumber; i <= _lastTargetNumber; i++)
             {
-                _tempTargetInfo = info.GetTargetInfo(i);
-                AddTargetInfo(_tempTargetInfo);
+                _tempTargetsInfos.Add(info.GetTargetInfo(i));
             }
+            SetTargetsInfos(_tempTargetsInfos);
         }
     }
 
@@ -60,18 +63,13 @@ public class TargetsPanelView : BaseUiView
         }
     }
 
-    private void AddTargetInfo(TargetsUIInfo info)
+    private void SetTargetsInfos(List<TargetsUIInfo> infos)
     {
-        if (_targetsIcons.Count > 0)
+        if (infos != null)
         {
             for (int i = 0; i < _targetsIcons.Count; i++)
             {
-                if ((i + 1) == _targetsIcons.Count)
-                {
-                    SetTargetInfo(info, _targetsIcons[i]);
-                    continue;
-                }
-                _targetsIcons[i].CopyValues(_targetsIcons[i + 1]);
+                SetTargetInfo(infos[i], _targetsIcons[i]);
             }
         }
     }
@@ -82,12 +80,12 @@ public class TargetsPanelView : BaseUiView
         {
             case LevelType.Common:
                 {
-                    _currentTargetName.text = $"target {info.LevelNumber}";
+                    _currentTargetName.text = $"target {info.TargetId}";
                     break;
                 }
             case LevelType.Boss:
                 {
-                    _currentTargetName.text = $"target {info.LevelNumber}";
+                    _currentTargetName.text = $"target {info.TargetId}";
                     break;
                 }
             case LevelType.Bonus:
@@ -124,6 +122,7 @@ public class TargetsPanelView : BaseUiView
                 }
             default:
                 {
+
                     view.Disable();
                     break;
                 }
@@ -158,7 +157,8 @@ public class TargetsPanelView : BaseUiView
     {
         view.Enable();
         view.DisableIcon();
-        view.SetText(info.LevelNumber.ToString());
+        view.SetText(info.TargetId.ToString());
     }
+
     #endregion
 }
