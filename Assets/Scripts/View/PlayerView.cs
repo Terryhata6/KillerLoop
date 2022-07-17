@@ -18,7 +18,7 @@ public class PlayerView : BaseObjectView,
     [SerializeField] private float _baseMovementSpeed;
     [SerializeField] private float _jumpForce;
     [SerializeField] private Image _indicatorImage;
-    [SerializeField] private SplineProjector _roadSpline;
+    [SerializeField] protected SplineProjector _roadSpline;
     [SerializeField] private SplineProjector _engPassSplineProjector;
 
     #endregion
@@ -104,7 +104,7 @@ public class PlayerView : BaseObjectView,
     public void WallRun()
     {
         _hitNormal = _hit.normal;
-        SetRigidbodyValues(false);
+        SetRigidbodyValues(true);
         SetAnimatorBool("WallRun", true);
         ChangeActionState(PlayerState.WallRun);
     }
@@ -178,7 +178,7 @@ public class PlayerView : BaseObjectView,
 
     #endregion
 
-    public void Move(Vector3 dir)
+    public virtual void Move(Vector3 dir)
     {
         MoveWithSpeed(dir, _movementSpeed);
         UpdateConsumersInfo();
@@ -331,7 +331,7 @@ public class PlayerView : BaseObjectView,
 
     #endregion
 
-    private void ChangeActionState(PlayerState state)
+    public virtual void ChangeActionState(PlayerState state)
     {
         StopCurrentAction();
         _state = state;

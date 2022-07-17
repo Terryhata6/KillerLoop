@@ -15,6 +15,9 @@ public class LevelView : BaseObjectView,
     [SerializeField] private PlayerLevelInfo _playerInfo;
     [Header("Enemies Information")]
     [SerializeField] private EnemiesLevelInfo _enemiesInfo;
+    [SerializeField] private RoadRunSave _roadRunWay;
+    [Header("Writer Information")]
+    [SerializeField] private WriterLevelInfo _writerLevelInfo;
 
     #endregion
 
@@ -49,7 +52,13 @@ public class LevelView : BaseObjectView,
 
     public EnemiesLevelInfo EnemiesInfo => _enemiesInfo;
 
+    public RoadRunSave RoadRunWay => _roadRunWay;
+
     public PlayerLevelInfo PlayerInfo => _playerInfo;
+
+    public WriterLevelInfo WriterInfo => _writerLevelInfo;
+
+    public WriterLevelInfo WriterLevelInfo { get => _writerLevelInfo; set => _writerLevelInfo = value; }
 
     public void AddConsumer(IConsumer consumer)
     {

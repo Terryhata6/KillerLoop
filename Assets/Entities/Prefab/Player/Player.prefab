@@ -746,10 +746,10 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 0
-  m_Radius: 0.07639832
-  m_Height: 0.30559328
+  m_Radius: 0.115
+  m_Height: 0.35
   m_Direction: 1
-  m_Center: {x: 0, y: 0.15279664, z: 0}
+  m_Center: {x: 5.8833816e-10, y: 0.1508284, z: -0.0651}
 --- !u!54 &2517625628291333328
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -856,7 +856,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 0
-  m_Radius: 0.083446726
+  m_Radius: 0.09
   m_Height: 0.27815574
   m_Direction: 1
   m_Center: {x: 0, y: 0.13907787, z: 0}
@@ -1012,8 +1012,8 @@ SkinnedMeshRenderer:
   m_BlendShapeWeights: []
   m_RootBone: {fileID: 0}
   m_AABB:
-    m_Center: {x: -0.000028669834, y: -0.2584821, z: -0.07942888}
-    m_Extent: {x: 0.37663528, y: 0.5300702, z: 0.14787401}
+    m_Center: {x: -0.0076364577, y: -0.2594816, z: -0.10059972}
+    m_Extent: {x: 0.35732245, y: 0.5310697, z: 0.16904484}
   m_DirtyAABB: 0
 --- !u!183 &2864783004867599854
 Cloth:
@@ -1295,6 +1295,8 @@ Cloth:
   - {fileID: 2517625628291333335}
   - {fileID: 8282847878981421910}
   - {fileID: 770903235432594569}
+  - {fileID: 0}
+  - {fileID: 6831797457694702029}
   m_SphereColliders:
   - first: {fileID: 304390979209614703}
     second: {fileID: 304390979209614703}
@@ -1741,10 +1743,10 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 0
-  m_Radius: 0.07603911
-  m_Height: 0.30415645
+  m_Radius: 0.115
+  m_Height: 0.35
   m_Direction: 1
-  m_Center: {x: 0, y: 0.15207823, z: 0}
+  m_Center: {x: -0.03236577, y: 0.15207826, z: -0.0651}
 --- !u!54 &5436632081788670872
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1851,7 +1853,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 0
-  m_Radius: 0.083483815
+  m_Radius: 0.09
   m_Height: 0.27827936
   m_Direction: 1
   m_Center: {x: 0, y: 0.13913968, z: 0}
@@ -2529,6 +2531,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1730015602700263126}
+  - component: {fileID: 6831797457694702029}
   m_Layer: 8
   m_Name: mixamorig:Spine1
   m_TagString: Untagged
@@ -2551,6 +2554,20 @@ Transform:
   m_Father: {fileID: 5125092484644899390}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &6831797457694702029
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8468508350299443925}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.06
+  m_Height: 0.35
+  m_Direction: 0
+  m_Center: {x: 0, y: 0.182, z: -0.022}
 --- !u!1 &8954532427811036334
 GameObject:
   m_ObjectHideFlags: 0

@@ -53,7 +53,6 @@ public class PlayerJumpingStateModel : BasePlayerStateModel
     {
         if (player.RayCastCheck(player.Position + Vector3.up, Vector3.down, 1.1f, 1 << 11 | (1 << 12)))
         {
-            Debug.Log("land");
             player.Stand();
         }
     }

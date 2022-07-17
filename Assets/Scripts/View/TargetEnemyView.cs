@@ -5,6 +5,8 @@ using UnityEngine;
 public class TargetEnemyView : EnemyView,
     ITargetDistanceUpdater //Service
 {
+    [SerializeField] private RoadRunSave _roadRunSave;
+    [SerializeField] private int _savePointCounter;
 
     #region PublicMethods
 
@@ -12,13 +14,68 @@ public class TargetEnemyView : EnemyView,
     {
         base.Initialize();
         InitializeService();
+        _savePointCounter = 0;
     }
 
-    public override void Move(Vector3 dir)
+    #region Actions
+
+
+    public void ChangeState(EnemyState state)
     {
-        base.Move(dir);
+        switch (state)
+        {
+            case EnemyState.Idle:
+                {
+                    Stand();
+                    break;
+                }
+            case EnemyState.Move:
+                {
+                    Run();
+                    break;
+                }
+            case EnemyState.Jump:
+                {
+                    Jump();
+                    break;
+                }
+            case EnemyState.Slide:
+                {
+                    Slide();
+                    break;
+                }
+            case EnemyState.WallRun:
+                {
+                    WallRun();
+                    break;
+                }
+            default:
+                {
+                    break;
+                }
+        }
+    }
+
+    public override void MoveWithSpeed(Vector3 dir, float speed)
+    {
+        SetNewRoadPosition();
         UpdateConsumersInfo();
     }
+
+    private void SetNewRoadPosition()
+    {
+        if (_roadRunSave && _savePointCounter < _roadRunSave.Points.Count)
+        {
+            if (State != _roadRunSave.Points[_savePointCounter].State)
+            {
+                ChangeState(_roadRunSave.Points[_savePointCounter].State);
+            }
+            _transform.position = _roadRunSave.Points[_savePointCounter].Position;
+            _transform.rotation = _roadRunSave.Points[_savePointCounter].Rotation;
+            _savePointCounter++;
+        }
+    }
+    #endregion
 
     public override IEnumerator DeadAnimation()
     {

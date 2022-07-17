@@ -15,10 +15,10 @@ public class EnemyView : BaseObjectView
     [SerializeField] private float _jumpForce;
     [SerializeField] protected SplineTracer _splineTracer;
     [SerializeField] private float _flyAwayPower;
+    [SerializeField] private EnemyState _state = EnemyState.Idle;
 
     #endregion
 
-    private EnemyState _state = EnemyState.Idle;
     private float _movingBlend = 0;
     private bool _canMove;
     private float _baseY;
@@ -88,12 +88,9 @@ public class EnemyView : BaseObjectView
 
     public void Run()
     {
-        if (_canMove)
-        {
-            SetAnimatorBool("Run", true);
-            SetRigidbodyValues(false, false);
-            ChangeActionState(EnemyState.Move);
-        }
+        SetAnimatorBool("Run", true);
+        SetRigidbodyValues(false, false);
+        ChangeActionState(EnemyState.Move);
     }
 
     public void Slide()
@@ -159,7 +156,7 @@ public class EnemyView : BaseObjectView
 
     #endregion
 
-    public void LookRotation(Vector3 lookVector)
+    public virtual void LookRotation(Vector3 lookVector)
     {
         if (_canMove)
         {
@@ -177,7 +174,7 @@ public class EnemyView : BaseObjectView
         MoveWithSpeed(dir, _movementSpeed);
     }
 
-    public void MoveWithSpeed(Vector3 dir, float speed)
+    public virtual void MoveWithSpeed(Vector3 dir, float speed)
     {
         if (_canMove)
         {
@@ -185,7 +182,7 @@ public class EnemyView : BaseObjectView
         }
     }
 
-    public void Flying()
+    public virtual void Flying()
     {
         _tempVector.y = (-(_jumpForce - 0.2f) * ((_x) * (_x)) + _jumpForce) + _baseY;
         _tempVector.x = Position.x;
@@ -279,16 +276,15 @@ public class EnemyView : BaseObjectView
 
     #region PrivateMethods
 
-    private void MoveEnemyToWall(Vector3 hitPoint, Vector3 hitNormal)
+    public virtual void MoveEnemyToWall(Vector3 hitPoint, Vector3 hitNormal)
     {
         _tempVector = Vector3.Project(Position, hitPoint) + hitNormal * 0.3f;
         _tempVector.y = Position.y;
         _transform.position = _tempVector;
     }
 
-    private void ChangeActionState(EnemyState state)
+    public virtual void ChangeActionState(EnemyState state)
     {
-        Debug.Log(state);
         StopCurrentAction();
         _state = state;
     }

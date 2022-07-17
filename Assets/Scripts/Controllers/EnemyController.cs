@@ -12,6 +12,7 @@ public class EnemyController : BaseController, IExecute,
     private int _index;
     private EnemyView _tempEnemy;
     private int _enemyBeaten;
+    private RoadRunSave _currentRoadWay;
 
     #endregion
 
@@ -68,9 +69,9 @@ public class EnemyController : BaseController, IExecute,
         _enemyStates = new Dictionary<EnemyState, BaseEnemyStateModel>
         {
             {EnemyState.Idle, new EnemyIdleStateModel()},
-            {EnemyState.Jump, new EnemyJumpStateModel()},
+            {EnemyState.Jump, new EnemyMoveStateModel()},
             {EnemyState.Move, new EnemyMoveStateModel()},
-            {EnemyState.WallRun, new EnemyWallRunStateModel()},
+            {EnemyState.WallRun, new EnemyMoveStateModel()},
             {EnemyState.Inactive, new EnemyInactiveStateModel()}
         };
     }
@@ -128,6 +129,7 @@ public class EnemyController : BaseController, IExecute,
                 _enemies.Remove(enemies[_index]);
                 continue;
             }
+            Debug.Log("init");
             enemies[_index].Initialize();
         }
     }
@@ -157,6 +159,14 @@ public class EnemyController : BaseController, IExecute,
         for (int i = 0; i < _enemies.Count; i++)
         {
             _enemies[i].SetMovingBlend(0f);
+        }
+    }
+
+    private void SetRoadRunWay(RoadRunSave save)
+    {
+        if (save)
+        {
+            _currentRoadWay = save;
         }
     }
 
@@ -193,6 +203,7 @@ public class EnemyController : BaseController, IExecute,
         if (service != null)
         {
             LoadNewEnemies(service.EnemiesInfo.Enemies);
+            SetRoadRunWay(service.RoadRunWay);
         }
     }
 

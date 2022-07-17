@@ -11,6 +11,8 @@ public class PlayerController : BaseController, IExecute,
     private PlayerView _playerPrefab;
     private PlayerView _temp;
     private Vector3 _tempPos;
+    private bool _isWritingRoad;
+    private RoadRunSave _roadRunSave;
     private PlayerLevelInfo _playerLevelInfo;
     private Vector2 _positionDelta = Vector2.zero;
     private Vector2 _positionBegan = Vector2.zero;
@@ -71,6 +73,7 @@ public class PlayerController : BaseController, IExecute,
         LevelEvents.Current.OnLevelContinue += Enable;
         LevelEvents.Current.OnLevelLose += Disable;
         LevelEvents.Current.OnLevelWin += Disable;
+        LevelEvents.Current.OnLevelLoaded += Disable;
         LevelEvents.Current.OnLevelLoaded += LoadNewPlayer;
 
         UIEvents.Current.OnToMainMenu += Disable;
@@ -106,7 +109,6 @@ public class PlayerController : BaseController, IExecute,
     {
         if (prefab)
         {
-            Enable();
             _playerPrefab = prefab;
         }
         else
@@ -147,6 +149,11 @@ public class PlayerController : BaseController, IExecute,
     private void PlayerInitialize(PlayerView player)
     {
         player.Initialize(_playerLevelInfo);
+        if (_isWritingRoad
+            && player is RoadRunWriter)
+        {
+            WriterInitialize(player as RoadRunWriter);
+        }
     }
 
     private void RevivePlayer()
@@ -189,6 +196,22 @@ public class PlayerController : BaseController, IExecute,
 
     #endregion
 
+    #region WriterRoad
+
+    private void SetWriter(WriterLevelInfo info)
+    {
+        SetPlayerPrefab(info.Writer);
+        _roadRunSave = info.SavePrefab;
+        _isWritingRoad = true;
+    }
+
+    private void WriterInitialize(RoadRunWriter writer)
+    {
+        writer?.Initialize(_roadRunSave);
+    }
+
+    #endregion
+
     #endregion
 
     #region IService
@@ -221,6 +244,10 @@ public class PlayerController : BaseController, IExecute,
         if (service != null)
         {
             _playerLevelInfo = service.PlayerInfo;
+            if (service.WriterInfo.isActive)
+            {
+                SetWriter(service.WriterInfo);
+            }
         }
     }
 
