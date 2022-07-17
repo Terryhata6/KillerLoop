@@ -34,9 +34,14 @@ public class UIController : MonoBehaviour
         SwitchUI(UIState.MainMenu);
     }
 
-    private void RevivePlayer()
+    private void ReviveScreen()
     {
         SwitchUI(UIState.Revive);
+    }
+
+    private void ContinueGame()
+    {
+        SwitchUI(UIState.InGame);
     }
 
     private void OpenShopMenu()
@@ -51,19 +56,17 @@ public class UIController : MonoBehaviour
 
     private void WinLevel()
     {
-        //Time.timeScale = 0.0f;
         SwitchUI(UIState.WinLevel);
     }
 
     private void LoseLevel()
     {
-        //Time.timeScale = 0.0f;
         SwitchUI(UIState.LoseLevel);
     }
 
     private void NextLevel()
     {
-        LevelEvents.Current.ChangeLevel();
+        LevelEvents.Current.NextLevel();
     }
 
     private void OpenOptionsMenu()
@@ -86,12 +89,13 @@ public class UIController : MonoBehaviour
 
     private void SetEvents()
     {
-        LevelEvents.Current.OnLevelFinish += WinLevel;
-        LevelEvents.Current.OnLevelChanged += OpenGameMenu;
+        LevelEvents.Current.OnLevelWin += WinLevel;
+        LevelEvents.Current.OnLevelLoaded += OpenGameMenu;
         LevelEvents.Current.OnLevelLose += LoseLevel;
+        LevelEvents.Current.OnLevelContinue += ContinueGame;
+        LevelEvents.Current.OnLevelRestart += OpenGameMenu;
 
         UIEvents.Current.OnToMainMenu += OpenGameMenu; //Исправь Enter-alt
-        UIEvents.Current.OnReviveButton += RevivePlayer;
         UIEvents.Current.OnStartLevelButton += StartGame;
         UIEvents.Current.OnExitShopButton += OpenGameMenu;
         UIEvents.Current.OnExitOptionsButton += OpenGameMenu;
@@ -99,6 +103,8 @@ public class UIController : MonoBehaviour
         UIEvents.Current.OnShopMenuButton += OpenShopMenu;
         UIEvents.Current.OnCollectButton += NextLevel;
         UIEvents.Current.OnCollectX2Button += NextLevel;
+
+        GameEvents.Current.OnRevive += ReviveScreen;
     }
 
     private void SetServiceDistributor()

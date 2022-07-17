@@ -45,7 +45,7 @@ public class LoseLevelPanel : BaseMenuPanel, IWaitingCounter
     {
         if (isFinished)
         {
-            UIEvents.Current.ToMainMenu();
+            LevelEvents.Current.LevelRestart();
         }
     }
 

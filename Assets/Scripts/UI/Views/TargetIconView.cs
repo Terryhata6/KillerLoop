@@ -77,9 +77,8 @@ public class TargetIconView : BaseUiView
 
     public void CopyValues(TargetIconView otherView)
     {
-        _icon = otherView.Icon;
-        _text = otherView.Text;
-        _viewImage = otherView.ViewImage;
+        _icon.sprite = otherView.Icon.sprite;
+        _text.text = otherView.Text.text;
     }
     #endregion
 }

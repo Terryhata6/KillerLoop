@@ -16,8 +16,18 @@ public class BaseObjectView : MonoBehaviour, IInitialize
 
     #endregion
 
+    #region PublicMethods
+
     public virtual void Initialize()
     {
         _transform = transform;
     }
+
+    public void Delete()
+    {
+        Destroy(this.gameObject);
+    }
+
+    #endregion
+
 }

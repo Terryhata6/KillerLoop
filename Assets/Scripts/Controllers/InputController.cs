@@ -12,7 +12,7 @@ public class InputController : BaseController, IExecute
 
     #endregion
 
-    public InputController() { }
+    public InputController() : base() { }
 
     #region PublicMethods
 
@@ -116,8 +116,9 @@ public class InputController : BaseController, IExecute
     private void SetEvents()
     {
         LevelEvents.Current.OnLevelStart += Enable;
+        LevelEvents.Current.OnLevelContinue += Enable;
         LevelEvents.Current.OnLevelLose += Disable;
-        LevelEvents.Current.OnLevelFinish += Disable;
+        LevelEvents.Current.OnLevelWin += Disable;
 
         UIEvents.Current.OnToMainMenu += Disable;
     }

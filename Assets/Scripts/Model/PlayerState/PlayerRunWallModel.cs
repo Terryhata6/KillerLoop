@@ -25,7 +25,7 @@ public class PlayerRunWallModel : BasePlayerStateModel
         if (IdlePosition(positionBegan, positionDelta))
         {
             IdleOnTheWall(player);
-            NotReadyToJump(player);
+ //           NotReadyToJump(player);
             return;
         }
         _movingVector2D = positionDelta - positionBegan;
@@ -96,16 +96,17 @@ public class PlayerRunWallModel : BasePlayerStateModel
         _tempVector2d.y = player.HitNormal.z;
         if (Vector3.Dot(vector, _tempVector2d) >= _jumpTreshold)
         {
-            IdleOnTheWall(player);
-            _timer += Time.deltaTime * _jumpCounterSpeed;
-            player.IndicatorImage.transform.LookAt(player.MainCam.transform);
-            player.IndicatorImage.fillAmount = _timer;
-            if (_timer >= 1f)
-            {
-                player.Jump();
-                player.IndicatorImage.fillAmount = 0f;
-                _timer = 0f;
-            }
+            player.Jump();
+            //IdleOnTheWall(player);
+            //_timer += Time.deltaTime * _jumpCounterSpeed;
+            //player.IndicatorImage.transform.LookAt(player.MainCam.transform);
+            //player.IndicatorImage.fillAmount = _timer;
+            //if (_timer >= 1f)
+            //{
+            //    player.Jump();
+            //    player.IndicatorImage.fillAmount = 0f;
+            //    _timer = 0f;
+            //}
             return true;
         }
         else if (_timer != 0f)

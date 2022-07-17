@@ -100,12 +100,5 @@ public class UIEvents
     {
         OnToMainMenu?.Invoke();
     }
-
-    public event Action OnRevive;
-    public void Revive()
-    {
-        OnRevive?.Invoke();
-    }
-
     #endregion
 }

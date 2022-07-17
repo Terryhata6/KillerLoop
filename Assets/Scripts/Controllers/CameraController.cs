@@ -1,6 +1,7 @@
 using UnityEngine;
 
-public class CameraController : BaseController
+public class CameraController : BaseController,
+    IServiceConsumer<IPlayerSpawner> //Consumer
 {
     #region PrivateFields
 
@@ -19,10 +20,23 @@ public class CameraController : BaseController
 
     public void SetCameraTarget(Transform target)
     {
-        if (_camera)
+        if (_camera 
+            && target)
         {
             _camera.SetTarget(target, target);
             _camera.SetPriority(_highPriority);
+        }
+    }
+
+    #endregion
+
+    #region IServiceConsumer
+
+    public void UseService(IPlayerSpawner service)
+    {
+        if (service != null)
+        {
+            SetCameraTarget(service.CurrentPlayer.transform);
         }
     }
 
