@@ -2495,7 +2495,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _targetsUIInfo:
-    _targetId: 2
+    _targetId: 1
     _type: 3
   _playerInfo:
     _spawn: {fileID: 1760905742597579177}

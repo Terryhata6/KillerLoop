@@ -79,7 +79,6 @@ public class EnemyView : BaseObjectView
 
     public void WallRun()
     {
-        Debug.Log("wallrun");
         _hitNormal = _hit.normal;
         SetRigidbodyValues(false, false);
         SetAnimatorBool("WallRun", true);
@@ -156,7 +155,7 @@ public class EnemyView : BaseObjectView
 
     #endregion
 
-    public virtual void LookRotation(Vector3 lookVector)
+    public void LookRotation(Vector3 lookVector)
     {
         if (_canMove)
         {
@@ -165,8 +164,13 @@ public class EnemyView : BaseObjectView
             {
                 return;
             }
-            _transform.rotation = Quaternion.LookRotation(lookVector, Vector3.up);
+            Rotate(Quaternion.LookRotation(lookVector, Vector3.up));
         }
+    }
+
+    public void Rotate(Quaternion rotation)
+    {
+        _transform.rotation = rotation;
     }
 
     public virtual void Move(Vector3 dir)
@@ -176,10 +180,7 @@ public class EnemyView : BaseObjectView
 
     public virtual void MoveWithSpeed(Vector3 dir, float speed)
     {
-        if (_canMove)
-        {
-            _transform.Translate(dir * speed);
-        }
+        _transform.Translate(dir * speed);
     }
 
     public virtual void Flying()
@@ -211,12 +212,14 @@ public class EnemyView : BaseObjectView
         _tempVector.x = Forward.z;
         _tempVector.z = -Forward.x;
         _tempVector.y = 0f;
-        if (RayCastCheck(Position + (_tempVector + Vector3.up) * 0.5f, Forward.normalized + Vector3.up, 1f, 1 << 11)
-            || RayCastCheck(Position - (_tempVector - Vector3.up) * 0.5f, Forward.normalized + Vector3.up, 1f, 1 << 11))
-        {
-            MoveEnemyToWall(Hit.point, Hit.normal);
-            WallRun();
-        }
+        RayCastCheck(Position + (_tempVector + Vector3.up) * 0.5f,
+            Forward.normalized + Vector3.up,
+            1f,
+            1 << 11);
+        RayCastCheck(Position - (_tempVector - Vector3.up) * 0.5f,
+            Forward.normalized + Vector3.up,
+            1f,
+            1 << 11);
     }
 
     #endregion
@@ -289,6 +292,14 @@ public class EnemyView : BaseObjectView
         _state = state;
     }
 
+    protected bool OnGround()
+    {
+        RayCastCheck(Position + Vector3.up, Vector3.down, 1.2f, 1 << 11);
+        return Hit.distance <= 1.2f;
+
+
+    }
+
     private void StopCurrentAction()
     {
         switch (_state)
@@ -337,8 +348,7 @@ public class EnemyView : BaseObjectView
     {
         if (_rigidbody)
         {
-            _rigidbody.useGravity = useGravity;
-            _rigidbody.isKinematic = isKinematic;
+            _rigidbody.isKinematic = true;
         }
     }
 

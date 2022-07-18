@@ -13,6 +13,7 @@ public class PlayerController : BaseController, IExecute,
     private Vector3 _tempPos;
     private bool _isWritingRoad;
     private RoadRunSave _roadRunSave;
+    private CollectablesSpawnPoints _spawnPointsStorage;
     private PlayerLevelInfo _playerLevelInfo;
     private Vector2 _positionDelta = Vector2.zero;
     private Vector2 _positionBegan = Vector2.zero;
@@ -202,12 +203,13 @@ public class PlayerController : BaseController, IExecute,
     {
         SetPlayerPrefab(info.Writer);
         _roadRunSave = info.SavePrefab;
+        _spawnPointsStorage = info.SpawnPointsStorage;
         _isWritingRoad = true;
     }
 
     private void WriterInitialize(RoadRunWriter writer)
     {
-        writer?.Initialize(_roadRunSave);
+        writer?.Initialize(_roadRunSave, _spawnPointsStorage);
     }
 
     #endregion

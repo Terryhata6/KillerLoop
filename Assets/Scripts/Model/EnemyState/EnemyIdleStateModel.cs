@@ -8,7 +8,7 @@ public class EnemyIdleStateModel : BaseEnemyStateModel
     {
         base.Execute(enemy);
         enemy.SetMovingBlend(0f);
-        enemy.MoveWithSpeed(Vector3.zero, 0);
+        enemy.Move(Vector3.zero);
     }
 
     #endregion

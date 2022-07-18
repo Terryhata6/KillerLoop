@@ -6,23 +6,23 @@ public struct MovementWriterPoint
 {
     #region PrivateFields
 
-    [SerializeField] private Vector3 _position;
     [SerializeField] private Quaternion _rotation;
+    [SerializeField] private Vector3 _position;
     [SerializeField] private EnemyState _state;
 
     #endregion
 
-    public MovementWriterPoint(Vector3 pos, Quaternion rot, PlayerState state)
+    public MovementWriterPoint(Quaternion rot, Vector3 pos, PlayerState state)
     {
-        _position = pos;
         _rotation = rot;
+        _position = pos;
         _state = EnemyState.Inactive;
         _state = ConvertState(state);
     }
 
     #region AccessFields
-    public Vector3 Position => _position;
     public Quaternion Rotation => _rotation;
+    public Vector3 Position => _position;
     public EnemyState State => _state;
 
     #endregion

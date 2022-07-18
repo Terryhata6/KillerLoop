@@ -199,7 +199,7 @@ public class PlayerView : BaseObjectView,
         Rotate(Quaternion.LookRotation(lookVector));
     }
 
-    public void Rotate(Quaternion dir)
+    public virtual void Rotate(Quaternion dir)
     {
         _transform.rotation = dir;
     }

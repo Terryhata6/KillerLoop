@@ -3218,10 +3218,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fec3e00396334cd1a3547426304389e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerPrefab: {fileID: 4177377530335688103, guid: 93b08d4d98e933440a33d6f97e857556, type: 3}
+  _playerPrefab: {fileID: 318778944230572928, guid: bf61d4e6b7f5ea74fab2d46601280314, type: 3}
   _virtualCamera: {fileID: 1742784230}
   _levels:
-  - {fileID: 9015879074719967038, guid: 99975b2f5bf2dde45a4f87be9b40fa20, type: 3}
+  - {fileID: 5914922281037436697, guid: c31192b2dd23fa845b06558b90190087, type: 3}
+  - {fileID: 5404449373101833777, guid: 3931b17aef798614eb74740e17a4c217, type: 3}
   _debugTestingScene: 0
   _testingSceneName: EnterAltCreed
 --- !u!4 &2093002200

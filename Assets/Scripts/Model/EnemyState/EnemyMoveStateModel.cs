@@ -7,7 +7,7 @@ public class EnemyMoveStateModel: BaseEnemyStateModel
     public override void Execute(EnemyView enemy)
     {
         base.Execute(enemy);
-        enemy.MoveWithSpeed(Vector3.zero, 0);
+        enemy.Move(Vector3.zero);
         enemy.SetMovingBlend(1f);
     }
 
