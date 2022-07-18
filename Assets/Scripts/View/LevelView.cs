@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 public class LevelView : BaseObjectView, 
-    IEnemiesLevelInfoUpdater, IPlayerLevelInfoUpdater, //Service
+    IEnemiesLevelInfoUpdater, IPlayerLevelInfoUpdater, ICollectablesLevelInfoUpdater,//Service
     IEquatable<LevelView>, IComparable<LevelView>
 {
     #region PrivateFields
@@ -15,6 +15,11 @@ public class LevelView : BaseObjectView,
     [SerializeField] private PlayerLevelInfo _playerInfo;
     [Header("Enemies Information")]
     [SerializeField] private EnemiesLevelInfo _enemiesInfo;
+    [SerializeField] private RoadRunSave _roadRunWay;
+    [Header("Collectables Information")]
+    [SerializeField] private CollectablesLevelInfo _collectablesInfo;
+    [Header("Writer Information")]
+    [SerializeField] private WriterLevelInfo _writerLevelInfo;
 
     #endregion
 
@@ -46,29 +51,36 @@ public class LevelView : BaseObjectView,
 
     private BaseService<IPlayerLevelInfoUpdater> _PlayerInfoUpdaterHelper;
     private BaseService<IEnemiesLevelInfoUpdater> _EnemiesInfoUpdaterHelper;
+    private BaseService<ICollectablesLevelInfoUpdater> _CollectablesInfoUpdaterHelper;
 
     public EnemiesLevelInfo EnemiesInfo => _enemiesInfo;
-
+    public RoadRunSave RoadRunWay => _roadRunWay;
     public PlayerLevelInfo PlayerInfo => _playerInfo;
+    public WriterLevelInfo WriterInfo => _writerLevelInfo;
+    public CollectablesLevelInfo CollectablesInfo => _collectablesInfo;
 
     public void AddConsumer(IConsumer consumer)
     {
         _EnemiesInfoUpdaterHelper?.AddConsumer(consumer);
         _PlayerInfoUpdaterHelper?.AddConsumer(consumer);
+        _CollectablesInfoUpdaterHelper?.AddConsumer(consumer);
     }
 
     private void InitializeService()
     {
         _EnemiesInfoUpdaterHelper = new BaseService<IEnemiesLevelInfoUpdater>(this);
         _PlayerInfoUpdaterHelper = new BaseService<IPlayerLevelInfoUpdater>(this);
+        _CollectablesInfoUpdaterHelper = new BaseService<ICollectablesLevelInfoUpdater>(this);
         _EnemiesInfoUpdaterHelper.FindConsumers();
         _PlayerInfoUpdaterHelper.FindConsumers();
+        _CollectablesInfoUpdaterHelper.FindConsumers();
     }
 
     private void UpdateConsumersInfo()
     {
         _EnemiesInfoUpdaterHelper?.ServeConsumers();
         _PlayerInfoUpdaterHelper?.ServeConsumers();
+        _CollectablesInfoUpdaterHelper?.ServeConsumers();
     }
 
     #endregion

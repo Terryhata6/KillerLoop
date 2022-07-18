@@ -6,13 +6,10 @@ public class PlayerRunWallModel : BasePlayerStateModel
 
     private Vector3 _movingVector = Vector3.zero;
     private Vector2 _movingVector2D;
-    private float _magnitude;
     private Vector3 _tempVector;
     private Vector3 _tempVector2d;
     private float _directionTreshold = 0.8f;
     private float _jumpTreshold = 200f;
-    private float _timer;
-    private float _jumpCounterSpeed = 2f;
 
     #endregion
 
@@ -25,19 +22,17 @@ public class PlayerRunWallModel : BasePlayerStateModel
         if (IdlePosition(positionBegan, positionDelta))
         {
             IdleOnTheWall(player);
- //           NotReadyToJump(player);
             return;
         }
+
         _movingVector2D = positionDelta - positionBegan;
-        if (ReadyToJump(_movingVector2D, player))
-        {
-            return;
-        }
-        CalculateMovingVector3d(_movingVector2D, player.HitNormal, out _movingVector, out _magnitude);
+        _movingVector = CalculateMovingVector3d(_movingVector2D, player.HitNormal);
+
         player.Rotate(Quaternion.LookRotation(_movingVector));
         player.Move(Vector3.forward * Time.deltaTime);
         player.SetMovingBlend(CalculateMovingBlend(_movingVector, player.HitNormal));
 
+        CheckForInstanceJump(_movingVector2D, player);
         CheckToJump(player);
     }
 
@@ -45,15 +40,8 @@ public class PlayerRunWallModel : BasePlayerStateModel
 
     #region PrivateMethods
 
-    private void CalculateMovingVector3d(Vector2 vector2d, Vector3 normal, out Vector3 movingVector3d, out float magnitude)
+    private Vector3 CalculateMovingVector3d(Vector2 vector2d, Vector3 normal)
     {
-        magnitude = vector2d.magnitude;
-        if (magnitude > 100)
-        {
-            magnitude = 100.0f;
-        }
-        magnitude *= 0.01f;
-
         _tempVector.x = normal.z;
         _tempVector.z = -normal.x;
         _tempVector.y = 0f;
@@ -61,15 +49,15 @@ public class PlayerRunWallModel : BasePlayerStateModel
         _tempVector2d.y = _tempVector.z;
         if (Vector3.Dot(vector2d, -_tempVector2d.normalized) >= _directionTreshold)
         {
-            movingVector3d = -_tempVector * magnitude;
+            return -_tempVector;
         }
         else if (Vector3.Dot(vector2d, _tempVector2d.normalized) >= _directionTreshold)
         {
-            movingVector3d = _tempVector * magnitude;
+           return _tempVector;
         }
         else
         {
-            movingVector3d = Vector3.zero;
+            return Vector3.zero;
         }
     }
 
@@ -90,42 +78,20 @@ public class PlayerRunWallModel : BasePlayerStateModel
         return 0f;
     }
 
-    private bool ReadyToJump(Vector2 vector, PlayerView player)
+    private void CheckForInstanceJump(Vector2 vector, PlayerView player)
     {
         _tempVector2d.x = player.HitNormal.x;
         _tempVector2d.y = player.HitNormal.z;
         if (Vector3.Dot(vector, _tempVector2d) >= _jumpTreshold)
         {
             player.Jump();
-            //IdleOnTheWall(player);
-            //_timer += Time.deltaTime * _jumpCounterSpeed;
-            //player.IndicatorImage.transform.LookAt(player.MainCam.transform);
-            //player.IndicatorImage.fillAmount = _timer;
-            //if (_timer >= 1f)
-            //{
-            //    player.Jump();
-            //    player.IndicatorImage.fillAmount = 0f;
-            //    _timer = 0f;
-            //}
-            return true;
         }
-        else if (_timer != 0f)
-        {
-            NotReadyToJump(player);
-        }
-        return false;
     }
 
     private void IdleOnTheWall(PlayerView player)
     {
         player.SetMovingBlend(0f);
         player.Rotate(Quaternion.LookRotation(-player.HitNormal));
-    }
-
-    private void NotReadyToJump(PlayerView player)
-    {
-        _timer = 0f;
-        player.IndicatorImage.fillAmount = _timer;
     }
 
     private void CheckToJump(PlayerView player)

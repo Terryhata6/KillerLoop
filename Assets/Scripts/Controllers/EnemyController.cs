@@ -9,9 +9,9 @@ public class EnemyController : BaseController, IExecute,
 
     private List<EnemyView> _enemies;
     private Dictionary<EnemyState, BaseEnemyStateModel> _enemyStates;
-    private int _index;
     private EnemyView _tempEnemy;
     private int _enemyBeaten;
+    private RoadRunSave _currentRoadWay;
 
     #endregion
 
@@ -98,6 +98,7 @@ public class EnemyController : BaseController, IExecute,
 
     #endregion
 
+    #region EnemyManage
 
     private void LoadNewEnemies(List<EnemyView> enemies)
     {
@@ -132,11 +133,6 @@ public class EnemyController : BaseController, IExecute,
         }
     }
 
-    private void ResetFields()
-    {
-        _enemyBeaten = 0;
-    }
-
     private void EnemyRemove(EnemyView enemy)
     {
         if (_enemies.Contains(enemy))
@@ -144,6 +140,13 @@ public class EnemyController : BaseController, IExecute,
             _enemies.Remove(enemy);
         }
         CountBeatenEnemy();
+    }
+
+    #endregion
+
+    private void ResetFields()
+    {
+        _enemyBeaten = 0;
     }
 
     private void CountBeatenEnemy()
@@ -157,6 +160,14 @@ public class EnemyController : BaseController, IExecute,
         for (int i = 0; i < _enemies.Count; i++)
         {
             _enemies[i].SetMovingBlend(0f);
+        }
+    }
+
+    private void SetRoadRunWay(RoadRunSave save)
+    {
+        if (save)
+        {
+            _currentRoadWay = save;
         }
     }
 
@@ -193,6 +204,7 @@ public class EnemyController : BaseController, IExecute,
         if (service != null)
         {
             LoadNewEnemies(service.EnemiesInfo.Enemies);
+            SetRoadRunWay(service.RoadRunWay);
         }
     }
 

@@ -1,30 +1,29 @@
 
-using System.Collections;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CollectableSpray : MonoBehaviour
+public class CollectableSpray : Singleton<CollectableSpray>
 {
-    public static CollectableSpray Instance;
 
     #region PrivateFields
 
     private float _tempRad;
     private Vector3 temp;
-    private List<Transform> _tempTF = new List<Transform>();
+    private List<Transform> _tempTF;
 
     #endregion
 
-    private void Awake()
+    public CollectableSpray()
     {
-        Instance = this;
+        _tempTF = new List<Transform>();
     }
 
     #region PublicMethods
 
-    public void SprayCollectables(List<Transform> transforms, float radius, float height)
+    public async void SprayCollectables(List<Transform> transforms, float radius, float height)
     {
-        StartCoroutine(Spray(transforms, radius, height));
+        await Spray(transforms, radius, height);
     }
 
     public void SprayCollectable(Transform transform, float radius, float height)
@@ -38,7 +37,7 @@ public class CollectableSpray : MonoBehaviour
 
     #region PrivateMethods
 
-    private IEnumerator Spray(List<Transform> transforms, float radius, float height)
+    private async Task Spray(List<Transform> transforms, float radius, float height)
     {
         Transform[] objects = new Transform[transforms.Count];
         transforms.CopyTo(objects);
@@ -52,8 +51,7 @@ public class CollectableSpray : MonoBehaviour
         for (int i = 0; i < objects.Length; i++)
         {
             basePos[i] = objects[i].position;
-            _tempRad = Random.Range(0f, 360f) * Mathf.Deg2Rad;
-            nextPos[i] = (new Vector3(Mathf.Cos(_tempRad), 0, Mathf.Sin(_tempRad)) * radius) + objects[i].position;
+            nextPos[i] = GetRandomDegreeVector(radius, objects[i].position);
         }
 
 
@@ -77,10 +75,19 @@ public class CollectableSpray : MonoBehaviour
             {
                 count = false;
             }
-            yield return null;
+            await Task.Yield();
         }
 
     }
 
+    private Vector3 GetRandomDegreeVector(float radius, Vector3 sourcePosition)
+    {
+        _tempRad = Random.Range(0f, 360f) * Mathf.Deg2Rad;
+        return new Vector3(Mathf.Cos(_tempRad), 0, Mathf.Sin(_tempRad)) 
+            * radius
+            + sourcePosition;
+    }
+
     #endregion
+
 }

@@ -2981,6 +2981,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: UI
       objectReference: {fileID: 0}
+    - target: {fileID: 2772605877459730318, guid: 935ae19ee91bb5e4cbcd84a194b8d05d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 935ae19ee91bb5e4cbcd84a194b8d05d, type: 3}
 --- !u!1 &963194225
@@ -3218,8 +3222,7 @@ MonoBehaviour:
   _virtualCamera: {fileID: 1742784230}
   _levels:
   - {fileID: 5914922281037436697, guid: c31192b2dd23fa845b06558b90190087, type: 3}
-  - {fileID: 4494181413355513564, guid: 5a81968fd13d2354dba880236d03eba5, type: 3}
-  - {fileID: 4790016051659916815, guid: 3931b17aef798614eb74740e17a4c217, type: 3}
+  - {fileID: 5404449373101833777, guid: 3931b17aef798614eb74740e17a4c217, type: 3}
   _debugTestingScene: 0
   _testingSceneName: EnterAltCreed
 --- !u!4 &2093002200

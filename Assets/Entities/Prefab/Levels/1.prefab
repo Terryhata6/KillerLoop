@@ -819,138 +819,7 @@ MonoBehaviour:
   multithreaded: 0
   rebuildOnAwake: 0
   updateMode: 0
-  triggerGroups:
-  - open: 1
-    enabled: 1
-    name: Trigger Group 1
-    color: {r: 1, g: 1, b: 1, a: 1}
-    triggers:
-    - name: Trigger 1
-      type: 1
-      workOnce: 1
-      position: 0.09000000357627869
-      enabled: 1
-      color: {r: 0.990566, g: 0.92214835, b: 0.7793699, a: 1}
-      onCross:
-        m_PersistentCalls:
-          m_Calls:
-          - m_Target: {fileID: 5050647716555105233}
-            m_TargetAssemblyTypeName: EnemyView, Assembly-CSharp
-            m_MethodName: Jump
-            m_Mode: 1
-            m_Arguments:
-              m_ObjectArgument: {fileID: 0}
-              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-              m_IntArgument: 0
-              m_FloatArgument: 0
-              m_StringArgument: 
-              m_BoolArgument: 0
-            m_CallState: 2
-    - name: Trigger 3
-      type: 1
-      workOnce: 1
-      position: 0.27000001072883606
-      enabled: 1
-      color: {r: 0.9484251, g: 0.9528302, b: 0.50697756, a: 1}
-      onCross:
-        m_PersistentCalls:
-          m_Calls:
-          - m_Target: {fileID: 5050647716555105233}
-            m_TargetAssemblyTypeName: EnemyView, Assembly-CSharp
-            m_MethodName: Jump
-            m_Mode: 1
-            m_Arguments:
-              m_ObjectArgument: {fileID: 0}
-              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-              m_IntArgument: 0
-              m_FloatArgument: 0
-              m_StringArgument: 
-              m_BoolArgument: 0
-            m_CallState: 2
-    - name: Trigger 4
-      type: 1
-      workOnce: 1
-      position: 0.43273216485977173
-      enabled: 1
-      color: {r: 0.9490196, g: 0.9529412, b: 0.5058824, a: 1}
-      onCross:
-        m_PersistentCalls:
-          m_Calls:
-          - m_Target: {fileID: 5050647716555105233}
-            m_TargetAssemblyTypeName: EnemyView, Assembly-CSharp
-            m_MethodName: Jump
-            m_Mode: 1
-            m_Arguments:
-              m_ObjectArgument: {fileID: 0}
-              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-              m_IntArgument: 0
-              m_FloatArgument: 0
-              m_StringArgument: 
-              m_BoolArgument: 0
-            m_CallState: 2
-    - name: Trigger 6
-      type: 1
-      workOnce: 1
-      position: 0.7223899364471436
-      enabled: 1
-      color: {r: 0.8509804, g: 0.93333334, b: 0.74509805, a: 1}
-      onCross:
-        m_PersistentCalls:
-          m_Calls:
-          - m_Target: {fileID: 5050647716555105233}
-            m_TargetAssemblyTypeName: EnemyView, Assembly-CSharp
-            m_MethodName: Jump
-            m_Mode: 1
-            m_Arguments:
-              m_ObjectArgument: {fileID: 0}
-              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-              m_IntArgument: 0
-              m_FloatArgument: 0
-              m_StringArgument: 
-              m_BoolArgument: 0
-            m_CallState: 2
-    - name: Trigger 7
-      type: 1
-      workOnce: 1
-      position: 0.8999999761581421
-      enabled: 1
-      color: {r: 0.59369886, g: 0.9622642, b: 0.80651027, a: 1}
-      onCross:
-        m_PersistentCalls:
-          m_Calls:
-          - m_Target: {fileID: 5050647716555105233}
-            m_TargetAssemblyTypeName: EnemyView, Assembly-CSharp
-            m_MethodName: Jump
-            m_Mode: 1
-            m_Arguments:
-              m_ObjectArgument: {fileID: 0}
-              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-              m_IntArgument: 0
-              m_FloatArgument: 0
-              m_StringArgument: 
-              m_BoolArgument: 0
-            m_CallState: 2
-    - name: Trigger 8
-      type: 1
-      workOnce: 1
-      position: 1
-      enabled: 1
-      color: {r: 0.5921569, g: 0.9607843, b: 0.80784315, a: 1}
-      onCross:
-        m_PersistentCalls:
-          m_Calls:
-          - m_Target: {fileID: 5050647716555105233}
-            m_TargetAssemblyTypeName: EnemyView, Assembly-CSharp
-            m_MethodName: Stand
-            m_Mode: 1
-            m_Arguments:
-              m_ObjectArgument: {fileID: 0}
-              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-              m_IntArgument: 0
-              m_FloatArgument: 0
-              m_StringArgument: 
-              m_BoolArgument: 0
-            m_CallState: 2
+  triggerGroups: []
   spline:
     points:
     - _type: 0
@@ -3264,7 +3133,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _targetsUIInfo:
-    _targetId: 1
+    _targetId: 2
     _type: 3
   _playerInfo:
     _spawn: {fileID: 5050647716259919015}
@@ -3272,6 +3141,10 @@ MonoBehaviour:
   _enemiesInfo:
     _enemies:
     - {fileID: 5050647716555105233}
+  _roadRunWay: {fileID: 4878372926478752769, guid: e0ef3ea9068ccba48b634838f6de6f05, type: 3}
+  _writerLevelInfo:
+    _savePrefab: {fileID: 0}
+    _writer: {fileID: 0}
 --- !u!1 &5050647717506939165
 GameObject:
   m_ObjectHideFlags: 0
@@ -6750,3 +6623,6 @@ MonoBehaviour:
   _jumpForce: 1
   _splineTracer: {fileID: 8328754137601472695}
   _flyAwayPower: 50
+  _state: 0
+  _roadRunSave: {fileID: 4878372926478752769, guid: e0ef3ea9068ccba48b634838f6de6f05, type: 3}
+  _savePointCounter: 0

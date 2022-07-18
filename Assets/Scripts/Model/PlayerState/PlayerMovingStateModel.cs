@@ -56,7 +56,6 @@ public class PlayerMovingStateModel : BasePlayerStateModel
         if (!player.RayCastCheck(player.Position + Vector3.up * 1.5f, player.Forward * 2f + Vector3.down * 4f, 3f, (1 << 11) | (1 << 12))
         || player.RayCastCheck(player.Position + Vector3.up, player.Forward * 1f, 2f, 1 << 11))
         {
-            Debug.Log("jump");
             player.Jump();
         }
     }

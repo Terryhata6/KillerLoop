@@ -66,8 +66,8 @@ public class LevelController : BaseController,
         else
         {
             _tempInt = _levels.IndexOf(_currentLevel) + 1;
-            UnLoadLevel(_currentLevel);
         }
+        UnLoadLevel(_currentLevel);
         LoadLevel(GetLevelByIndex(_tempInt));
     }
 

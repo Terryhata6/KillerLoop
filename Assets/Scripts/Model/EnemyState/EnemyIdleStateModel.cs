@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public class EnemyIdleStateModel : BaseEnemyStateModel
 {
     #region PublicMethods
@@ -6,7 +8,7 @@ public class EnemyIdleStateModel : BaseEnemyStateModel
     {
         base.Execute(enemy);
         enemy.SetMovingBlend(0f);
-        GravityEffect(enemy);
+        enemy.Move(Vector3.zero);
     }
 
     #endregion

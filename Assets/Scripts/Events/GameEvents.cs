@@ -24,6 +24,17 @@ public class GameEvents
 
     #endregion
 
+    #region CollectableEvents
+
+    public Action<CollectableView> OnCollectableTriggered;
+
+    public void CollectableTriggered(CollectableView view)
+    {
+        OnCollectableTriggered?.Invoke(view);
+    }
+
+    #endregion
+
     #region Global
 
     public Action OnGameStart;

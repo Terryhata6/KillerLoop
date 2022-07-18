@@ -10,11 +10,8 @@ public class EnemyJumpStateModel : BaseEnemyStateModel
     {
         base.Execute(enemy);
         enemy.Flying();
-        enemy.LookRotation(enemy.SplineDirection);
         enemy.Move(Vector3.forward * Time.deltaTime);
-
         CheckToLand(enemy);
-        enemy.CheckForAWall();
     }
 
     #endregion
@@ -23,7 +20,7 @@ public class EnemyJumpStateModel : BaseEnemyStateModel
 
     private void CheckToLand(EnemyView enemy)
     {
-        if (enemy.RayCastCheck(enemy.Position + Vector3.up, Vector3.down + Vector3.forward * 0.4f, 1.2f, 1 << 11 | (1 << 12)))
+        if (enemy.RayCastCheck(enemy.Position + Vector3.up, Vector3.down, 1.1f, 1 << 11 | (1 << 12)))
         {
             enemy.Run();
         }
