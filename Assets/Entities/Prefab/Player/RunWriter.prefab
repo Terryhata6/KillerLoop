@@ -1047,7 +1047,7 @@ GameObject:
   - component: {fileID: 3926108250739528129}
   - component: {fileID: 6360368899394938004}
   - component: {fileID: 4222778213461498328}
-  - component: {fileID: 4177377530335688103}
+  - component: {fileID: 6774116436954290269}
   m_Layer: 8
   m_Name: RunWriter
   m_TagString: Untagged
@@ -1340,7 +1340,7 @@ MonoBehaviour:
   _offset: {x: 0, y: 0}
   _rotationOffset: {x: 0, y: 0, z: 0}
   lastPosition: {x: -1.451, y: 0.00000011920929, z: -0.08310509}
---- !u!114 &4177377530335688103
+--- !u!114 &6774116436954290269
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1349,7 +1349,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4987978233058228346}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dae7fbcace393fd458c3bb29e440262d, type: 3}
+  m_Script: {fileID: 11500000, guid: d9b9fd11799e9b24aa4649374abd2ed3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _animator: {fileID: 4987978233058228347}
@@ -1359,8 +1359,11 @@ MonoBehaviour:
   _indicatorImage: {fileID: 0}
   _roadSpline: {fileID: 6360368899394938004}
   _engPassSplineProjector: {fileID: 4222778213461498328}
-  _savePrefab: {fileID: 0}
-  _active: 0
+  _activeRunSaving: 0
+  _activeSpawnsCreating: 0
+  _spawnPointVisualize: {fileID: 8980429117832534576, guid: cb139a86e5925bc4286bd1ea48e7fa0e, type: 3}
+  _spawningPeriod: 2000
+  _spawningOnCoolDown: 0
 --- !u!1 &5115159590424615713
 GameObject:
   m_ObjectHideFlags: 0

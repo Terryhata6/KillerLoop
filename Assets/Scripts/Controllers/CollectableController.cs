@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class CollectableController : BaseController, IExecute,
@@ -9,16 +10,13 @@ public class CollectableController : BaseController, IExecute,
 
     private CollectablesLevelInfo _options;
     private List<Vector3> _spawnPoints;
-    private CollectableView _tempColletable;
-    private ObjectPool<CollectableView> _pool;
     private List<CollectableView> _activeColl;
     private int _index;
-    private List<Transform> _tempTransforms;
+    private CollectableSpawner _spawner;
 
     private int _dropMoneyCount;
     private float _sprayHeight;
     private float _sprayRadius;
-    private int _sizeOfObjectPool;
 
     #endregion
 
@@ -66,20 +64,18 @@ public class CollectableController : BaseController, IExecute,
         LevelEvents.Current.OnLevelStart += Enable;
         LevelEvents.Current.OnLevelContinue += Enable;
         LevelEvents.Current.OnLevelLoaded += Disable;
-        LevelEvents.Current.OnLevelLoaded += LoadCollectables;
+ //       LevelEvents.Current.OnLevelLoaded += LoadCollectables;
 
         UIEvents.Current.OnToMainMenu += Disable;
     }
 
     private void InitializeFields()
     {
-        _pool = new ObjectPool<CollectableView>();
         _activeColl = new List<CollectableView>();
-        _tempTransforms = new List<Transform>();
-        _sizeOfObjectPool = 40;
+        _spawner = new CollectableSpawner();
         _dropMoneyCount = 10;
-        _sprayHeight = 3f;
-        _sprayRadius = 3f;
+        _sprayHeight = 2f;
+        _sprayRadius = 1.2f;
     }
 
 
@@ -95,24 +91,8 @@ public class CollectableController : BaseController, IExecute,
         }
         for (_index = 0; _index < _spawnPoints.Count; _index++)
         {
-            LoadCollectable(_spawnPoints[_index]);
+            _spawner.LoadCollectable(_spawnPoints[_index]);
         }
-    }
-
-    private CollectableView LoadCollectable(Vector3 position)
-    {
-        _tempColletable = _pool.GetObject(position);
-        CollectableInit(_tempColletable);
-        return _tempColletable;
-    }
-
-    private void CollectableInit(CollectableView collectable)
-    {
-        if (!collectable)
-        {
-            return;
-        }
-        collectable.Initialize();
     }
 
     private void MoveCollectable(CollectableView collectable)
@@ -121,7 +101,8 @@ public class CollectableController : BaseController, IExecute,
             || !collectable.enabled
             || collectable.AtTarget)
         {
-            DeleteMovingMoney(collectable);
+            DeleteMovingCollectable(collectable);
+            collectable.Collected();
         }
         else
         {
@@ -138,7 +119,7 @@ public class CollectableController : BaseController, IExecute,
 
     }
 
-    private void DeleteMovingMoney(CollectableView collectable)
+    private void DeleteMovingCollectable(CollectableView collectable)
     {
         if (_activeColl.Contains(collectable))
         {
@@ -146,41 +127,22 @@ public class CollectableController : BaseController, IExecute,
         }
     }
 
+    private void PrepareSpawner()
+    {
+        _spawner?.InitializePool(_options.PoolExamples);
+    }
 
     #endregion
-
-    private void PoolInit()
-    {
-        _pool.CleanPool();
-        if (_options.PoolExamples != null)
-        {
-            Debug.Log("Collectables pool initialize");
-            _pool.Initialize(_options.PoolExamples, _sizeOfObjectPool);
-        }
-        else
-        {
-            Debug.Log("Oops! Pool examples missing");
-        }
-    }
 
     #region SprayCollectables
 
     private void SprayCollectables(BaseObjectView source)
     {
-        CollectableSpray.Instance.SprayCollectables(
-            GetMoneyAtPosition(_dropMoneyCount, source.Position),
-            _sprayRadius,
-            _sprayHeight);
-    }
-
-    private List<Transform> GetMoneyAtPosition(int count, Vector3 basePosition)
-    {
-        _tempTransforms.Clear();
-        for (int _index = 0; _index < count; _index++)
-        {
-            _tempTransforms.Add(LoadCollectable(basePosition).transform);
-        }
-        return _tempTransforms;
+        _spawner.LoadCollectablesWithSpray(
+            source.Position,
+            _dropMoneyCount,
+            _sprayHeight,
+            _sprayRadius);
     }
 
     #endregion
@@ -202,7 +164,7 @@ public class CollectableController : BaseController, IExecute,
     {
         Debug.Log("Collectables Parameters set");
         _options = options;
-        PoolInit();
+        PrepareSpawner();
         if (_options.Spawns)
         {
             _spawnPoints = _options.Spawns?.Points;

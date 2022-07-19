@@ -2504,9 +2504,13 @@ MonoBehaviour:
     _enemies:
     - {fileID: 0}
   _roadRunWay: {fileID: 4878372926478752769, guid: e0ef3ea9068ccba48b634838f6de6f05, type: 3}
+  _collectablesInfo:
+    _poolExamples: []
+    _spawnPoints: {fileID: 0}
   _writerLevelInfo:
-    _savePrefab: {fileID: 4878372926478752769, guid: e0ef3ea9068ccba48b634838f6de6f05, type: 3}
-    _writer: {fileID: 4177377530335688103, guid: 93b08d4d98e933440a33d6f97e857556, type: 3}
+    _savePrefab: {fileID: 992269219285134464, guid: e0ef3ea9068ccba48b634838f6de6f05, type: 3}
+    _spawnPointsStorage: {fileID: 6013772415251878265, guid: 89eb444659f92a841af82bf7fa950390, type: 3}
+    _writer: {fileID: 6774116436954290269, guid: 93b08d4d98e933440a33d6f97e857556, type: 3}
 --- !u!1 &1760905741626338323
 GameObject:
   m_ObjectHideFlags: 0

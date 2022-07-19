@@ -202,6 +202,7 @@ public class PlayerController : BaseController, IExecute,
     private void SetWriter(WriterLevelInfo info)
     {
         SetPlayerPrefab(info.Writer);
+        Debug.Log(info.Writer);
         _roadRunSave = info.SavePrefab;
         _spawnPointsStorage = info.SpawnPointsStorage;
         _isWritingRoad = true;
