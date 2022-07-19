@@ -512,8 +512,12 @@ MonoBehaviour:
     _enemies:
     - {fileID: 7230404248645889114}
   _roadRunWay: {fileID: 6826480859125525474, guid: 6e9dbe746ed4eaf428465f449c2df521, type: 3}
+  _collectablesInfo:
+    _poolExamples: []
+    _spawnPoints: {fileID: 0}
   _writerLevelInfo:
     _savePrefab: {fileID: 0}
+    _spawnPointsStorage: {fileID: 0}
     _writer: {fileID: 0}
 --- !u!1 &6846018153615866202
 GameObject:
@@ -6481,5 +6485,5 @@ MonoBehaviour:
   _splineTracer: {fileID: 5896798297332922172}
   _flyAwayPower: 50
   _state: 0
-  _roadRunSave: {fileID: 6826480859125525474, guid: 6e9dbe746ed4eaf428465f449c2df521, type: 3}
+  _roadRunSave: {fileID: 3397698264110665167, guid: 6e9dbe746ed4eaf428465f449c2df521, type: 3}
   _savePointCounter: 0

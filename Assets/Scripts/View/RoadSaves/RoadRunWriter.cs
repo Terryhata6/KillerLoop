@@ -11,6 +11,8 @@ public class RoadRunWriter : PlayerView
     [SerializeField] private bool _activeRunSaving;
     [SerializeField] private bool _activeSpawnsCreating;
     [SerializeField] private Transform _spawnPointVisualize;
+    [SerializeField] private int _spawningPeriod;
+    [SerializeField] private bool _spawningOnCoolDown;
 
     #endregion
 
@@ -19,6 +21,9 @@ public class RoadRunWriter : PlayerView
     private RoadRunSave _savePrefab;
     private Quaternion _lastRotation;
     private PlayerState _lastState;
+    private float _spawningDelay;
+    private float _counter;
+    private Transform _collectablesParent;
 
     #endregion
 
@@ -26,22 +31,41 @@ public class RoadRunWriter : PlayerView
 
     public void Initialize(RoadRunSave save, CollectablesSpawnPoints spawnsStorage)
     {
+        InitializeFields();
         SetSavingSource(save);
         SetCollectablesSpawnsStorage(spawnsStorage);
+        CreateCollectablesParent();
+        Debug.Log("Writer Loaded");
     }
 
     public override void Move(Vector3 dir)
     {
         base.Move(dir);
         Save();
-        CreateCollectableSpawnPoint();
+        CollectableSpawning();
     }
 
     #endregion
 
     #region PrivateMethods
 
+    private void InitializeFields()
+    {
+        _spawningDelay = 1.5f;
+        _counter = 0.0f;
+    }
+
+
     #region CreatingCollectablesSpawns
+
+    private void CreateCollectablesParent()
+    {
+        if (!_spawnPointVisualize)
+        {
+            return;
+        }
+        _collectablesParent = new GameObject("Collectables").transform;
+    }
 
     private void SetCollectablesSpawnsStorage(CollectablesSpawnPoints storage)
     {
@@ -50,6 +74,7 @@ public class RoadRunWriter : PlayerView
             _spawnsStorage = storage;
             _spawnsStorage.Reset();
             _activeSpawnsCreating = true;
+            Debug.Log("Creating spawn points enable");
         }
         else
         {
@@ -58,21 +83,29 @@ public class RoadRunWriter : PlayerView
         }
     }
 
-    private void CreateCollectableSpawnPoint()
+    private void CollectableSpawning()
     {
-        if (!_activeSpawnsCreating)
+        if (!_activeSpawnsCreating || _spawningOnCoolDown)
         {
             return;
         }
-        if (_spawnPointVisualize)
+        SpawnWithDelay(_spawnPointVisualize, _spawningDelay);
+    }
+
+    private void SpawnWithDelay(Transform example, float delay)
+    {
+        if (_activeSpawnsCreating)
         {
-            Instantiate(_spawnPointVisualize, Position, Rotation);
+            _counter += Time.deltaTime;
+            if (_counter >= delay)
+            {
+                _counter = 0.0f;
+                Instantiate(example,Position, Rotation,_collectablesParent);
+            }
         }
-        _spawnsStorage.SavePoint(Position);
     }
 
     #endregion
-
 
     #region SavingRoadRun
 
@@ -83,6 +116,7 @@ public class RoadRunWriter : PlayerView
             _savePrefab = save;
             _savePrefab.Reset();
             _activeRunSaving = true;
+            Debug.Log("Saving Run");
         }
         else
         {
@@ -100,7 +134,6 @@ public class RoadRunWriter : PlayerView
                 CreateRoadPoint();
                 _lastRotation = Rotation;
                 _lastState = State;
-                Debug.Log("SAVE");
             }
             if (Distance >= 1.0f)
             {
@@ -132,6 +165,11 @@ public class RoadRunWriter : PlayerView
     }
 
     #endregion
+
+    private void OnDisable()
+    {
+        Destroy(_collectablesParent.gameObject);
+    }
 
     #endregion
 }

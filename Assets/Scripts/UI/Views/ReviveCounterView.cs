@@ -66,6 +66,8 @@ public class ReviveCounterView : BaseUiView
         FillImage(_maxImageFillValue);
         _isCounting = true;
         _source = source;
+        _timer = 10.0f;
+        SetCounterValue(_timer);
     }
     private void FillImage(float value)
     {

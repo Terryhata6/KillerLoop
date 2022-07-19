@@ -89,6 +89,7 @@ public class MainController : MonoBehaviour
         AddController(new CameraController(_virtualCamera));
         AddController(new EnemyController());
         AddController(new LevelController(_levels));
+        AddController(new CollectableController());
     }
 
     private void InitializeControllers()

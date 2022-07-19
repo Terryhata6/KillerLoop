@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8209929376587478159}
-  - component: {fileID: 6826480859125525474}
+  - component: {fileID: 3397698264110665167}
   m_Layer: 0
   m_Name: Target2Road
   m_TagString: Untagged
@@ -31,7 +31,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6826480859125525474
+--- !u!114 &3397698264110665167
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -40,7 +40,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3124924195636207295}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 178014dc3487103409c8e8018f51434b, type: 3}
+  m_Script: {fileID: 11500000, guid: 92c68023a43150d4fa27595b92560c0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _points: []

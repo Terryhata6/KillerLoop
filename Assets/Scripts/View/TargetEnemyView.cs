@@ -15,6 +15,9 @@ public class TargetEnemyView : EnemyView,
     #endregion
 
     private Vector3 _nextPosition;
+    private bool _spawningCollectables;
+    private float _spawningDelay;
+    private float _counter;
 
     #endregion
 
@@ -26,8 +29,7 @@ public class TargetEnemyView : EnemyView,
     {
         base.Initialize();
         InitializeService();
-        _savePointCounter = 0;
-        _nextPosition = Position;
+        InitializeFields();
     }
 
     #endregion
@@ -73,14 +75,14 @@ public class TargetEnemyView : EnemyView,
 
     public override void Move(Vector3 dir)
     {
-        if (_roadRunSave 
-            && _savePointCounter < _roadRunSave.Points.Count)
+        if (!_roadRunSave 
+            && _savePointCounter >= _roadRunSave.Points.Count)
         {
-
-            UpdateRoadPoint();
-            _transform.position = Vector3.MoveTowards(Position, _nextPosition, Time.deltaTime * 2.5f);
-
+            return;
         }
+        UpdateRoadPoint();
+        MoveToNextPoint(_nextPosition);
+        SpawnCollectables();
     }
 
     #endregion
@@ -99,9 +101,26 @@ public class TargetEnemyView : EnemyView,
 
     #region PrivateMethods
 
+    private void InitializeFields()
+    {
+        _savePointCounter = 0;
+        _nextPosition = Position;
+        _spawningDelay = 1.5f;
+        _counter = 0.0f;
+        _spawningCollectables = true;
+    }
+
+    private void MoveToNextPoint(Vector3 nextPosition)
+    {
+        _transform.position = Vector3.MoveTowards(Position, nextPosition, Time.deltaTime * 2.5f);
+    }
+
     private void UpdateRoadPoint()
     {
-
+        if (_savePointCounter >= _roadRunSave.Points.Count)
+        {
+            return;
+        }
         if ((Position - _nextPosition).magnitude <= 0.07f)
         {
             UpdateState();
@@ -142,6 +161,20 @@ public class TargetEnemyView : EnemyView,
         }
         ChangeState(_roadRunSave.Points[_savePointCounter].State);
 
+    }
+
+    private void SpawnCollectables()
+    {
+
+        if (_spawningCollectables)
+        {
+            _counter += Time.deltaTime;
+            if(_counter >= _spawningDelay)
+            {
+                _counter = 0.0f;
+                CollectableSpawner.Instance.LoadCollectable(Position);
+            }
+        }
     }
 
     private void OnDestroy()

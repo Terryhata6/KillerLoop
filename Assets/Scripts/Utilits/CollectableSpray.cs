@@ -21,7 +21,7 @@ public class CollectableSpray : Singleton<CollectableSpray>
 
     #region PublicMethods
 
-    public async void SprayCollectables(List<Transform> transforms, float radius, float height)
+    public async Task SprayCollectables(List<Transform> transforms, float radius, float height)
     {
         await Spray(transforms, radius, height);
     }
@@ -33,9 +33,24 @@ public class CollectableSpray : Singleton<CollectableSpray>
         SprayCollectables(_tempTF, radius, height);
     }
 
+    public async void SpawningCollectablesAtObject(Transform example, Transform obj, int size, int period)
+    {
+        await SpawningCollectables(example, obj, size, period);
+    }
+
     #endregion
 
     #region PrivateMethods
+
+    private async Task SpawningCollectables(Transform example, Transform source, int size, int period)
+    {
+        for (int i = 0; i < size; i++)
+        {
+            await Task.Delay(period);
+            GameObject.Instantiate(example, source.position, source.rotation);
+            await Task.Yield();
+        }
+    }
 
     private async Task Spray(List<Transform> transforms, float radius, float height)
     {
