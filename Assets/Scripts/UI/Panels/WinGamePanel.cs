@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -60,6 +61,7 @@ public class WinGamePanel : BaseMenuPanel,
         IsShow = true;
         StartAnimations();
         UpdateAllValues();
+        TurnOffX2Button(false);
         EnableButtons();
     }
 
@@ -98,16 +100,28 @@ public class WinGamePanel : BaseMenuPanel,
     private void SetMultiplier(float value)
     {
         _multiplier = (int)value;
+        if (IsShow)
+        {
+            UpdateMultiplierCounter(_multiplier);
+        }
     }
 
     private void SetBeatenEnemyValue(int value)
     {
         _enemyBeaten = value;
+        if (IsShow)
+        {
+            UpdateEnemyBeatenValue(_enemyBeaten);
+        }
     }
 
     private void SetCollectedMoneyValue(int value)
     {
         _moneyCollected = value;
+        if (IsShow)
+        {
+            UpdateMoneyCounter();
+        }
     }
 
     private void ResetValues()
@@ -121,7 +135,7 @@ public class WinGamePanel : BaseMenuPanel,
         BindListenerToButton(_collectButton, UIEvents.Current.CollectButton);
         BindListenerToButton(_collectX2Button, UIEvents.Current.CollectX2Button);
         BindListenerToButton(_collectButton, DisableButtons);
-        BindListenerToButton(_collectX2Button, DisableButtons);
+        BindListenerToButton(_collectX2Button, TurnOffX2Button);
     }
 
     private void EnableButtons()
@@ -133,6 +147,19 @@ public class WinGamePanel : BaseMenuPanel,
         if (_collectX2Button)
         {
             _collectX2Button.enabled = true;
+        }
+    }
+
+    private void TurnOffX2Button()
+    {
+        TurnOffX2Button(true);
+    }
+
+    private void TurnOffX2Button(bool value)
+    {
+        if (_collectX2Button)
+        {
+            _collectX2Button.gameObject.SetActive(!value);
         }
     }
 
@@ -148,33 +175,34 @@ public class WinGamePanel : BaseMenuPanel,
         }
     }
 
-    private void MoneyIncrement(int value)
+    private void WaitingToCloseMenu()
     {
-        if (_currentMoney + value < _moneyCollected)
-        {
-            _currentMoney += value;
-        }
-        else
-        {
-            _currentMoney = _moneyCollected;
-        }
-        UpdateMoneyCounterValue(_currentMoney);
+        _waitingToCloseMenu = true;
     }
+
 
     #region UIUpdates
 
     private void UpdateAllValues()
     {
-        UpdateMoneyCounter();
+        UpdateMoneyCounterValue(0);
         UpdateMultiplierCounter(_multiplier);
         UpdateEnemyBeatenValue(_enemyBeaten);
     }
 
-    private void UpdateMoneyCounter()
+    private async void UpdateMoneyCounter()
     {
-        if (_moneyCollected > _currentMoney)
+        if (_moneyCollected <= _currentMoney)
         {
-            StartCoroutine(CountingMoney());
+            return;
+        }
+        DisableButtons();
+        Task task = CountingMoney();
+        await Task.WhenAll(task);
+        EnableButtons();
+        if (_waitingToCloseMenu)
+        {
+            LevelEvents.Current.NextLevel();
         }
     }
 
@@ -234,17 +262,18 @@ public class WinGamePanel : BaseMenuPanel,
 
     #region Coroutine
 
-    private IEnumerator CountingMoney()
+    private async Task CountingMoney()
     {
-        _incrementValue = (int)((_moneyCollected - _currentMoney) * _incrementMultiplier);
+        _incrementValue = Mathf.CeilToInt((_moneyCollected - _currentMoney) * _incrementMultiplier);
         while (_currentMoney < _moneyCollected)
         {
-            MoneyIncrement(_incrementValue);
-            yield return null;
-        }
-        if (_waitingToCloseMenu)
-        {
-            UIEvents.Current.ToMainMenu();
+            _currentMoney += _incrementValue;
+            if (_currentMoney > _moneyCollected)
+            {
+                _currentMoney = _moneyCollected;
+            }
+            UpdateMoneyCounterValue(_currentMoney);
+            await Task.Yield();
         }
     }
 

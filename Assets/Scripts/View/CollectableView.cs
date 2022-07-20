@@ -16,8 +16,10 @@ public class CollectableView : BaseObjectView
 
     private Transform _target;
     private bool _isReadyForMove;
-    private string _tag;
     private float _speedBoostValue;
+    private bool _triggered;
+    private int _playerLayer;
+    private float _defaultTriggerRadius;
 
     #endregion
 
@@ -34,6 +36,7 @@ public class CollectableView : BaseObjectView
     private void Awake()
     {
         ActiveTrigger(true);
+        _defaultTriggerRadius = _trigger?.radius ?? 2f;
     }
 
     #region PublicMethods
@@ -45,6 +48,7 @@ public class CollectableView : BaseObjectView
         base.Initialize();
         InitializeFields();
         PlayAnimation(true);
+        ChangeTriggerRadius(_defaultTriggerRadius);
     }
 
     #endregion
@@ -71,6 +75,15 @@ public class CollectableView : BaseObjectView
 
     #endregion
 
+    public void ChangeTriggerRadius(float radius)
+    {
+        if (!_trigger)
+        {
+            return;
+        }
+        _trigger.radius = radius;
+    }
+
     #endregion
 
     #region PrivateMethods
@@ -79,8 +92,8 @@ public class CollectableView : BaseObjectView
     {
         gameObject.layer = 14;
         _isReadyForMove = true;
-        _tag = "Player";
-        _speedBoostValue = Time.deltaTime * 10f;
+        _speedBoostValue = Time.deltaTime * 5f;
+        _playerLayer = 7;
     }
 
     private void PlayAnimation(bool value)
@@ -99,16 +112,7 @@ public class CollectableView : BaseObjectView
 
     private void IncreaseSpeed()
     {
-        _movingSpeed += Time.deltaTime;
-    }
-
-    private void ChangeTriggerRadius(float radius)
-    {
-        if (!_trigger)
-        {
-            return;
-        }
-        _trigger.radius = radius;
+        _movingSpeed += _speedBoostValue;
     }
 
     private bool CheckAtTarget()
@@ -134,19 +138,20 @@ public class CollectableView : BaseObjectView
         ActiveTrigger(false);
         GameEvents.Current.CollectableTriggered(this);
         _target = other;
+        _triggered = true;
     }
 
     #endregion
 
     #region OnTriggerEnter
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
-        if (other.tag == "Untagged")
+        if (_triggered)
         {
             return;
         }
-        if (other.CompareTag(_tag))
+        if (other.gameObject.layer == _playerLayer)
         {
             Triggered(other.transform); // когда игрок приближается к коину, он становится целью для коина, к которой он летит
         }

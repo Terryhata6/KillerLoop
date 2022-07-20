@@ -2,5 +2,5 @@
 
 public interface IMultiplierCounter : IService
 {
-    public float Multiplier { get; }
+    public int Multiplier { get; }
 }

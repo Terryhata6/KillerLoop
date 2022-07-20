@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class MainMenuPanel : BaseMenuPanel, 
@@ -15,7 +16,7 @@ public class MainMenuPanel : BaseMenuPanel,
     [SerializeField] private GameObject _panel;
 
     [Header("Elements")]
-    [SerializeField] private Button _startButton;
+    [SerializeField] private StartLevelButtonView _startButton;
     [SerializeField] private Button _shopButton;
     [SerializeField] private Button _optionsButton;
     [SerializeField] private List<Animation> _menuAnimations;
@@ -58,6 +59,11 @@ public class MainMenuPanel : BaseMenuPanel,
         UpdateMoneyCounter();
     }
 
+    public void StartGame()
+    {
+        UIEvents.Current.StartLevelButton();
+    }
+
     #endregion
 
     #region PrivateMethods
@@ -65,8 +71,8 @@ public class MainMenuPanel : BaseMenuPanel,
     private void SetButtonEvents()
     {
         BindListenerToButton(_shopButton, UIEvents.Current.ShopMenuButton);
-        BindListenerToButton(_startButton, UIEvents.Current.StartLevelButton);
         BindListenerToButton(_optionsButton, UIEvents.Current.OptionMenuButton);
+        BindListenerToButton(_startButton, UIEvents.Current.StartLevelButton);
     }
 
     private void ProcessNewGoods()
@@ -84,9 +90,17 @@ public class MainMenuPanel : BaseMenuPanel,
 
     private void UpdateMoneyCounter()
     {
-        if (_moneyStorage != null && _moneyValue != null)
+        if (!_moneyValue)
+        {
+            return;
+        }
+        if (_moneyStorage != null)
         {
             _moneyValue.text = _moneyStorage.MoneyValue.ToString();
+        }
+        else
+        {
+            _moneyValue.text = 0.ToString();
         }
     }
 
@@ -115,8 +129,8 @@ public class MainMenuPanel : BaseMenuPanel,
     private void OnDestroy()
     {
         RemoveListenersFromButton(_shopButton);
-        RemoveListenersFromButton(_startButton);
         RemoveListenersFromButton(_optionsButton);
+        RemoveListenersFromButton(_startButton);
     }
 
     #endregion

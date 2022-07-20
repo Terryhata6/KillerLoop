@@ -144,7 +144,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _points: 5
-  _movingSpeed: 2
+  _movingSpeed: 1.5
   _trigger: {fileID: -959583054430197566}
   _spinningAnimation: {fileID: 5298892012332772874}
 --- !u!135 &-959583054430197566

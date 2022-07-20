@@ -4,9 +4,7 @@ public class EnemyWallRunStateModel : BaseEnemyStateModel
 {
     #region PrivateField
 
-    private Vector3 _movingVector = Vector3.zero;
     private Vector3 _tempVector;
-    private float _directionTreshold = 0.8f;
 
     #endregion
 
@@ -16,7 +14,8 @@ public class EnemyWallRunStateModel : BaseEnemyStateModel
     {
         base.Execute(enemy);
 
-        enemy.Move(Vector3.forward * Time.deltaTime);
+        enemy.UpdateRoadPoint();
+        enemy.MoveToNextPoint(enemy.BaseMovementSpeed * Time.deltaTime);
         enemy.SetMovingBlend(CheckSide(enemy));
     }
 

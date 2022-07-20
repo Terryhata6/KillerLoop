@@ -13,6 +13,7 @@ public class CollectableSpawner : Singleton<CollectableSpawner>
     private List<Transform> _tempTransforms;
     private List<CollectableView> _tempCollectables;
     private int _poolSize;
+    private float _maxRadius;
 
     #endregion
 
@@ -40,6 +41,7 @@ public class CollectableSpawner : Singleton<CollectableSpawner>
             height);
         await Task.WhenAll(task);
         CollectablesInit(_tempCollectables);
+        ChangeTriggerRadius(_tempCollectables, _maxRadius);
     }
 
     public async Task LoadCollectableWithDelay(Transform obj, int delay)
@@ -74,6 +76,7 @@ public class CollectableSpawner : Singleton<CollectableSpawner>
     private void InitializeFields()
     {
         _poolSize = 40;
+        _maxRadius = 10f;
         _pool = new ObjectPool<CollectableView>();
         _tempCollectables = new List<CollectableView>();
         _tempTransforms = new List<Transform>();
@@ -95,7 +98,6 @@ public class CollectableSpawner : Singleton<CollectableSpawner>
 
     private void CollectablesInit(List<CollectableView> collectables)
     {
-        Debug.Log("init");
         if (collectables == null)
         {
             return;
@@ -104,6 +106,27 @@ public class CollectableSpawner : Singleton<CollectableSpawner>
         {
             CollectableInit(collectables[i]);
         }
+    }
+
+    private void ChangeTriggerRadius(List<CollectableView> collectables, float radius)
+    {
+        if (collectables == null)
+        {
+            return;
+        }
+        for (int i = 0; i < collectables.Count; i++)
+        {
+            ChangeTriggerRadius(collectables[i],radius);
+        }
+    }
+
+    private void ChangeTriggerRadius(CollectableView collectable, float radius)
+    {
+        if (!collectable)
+        {
+            return;
+        }
+        collectable.ChangeTriggerRadius(radius);
     }
 
     private List<Transform> ConvertToTransform(List<CollectableView> list)

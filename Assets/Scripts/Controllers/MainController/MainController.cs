@@ -90,6 +90,7 @@ public class MainController : MonoBehaviour
         AddController(new EnemyController());
         AddController(new LevelController(_levels));
         AddController(new CollectableController());
+        AddController(new ProgressController());
     }
 
     private void InitializeControllers()

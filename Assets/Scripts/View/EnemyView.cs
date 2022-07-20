@@ -16,6 +16,8 @@ public class EnemyView : BaseObjectView
     [SerializeField] protected SplineTracer _splineTracer;
     [SerializeField] private float _flyAwayPower;
     [SerializeField] private EnemyState _state = EnemyState.Idle;
+    [SerializeField] private RoadRunSave _roadRunSave;
+    [SerializeField] private int _savePointCounter;
 
     #endregion
 
@@ -24,32 +26,21 @@ public class EnemyView : BaseObjectView
     private float _baseY;
     private float _x;
     private Vector3 _tempVector;
-    private Vector3 _hitNormal;
+    private float _tempMagnitude;
     private RaycastHit _hit;
     private float _movementSpeed;
     private float _timer;
     private float _timeToDead;
     private Collider _tempCollider;
+    private Vector3 _nextPosition;
 
     #endregion
 
     #region AccessFields
 
-
-    public Vector3 SplineDirection
-    {
-        get
-        {
-            if (_splineTracer.result.percent >= 1f)
-            {
-                _canMove = false;
-            }
-            return _splineTracer.result.forward;
-        }
-    }
     public RaycastHit Hit => _hit;
-    public Vector3 HitNormal => _hitNormal;
     public EnemyState State => _state;
+    public float BaseMovementSpeed => _baseMovementSpeed;
 
     #endregion
 
@@ -58,28 +49,161 @@ public class EnemyView : BaseObjectView
         _state = EnemyState.Inactive;
     }
 
-    #region PublicMethods
+    #region EnemyManage
 
-    public override void Initialize()
+    public void Rotate(Quaternion rotation)
     {
-        base.Initialize();
-        DefaultSpeed();
-        _timeToDead = 0.5f;
-        SetRagdoll(false);
-        if (_splineTracer && _splineTracer.spline)
-        {
-            _canMove = true;
-        }
-        Run();
+        _transform.rotation = rotation;
     }
 
+    public virtual void MoveToNextPoint(float speed)
+    {
+        if (!_canMove)
+        {
+            return;
+        }
+        _transform.position = Vector3.MoveTowards(Position, _nextPosition, speed);
+    }
+
+    public virtual void Dead()
+    {
+        Debug.Log("EnemyDead");
+        GameEvents.Current.EnemyDead(this);
+        ChangeActionState(EnemyState.Inactive);
+        gameObject.layer = 9;
+    }
+
+    public void DeadWithRagdoll()
+    {
+        Dead();
+        StartCoroutine(DeadAnimation());
+    }
+
+    public virtual void Flying()
+    {
+        _tempVector.y = (-(_jumpForce - 0.2f) * ((_x) * (_x)) + _jumpForce) + _baseY;
+        _tempVector.x = Position.x;
+        _tempVector.z = Position.z;
+        _transform.position = _tempVector;
+        _x += Time.deltaTime * 1.3f;
+    }
+
+    public void PushAway(Vector3 flyAwayDirection)
+    {
+        //FlyAway(flyAwayDirection);
+        StartCoroutine(DeadAnimation());
+    }
+
+    private void FlyAway(Vector3 dir)
+    {
+        if (_rigidbody)
+        {
+            _rigidbody.AddForce(dir * _flyAwayPower, ForceMode.Impulse);
+        }
+    }
+
+    public void CheckForAWall()
+    {
+        _tempVector.x = Forward.z;
+        _tempVector.z = -Forward.x;
+        _tempVector.y = 0f;
+        RayCastCheck(Position + (_tempVector + Vector3.up) * 0.5f,
+            Forward.normalized + Vector3.up,
+            1f,
+            1 << 11);
+        RayCastCheck(Position - (_tempVector - Vector3.up) * 0.5f,
+            Forward.normalized + Vector3.up,
+            1f,
+            1 << 11);
+    }
+
+    #endregion
+
     #region Actions
+
+    public void ChangeActionState(EnemyState state)
+    {
+        StopCurrentAction();
+        _state = state;
+    }
+
+    public void StartStateAction(EnemyState state)
+    {
+        switch (state)
+        {
+            case EnemyState.Idle:
+                {
+                    Stand();
+                    break;
+                }
+            case EnemyState.Move:
+                {
+                    Run();
+                    break;
+                }
+            case EnemyState.Jump:
+                {
+                    Jump();
+                    break;
+                }
+            case EnemyState.Slide:
+                {
+                    Slide();
+                    break;
+                }
+            case EnemyState.WallRun:
+                {
+                    CheckForAWall();
+                    WallRun();
+                    break;
+                }
+            default:
+                {
+                    break;
+                }
+        }
+    }
+
+    private void StopCurrentAction()
+    {
+        switch (_state)
+        {
+            case EnemyState.Jump:
+                {
+                    Land();
+                    break;
+                }
+            case EnemyState.Move:
+                {
+                    StopRun();
+                    break;
+                }
+            case EnemyState.Idle:
+                {
+                    StopRun();
+                    break;
+                }
+            case EnemyState.Slide:
+                {
+                    EndSlide();
+                    break;
+                }
+            case EnemyState.WallRun:
+                {
+                    StopWallRun();
+                    break;
+                }
+            default:
+                {
+                    break;
+                }
+        }
+    }
 
     #region StartAction
 
     public void WallRun()
     {
-        _hitNormal = _hit.normal;
         SetRigidbodyValues(false, false);
         SetAnimatorBool("WallRun", true);
         ChangeActionState(EnemyState.WallRun);
@@ -124,105 +248,122 @@ public class EnemyView : BaseObjectView
 
     #region StopAction
 
-    public void Land()
+    private void Land()
     {
         SetAnimatorBool("Jump", false);
     }
 
-    public virtual void Dead()
-    {
-        Debug.Log("EnemyDead");
-        GameEvents.Current.EnemyDead(this);
-        ChangeActionState(EnemyState.Inactive);
-        gameObject.layer = 9;
-    }
-
-    public void DeadWithRagdoll()
-    {
-        Dead();
-        StartCoroutine(DeadAnimation());
-    }
-
-    public void StopWallRun()
+    private void StopWallRun()
     {
         SetAnimatorBool("WallRun", false);
     }
 
-    public void StopRun()
+    private void StopRun()
     {
         SetAnimatorBool("Run", false);
     }
 
     #endregion
 
-    public void LookRotation(Vector3 lookVector)
+    #endregion
+
+    #region RoadPointsUpdate
+
+    public void UpdateRoadPoint()
     {
-        if (_canMove)
+        if (_savePointCounter >= _roadRunSave.Points.Count)
         {
-            lookVector.y = 0f;
-            if (lookVector == Vector3.zero)
+            _canMove = false;
+            return;
+        }
+        if ((Position - _nextPosition).magnitude <= 0.07f)
+        {
+            UpdateState();
+            UpdateRotation();
+            UpdateNextPosition();
+            _savePointCounter++;
+        }
+
+        _nextPosition.y = Position.y;
+    }
+
+    private void UpdateRotation()
+    {
+        if (_savePointCounter > 0)
+        {
+            _transform.rotation = _roadRunSave.Points[_savePointCounter].Rotation;
+        }
+    }
+
+    private void UpdateNextPosition()
+    {
+        if (_savePointCounter + 1 < _roadRunSave.Points.Count)
+        {
+            _nextPosition = _roadRunSave.Points[_savePointCounter + 1].Position;
+        }
+    }
+
+    private void UpdateState()
+    {
+        if (_roadRunSave.Points[_savePointCounter].State == EnemyState.Inactive)
+        {
+            return;
+        }
+        if (State == EnemyState.Jump
+                && _roadRunSave.Points[_savePointCounter].State == EnemyState.Move)
+        {
+            return;
+        }
+        StartStateAction(_roadRunSave.Points[_savePointCounter].State);
+
+    }
+
+    private void FindNearestRoadPoint()
+    {
+        if (!_canMove)
+        {
+            return;
+        }
+        for (int i = 0; i < _roadRunSave.Points.Count; i++)
+        {
+            if ((_roadRunSave.Points[i].Position - Position).magnitude <= _tempMagnitude)
             {
-                return;
+                _tempMagnitude = (_roadRunSave.Points[i].Position - Position).magnitude;
+                _savePointCounter = i;
             }
-            Rotate(Quaternion.LookRotation(lookVector, Vector3.up));
         }
-    }
-
-    public void Rotate(Quaternion rotation)
-    {
-        _transform.rotation = rotation;
-    }
-
-    public virtual void Move(Vector3 dir)
-    {
-        MoveWithSpeed(dir, _movementSpeed);
-    }
-
-    public virtual void MoveWithSpeed(Vector3 dir, float speed)
-    {
-        _transform.Translate(dir * speed);
-    }
-
-    public virtual void Flying()
-    {
-        _tempVector.y = (-(_jumpForce - 0.2f) * ((_x) * (_x)) + _jumpForce) + _baseY;
-        _tempVector.x = Position.x;
-        _tempVector.z = Position.z;
-        _transform.position = _tempVector;
-        _x += Time.deltaTime * 1.3f;
-    }
-
-    public void PushAway(Vector3 flyAwayDirection)
-    {
-        FlyAway(flyAwayDirection);
-        StartCoroutine(DeadAnimation());
-    }
-
-    public void FlyAway(Vector3 dir)
-    {
-        if (_rigidbody)
-        {
-            _rigidbody.AddForce(dir * _flyAwayPower, ForceMode.Impulse);
-            Debug.Log(_rigidbody.velocity);
-        }
-    }
-
-    public void CheckForAWall()
-    {
-        _tempVector.x = Forward.z;
-        _tempVector.z = -Forward.x;
-        _tempVector.y = 0f;
-        RayCastCheck(Position + (_tempVector + Vector3.up) * 0.5f,
-            Forward.normalized + Vector3.up,
-            1f,
-            1 << 11);
-        RayCastCheck(Position - (_tempVector - Vector3.up) * 0.5f,
-            Forward.normalized + Vector3.up,
-            1f,
-            1 << 11);
+        _nextPosition = _roadRunSave.Points[_savePointCounter].Position;
     }
 
     #endregion
+
+    #region PublicOptionsMethods
+
+    public void Initialize(RoadRunSave roadRunSave)
+    {
+        SetRoadRunSave(roadRunSave);
+        Initialize();
+        FindNearestRoadPoint();
+    }
+
+    public override void Initialize()
+    {
+        base.Initialize();
+        InitializeFields();
+        SetRagdoll(false);
+        StartStateAction(EnemyState.Idle);
+    }
+
+    public void SetRoadRunSave(RoadRunSave roadRunSave)
+    {
+        if (!roadRunSave)
+        {
+            _canMove = false;
+            return;
+        }
+        _canMove = true;
+        _roadRunSave = roadRunSave;
+    }
 
     #region OptionalMethods
 
@@ -277,63 +418,15 @@ public class EnemyView : BaseObjectView
 
     #endregion
 
-    #region PrivateMethods
+    #region PrivateOptionsMethods
 
-    public virtual void MoveEnemyToWall(Vector3 hitPoint, Vector3 hitNormal)
+    private void InitializeFields()
     {
-        _tempVector = Vector3.Project(Position, hitPoint) + hitNormal * 0.3f;
-        _tempVector.y = Position.y;
-        _transform.position = _tempVector;
-    }
-
-    public virtual void ChangeActionState(EnemyState state)
-    {
-        StopCurrentAction();
-        _state = state;
-    }
-
-    protected bool OnGround()
-    {
-        RayCastCheck(Position + Vector3.up, Vector3.down, 1.2f, 1 << 11);
-        return Hit.distance <= 1.2f;
-
-
-    }
-
-    private void StopCurrentAction()
-    {
-        switch (_state)
-        {
-            case EnemyState.Jump:
-                {
-                    Land();
-                    break;
-                }
-            case EnemyState.Move:
-                {
-                    StopRun();
-                    break;
-                }
-            case EnemyState.Idle:
-                {
-                    StopRun();
-                    break;
-                }
-            case EnemyState.Slide:
-                {
-                    EndSlide();
-                    break;
-                }
-            case EnemyState.WallRun:
-                {
-                    StopWallRun();
-                    break;
-                }
-            default:
-                {
-                    break;
-                }
-        }
+        _savePointCounter = 0;
+        _nextPosition = Position;
+        _tempMagnitude = 100.0f;
+        _timeToDead = 0.5f;
+        DefaultSpeed();
     }
 
     private void SetAnimatorBool(string name, bool value)

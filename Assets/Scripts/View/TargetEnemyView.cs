@@ -7,14 +7,6 @@ public class TargetEnemyView : EnemyView,
 {
     #region PrivateFields
 
-    #region SerializeField
-
-    [SerializeField] private RoadRunSave _roadRunSave;
-    [SerializeField] private int _savePointCounter;
-
-    #endregion
-
-    private Vector3 _nextPosition;
     private bool _spawningCollectables;
     private float _spawningDelay;
     private float _counter;
@@ -30,59 +22,18 @@ public class TargetEnemyView : EnemyView,
         base.Initialize();
         InitializeService();
         InitializeFields();
+        StartStateAction(EnemyState.Move);
     }
 
     #endregion
 
     #region Actions
 
-    public void ChangeState(EnemyState state)
+    public override void MoveToNextPoint(float speed)
     {
-        switch (state)
-        {
-            case EnemyState.Idle:
-                {
-                    Stand();
-                    break;
-                }
-            case EnemyState.Move:
-                {
-                    Run();
-                    break;
-                }
-            case EnemyState.Jump:
-                {
-                    Jump();
-                    break;
-                }
-            case EnemyState.Slide:
-                {
-                    Slide();
-                    break;
-                }
-            case EnemyState.WallRun:
-                {
-                    CheckForAWall();
-                    WallRun();
-                    break;
-                }
-            default:
-                {
-                    break;
-                }
-        }
-    }
-
-    public override void Move(Vector3 dir)
-    {
-        if (!_roadRunSave 
-            && _savePointCounter >= _roadRunSave.Points.Count)
-        {
-            return;
-        }
-        UpdateRoadPoint();
-        MoveToNextPoint(_nextPosition);
+        base.MoveToNextPoint(speed);
         SpawnCollectables();
+        UpdateConsumersInfo();
     }
 
     #endregion
@@ -103,64 +54,9 @@ public class TargetEnemyView : EnemyView,
 
     private void InitializeFields()
     {
-        _savePointCounter = 0;
-        _nextPosition = Position;
         _spawningDelay = 1.5f;
         _counter = 0.0f;
         _spawningCollectables = true;
-    }
-
-    private void MoveToNextPoint(Vector3 nextPosition)
-    {
-        _transform.position = Vector3.MoveTowards(Position, nextPosition, Time.deltaTime * 2.5f);
-    }
-
-    private void UpdateRoadPoint()
-    {
-        if (_savePointCounter >= _roadRunSave.Points.Count)
-        {
-            return;
-        }
-        if ((Position - _nextPosition).magnitude <= 0.07f)
-        {
-            UpdateState();
-            UpdateRotation();
-            UpdateNextPosition();
-            _savePointCounter++;
-        }
-
-        _nextPosition.y = Position.y;
-    }
-
-    private void UpdateRotation()
-    {
-        if (_savePointCounter > 0)
-        {
-            _transform.rotation = _roadRunSave.Points[_savePointCounter].Rotation;
-        }
-    }
-
-    private void UpdateNextPosition()
-    {
-        if (_savePointCounter + 1 < _roadRunSave.Points.Count)
-        {
-            _nextPosition = _roadRunSave.Points[_savePointCounter + 1].Position;
-        }
-    }
-
-    private void UpdateState()
-    {
-        if (_roadRunSave.Points[_savePointCounter].State == EnemyState.Inactive)
-        {
-            return;
-        }
-        if (State == EnemyState.Jump
-                && _roadRunSave.Points[_savePointCounter].State == EnemyState.Move)
-        {
-            return;
-        }
-        ChangeState(_roadRunSave.Points[_savePointCounter].State);
-
     }
 
     private void SpawnCollectables()
@@ -172,7 +68,7 @@ public class TargetEnemyView : EnemyView,
             if(_counter >= _spawningDelay)
             {
                 _counter = 0.0f;
-                CollectableSpawner.Instance.LoadCollectable(Position);
+                CollectableSpawner.Instance.LoadCollectable(Position + Vector3.up);
             }
         }
     }
