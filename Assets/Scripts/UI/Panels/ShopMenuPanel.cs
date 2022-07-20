@@ -53,24 +53,22 @@ public class ShopMenuPanel : BaseMenuPanel,
         if (IsShow) return;
         _panel.gameObject.SetActive(true);
         IsShow = true;
-
+        UpdateMoneyStorageValue(_currentMoneyValue);
     }
 
     #region IserviceConsumer
 
     public void UseService(IMoneyStorage service)
     {
-        if (service != null)
+        if (service == null)
         {
-            _newMoneyValue = service.MoneyValue;
+            return;
         }
+        _newMoneyValue = service.MoneyValue;
+        _currentMoneyValue = _newMoneyValue;
         if (IsShow)
         {
             UpdateMoneyStorage();
-        }
-        else
-        {
-            _currentMoneyValue = _newMoneyValue;
         }
     }
 

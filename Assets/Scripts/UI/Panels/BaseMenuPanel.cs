@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -34,6 +35,18 @@ public abstract class BaseMenuPanel : MonoBehaviour, IInitialize
         }
     }
 
+    protected void BindListenerToButton(ITouchEventsHandler button, Action listener)
+    {
+        if (button != null)
+        {
+            button.OnTouch += listener;
+        }
+        else
+        {
+            Debug.Log($"Button Missing {button}");
+        }
+    }
+
     protected void RemoveListenersFromButton(Button button)
     {
         if (button)
@@ -43,6 +56,14 @@ public abstract class BaseMenuPanel : MonoBehaviour, IInitialize
         else
         {
             Debug.Log($"Button Missing {button}", button);
+        }
+    }
+
+    protected void RemoveListenersFromButton(ITouchEventsHandler button)
+    {
+        if (button != null)
+        {
+            button.OnTouch = null;
         }
     }
 

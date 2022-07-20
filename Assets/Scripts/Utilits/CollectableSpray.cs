@@ -26,31 +26,9 @@ public class CollectableSpray : Singleton<CollectableSpray>
         await Spray(transforms, radius, height);
     }
 
-    public void SprayCollectable(Transform transform, float radius, float height)
-    {
-        _tempTF.Clear();
-        _tempTF.Add(transform);
-        SprayCollectables(_tempTF, radius, height);
-    }
-
-    public async void SpawningCollectablesAtObject(Transform example, Transform obj, int size, int period)
-    {
-        await SpawningCollectables(example, obj, size, period);
-    }
-
     #endregion
 
     #region PrivateMethods
-
-    private async Task SpawningCollectables(Transform example, Transform source, int size, int period)
-    {
-        for (int i = 0; i < size; i++)
-        {
-            await Task.Delay(period);
-            GameObject.Instantiate(example, source.position, source.rotation);
-            await Task.Yield();
-        }
-    }
 
     private async Task Spray(List<Transform> transforms, float radius, float height)
     {
@@ -75,13 +53,13 @@ public class CollectableSpray : Singleton<CollectableSpray>
             for (int j = 0; j < objects.Length; j++)
             {
                 temp = Vector3.Lerp(basePos[j], nextPos[j], iterator);
-                temp.y = -1.8f * ((x) * (x)) + height; // Менять параболу тут
+                temp.y = -(1.8f) * ((x) * (x)) + height + basePos[j].y; // Менять параболу тут
                 if (objects[j])
                 {
                     objects[j].position = temp;
                 }
             }
-            iterator += Time.deltaTime;
+            iterator += Time.deltaTime * 1.5f;
             x += Time.deltaTime * 2f;
 
 

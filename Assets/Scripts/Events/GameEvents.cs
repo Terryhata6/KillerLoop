@@ -33,6 +33,13 @@ public class GameEvents
         OnCollectableTriggered?.Invoke(view);
     }
 
+    public Action<CollectableView> OnCollectableCollected;
+
+    public void CollectableCollected(CollectableView view)
+    {
+        OnCollectableCollected?.Invoke(view);
+    }
+
     #endregion
 
     #region Global

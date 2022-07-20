@@ -225,7 +225,6 @@ public class PlayerView : BaseObjectView,
         Debug.Log("PlayerDead");
         SetRagdoll(true);
         ChangeActionState(PlayerState.Inactive);
-        SetAliveLayer(false);
         LevelEvents.Current.LevelLose();
     }
 
@@ -254,7 +253,6 @@ public class PlayerView : BaseObjectView,
         CheckRigidbody();
         InitializeFields();
         SetRagdoll(false);
-        SetAliveLayer(true);
         SetRoadSpline(info.RoadSpline);
         Stand();
         Debug.Log("Player Loaded");
@@ -380,18 +378,6 @@ public class PlayerView : BaseObjectView,
         if (roadSpline)
         {
             _roadSpline.spline = roadSpline;
-        }
-    }
-
-    private void SetAliveLayer(bool alive)
-    {
-        if (alive)
-        {
-            gameObject.layer = 8;
-        }
-        else
-        {
-            gameObject.layer = 9;
         }
     }
 

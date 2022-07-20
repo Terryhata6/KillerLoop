@@ -2893,6 +2893,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1462238236326619975, guid: 935ae19ee91bb5e4cbcd84a194b8d05d, type: 3}
+      propertyPath: ss
+      value: 
+      objectReference: {fileID: 1027422995}
+    - target: {fileID: 1462238236326619975, guid: 935ae19ee91bb5e4cbcd84a194b8d05d, type: 3}
+      propertyPath: _startButton
+      value: 
+      objectReference: {fileID: 1116956180}
     - target: {fileID: 2772605877459730314, guid: 935ae19ee91bb5e4cbcd84a194b8d05d, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -2982,6 +2990,10 @@ PrefabInstance:
       value: UI
       objectReference: {fileID: 0}
     - target: {fileID: 2772605877459730318, guid: 935ae19ee91bb5e4cbcd84a194b8d05d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2772605877887999394, guid: 935ae19ee91bb5e4cbcd84a194b8d05d, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
@@ -3105,6 +3117,34 @@ MonoBehaviour:
   m_CameraActivatedEvent:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1027422995 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2772605879333704025, guid: 935ae19ee91bb5e4cbcd84a194b8d05d, type: 3}
+  m_PrefabInstance: {fileID: 421476941}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &1116956178 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2815060600093158357, guid: 935ae19ee91bb5e4cbcd84a194b8d05d, type: 3}
+  m_PrefabInstance: {fileID: 421476941}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1116956180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1116956178}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9846a3f66169da84d8ac9b50a1d4969e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1742784229
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3225,6 +3265,7 @@ MonoBehaviour:
   _playerPrefab: {fileID: 318778944230572928, guid: bf61d4e6b7f5ea74fab2d46601280314, type: 3}
   _virtualCamera: {fileID: 1742784230}
   _levels:
+  - {fileID: 5404449373101833777, guid: 3931b17aef798614eb74740e17a4c217, type: 3}
   - {fileID: 5914922281037436697, guid: c31192b2dd23fa845b06558b90190087, type: 3}
   _debugTestingScene: 0
   _testingSceneName: EnterAltCreed

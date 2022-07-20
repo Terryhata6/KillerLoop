@@ -21,9 +21,9 @@ public class RoadRunWriter : PlayerView
     private RoadRunSave _savePrefab;
     private Quaternion _lastRotation;
     private PlayerState _lastState;
-    private float _spawningDelay;
-    private float _counter;
-    private Transform _collectablesParent;
+ //   private float _spawningDelay;
+  //  private float _counter;
+//private Transform _collectablesParent;
 
     #endregion
 
@@ -33,8 +33,8 @@ public class RoadRunWriter : PlayerView
     {
         InitializeFields();
         SetSavingSource(save);
-        SetCollectablesSpawnsStorage(spawnsStorage);
-        CreateCollectablesParent();
+ //       SetCollectablesSpawnsStorage(spawnsStorage);
+ //       CreateCollectablesParent();
         Debug.Log("Writer Loaded");
     }
 
@@ -42,7 +42,7 @@ public class RoadRunWriter : PlayerView
     {
         base.Move(dir);
         Save();
-        CollectableSpawning();
+     //   CollectableSpawning();
     }
 
     #endregion
@@ -51,61 +51,61 @@ public class RoadRunWriter : PlayerView
 
     private void InitializeFields()
     {
-        _spawningDelay = 1.5f;
-        _counter = 0.0f;
+  //      _spawningDelay = 1.5f;
+ //       _counter = 0.0f;
     }
 
 
-    #region CreatingCollectablesSpawns
+    //#region CreatingCollectablesSpawns
 
-    private void CreateCollectablesParent()
-    {
-        if (!_spawnPointVisualize)
-        {
-            return;
-        }
-        _collectablesParent = new GameObject("Collectables").transform;
-    }
+    //private void CreateCollectablesParent()
+    //{
+    //    if (!_spawnPointVisualize)
+    //    {
+    //        return;
+    //    }
+    //    _collectablesParent = new GameObject("Collectables").transform;
+    //}
 
-    private void SetCollectablesSpawnsStorage(CollectablesSpawnPoints storage)
-    {
-        if (storage != null)
-        {
-            _spawnsStorage = storage;
-            _spawnsStorage.Reset();
-            _activeSpawnsCreating = true;
-            Debug.Log("Creating spawn points enable");
-        }
-        else
-        {
-            _activeSpawnsCreating = false;
-            Debug.Log("Creating spawns disable, missing spawns storage");
-        }
-    }
+    //private void SetCollectablesSpawnsStorage(CollectablesSpawnPoints storage)
+    //{
+    //    if (storage != null)
+    //    {
+    //        _spawnsStorage = storage;
+    //        _spawnsStorage.Reset();
+    //        _activeSpawnsCreating = true;
+    //        Debug.Log("Creating spawn points enable");
+    //    }
+    //    else
+    //    {
+    //        _activeSpawnsCreating = false;
+    //        Debug.Log("Creating spawns disable, missing spawns storage");
+    //    }
+    //}
 
-    private void CollectableSpawning()
-    {
-        if (!_activeSpawnsCreating || _spawningOnCoolDown)
-        {
-            return;
-        }
-        SpawnWithDelay(_spawnPointVisualize, _spawningDelay);
-    }
+    //private void CollectableSpawning()
+    //{
+    //    if (!_activeSpawnsCreating || _spawningOnCoolDown)
+    //    {
+    //        return;
+    //    }
+    //    SpawnWithDelay(_spawnPointVisualize, _spawningDelay);
+    //}
 
-    private void SpawnWithDelay(Transform example, float delay)
-    {
-        if (_activeSpawnsCreating)
-        {
-            _counter += Time.deltaTime;
-            if (_counter >= delay)
-            {
-                _counter = 0.0f;
-                Instantiate(example,Position, Rotation,_collectablesParent);
-            }
-        }
-    }
+    //private void SpawnWithDelay(Transform example, float delay)
+    //{
+    //    if (_activeSpawnsCreating)
+    //    {
+    //        _counter += Time.deltaTime;
+    //        if (_counter >= delay)
+    //        {
+    //            _counter = 0.0f;
+    //            Instantiate(example,Position, Rotation,_collectablesParent);
+    //        }
+    //    }
+    //}
 
-    #endregion
+    //#endregion
 
     #region SavingRoadRun
 
@@ -165,11 +165,6 @@ public class RoadRunWriter : PlayerView
     }
 
     #endregion
-
-    private void OnDisable()
-    {
-        Destroy(_collectablesParent.gameObject);
-    }
 
     #endregion
 }

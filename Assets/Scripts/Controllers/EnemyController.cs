@@ -11,7 +11,6 @@ public class EnemyController : BaseController, IExecute,
     private Dictionary<EnemyState, BaseEnemyStateModel> _enemyStates;
     private EnemyView _tempEnemy;
     private int _enemyBeaten;
-    private RoadRunSave _currentRoadWay;
 
     #endregion
 
@@ -100,13 +99,13 @@ public class EnemyController : BaseController, IExecute,
 
     #region EnemyManage
 
-    private void LoadNewEnemies(List<EnemyView> enemies)
+    private void LoadNewEnemies(List<EnemyView> enemies,RoadRunSave save)
     {
         if (enemies != null)
         {
             SetEnemies(enemies);
             ResetFields();
-            InitializeEnemies(_enemies);
+            InitializeEnemies(_enemies, save);
             Debug.Log("Enemies loaded");
         }
         else
@@ -115,12 +114,17 @@ public class EnemyController : BaseController, IExecute,
         }
     }
 
+    private void LoadNewEnemies(List<EnemyView> enemies)
+    {
+        LoadNewEnemies(enemies, null);
+    }
+
     private void SetEnemies(List<EnemyView> enemies)
     {
         _enemies = enemies;
     }
 
-    private void InitializeEnemies(List<EnemyView> enemies)
+    private void InitializeEnemies(List<EnemyView> enemies, RoadRunSave save)
     {
         for (int _index = 0; _index < enemies.Count; _index++)
         {
@@ -129,7 +133,7 @@ public class EnemyController : BaseController, IExecute,
                 _enemies.Remove(enemies[_index]);
                 continue;
             }
-            enemies[_index].Initialize();
+            enemies[_index].Initialize(save);
         }
     }
 
@@ -160,14 +164,6 @@ public class EnemyController : BaseController, IExecute,
         for (int i = 0; i < _enemies.Count; i++)
         {
             _enemies[i].SetMovingBlend(0f);
-        }
-    }
-
-    private void SetRoadRunWay(RoadRunSave save)
-    {
-        if (save)
-        {
-            _currentRoadWay = save;
         }
     }
 
@@ -203,8 +199,7 @@ public class EnemyController : BaseController, IExecute,
     {
         if (service != null)
         {
-            LoadNewEnemies(service.EnemiesInfo.Enemies);
-            SetRoadRunWay(service.RoadRunWay);
+            LoadNewEnemies(service.EnemiesInfo.Enemies, service.RoadRunWay);
         }
     }
 

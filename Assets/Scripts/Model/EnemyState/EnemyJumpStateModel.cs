@@ -10,7 +10,8 @@ public class EnemyJumpStateModel : BaseEnemyStateModel
     {
         base.Execute(enemy);
         enemy.Flying();
-        enemy.Move(Vector3.forward * Time.deltaTime);
+        enemy.UpdateRoadPoint();
+        enemy.MoveToNextPoint(enemy.BaseMovementSpeed  * Time.deltaTime);
         CheckToLand(enemy);
     }
 

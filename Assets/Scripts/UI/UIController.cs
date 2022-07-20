@@ -102,7 +102,6 @@ public class UIController : MonoBehaviour
         UIEvents.Current.OnOptionMenuButton += OpenOptionsMenu;
         UIEvents.Current.OnShopMenuButton += OpenShopMenu;
         UIEvents.Current.OnCollectButton += NextLevel;
-        UIEvents.Current.OnCollectX2Button += NextLevel;
 
         GameEvents.Current.OnRevive += ReviveScreen;
     }

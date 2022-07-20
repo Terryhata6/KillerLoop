@@ -1,10 +1,9 @@
 
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 
 public class CollectableController : BaseController, IExecute,
-    IServiceConsumer<ICollectablesLevelInfoUpdater>
+    IServiceConsumer<ICollectablesLevelInfoUpdater> //Consumer
 {
     #region PrivateFields
 
@@ -13,7 +12,6 @@ public class CollectableController : BaseController, IExecute,
     private List<CollectableView> _activeColl;
     private int _index;
     private CollectableSpawner _spawner;
-
     private int _dropMoneyCount;
     private float _sprayHeight;
     private float _sprayRadius;
@@ -74,10 +72,9 @@ public class CollectableController : BaseController, IExecute,
         _activeColl = new List<CollectableView>();
         _spawner = new CollectableSpawner();
         _dropMoneyCount = 10;
-        _sprayHeight = 2f;
-        _sprayRadius = 1.2f;
+        _sprayHeight = 1.7f;
+        _sprayRadius = 0.7f;
     }
-
 
     #endregion
 
@@ -101,8 +98,7 @@ public class CollectableController : BaseController, IExecute,
             || !collectable.enabled
             || collectable.AtTarget)
         {
-            DeleteMovingCollectable(collectable);
-            collectable.Collected();
+            Collected(collectable);
         }
         else
         {
@@ -125,6 +121,13 @@ public class CollectableController : BaseController, IExecute,
         {
             _activeColl.Remove(collectable);
         }
+    }
+
+    private void Collected(CollectableView collectable)
+    {
+        DeleteMovingCollectable(collectable);
+        collectable.Collected();
+        GameEvents.Current.CollectableCollected(collectable);
     }
 
     private void PrepareSpawner()
@@ -171,5 +174,8 @@ public class CollectableController : BaseController, IExecute,
         }
     }
 
+
+
     #endregion
+
 }
