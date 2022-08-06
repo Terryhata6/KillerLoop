@@ -5,6 +5,7 @@ public class ProgressController : BaseController
 
     private MoneyStorage _moneyStorage;
     private LevelProgressManager _currentProgress;
+    private SaveProgressManager _saveProgressManager;
 
     #endregion
 
@@ -12,6 +13,7 @@ public class ProgressController : BaseController
     {
         _moneyStorage = new MoneyStorage();
         _currentProgress = new LevelProgressManager();
+        _saveProgressManager = SaveProgressManager.Instance;
     }
 
     #region PublicMethods
@@ -23,18 +25,14 @@ public class ProgressController : BaseController
         base.Initialize();
         SetEvents();
         ResetValues();
+        LoadProgress();
     }
 
     #endregion
 
     #endregion
 
-    #region PrivateMethods
-
-    private void ResetValues()
-    {
-        _currentProgress.InstanceMultiplying = false;
-    }
+    #region Initialize
 
     private void SetEvents()
     {
@@ -42,11 +40,25 @@ public class ProgressController : BaseController
 
         LevelEvents.Current.OnLevelWin += ProcessWin;
         LevelEvents.Current.OnLevelWin += InstanceMultiplyingMode;
-        LevelEvents.Current.OnNextLevel += ResetCurrentProgress;
-        LevelEvents.Current.OnNextLevel += ResetValues;
+        LevelEvents.Current.OnLevelLoaded += ResetValues;
+        LevelEvents.Current.OnLevelStart += ResetCurrentProgress;
 
         UIEvents.Current.OnCollectX2Button += CollectMoneyX2;
         UIEvents.Current.OnCollectButton += CollectMoney;
+    }
+
+    private void LoadProgress()
+    {
+        _moneyStorage.SetData(_saveProgressManager.LoadData<MoneyStorage>(_moneyStorage.Type));
+    }
+
+    #endregion
+
+    #region CurrentLevelManager
+
+    private void ResetValues()
+    {
+        _currentProgress.InstanceMultiplying = false;
     }
 
     private void CountMoney(CollectableView collectable)
@@ -73,7 +85,6 @@ public class ProgressController : BaseController
     private void CollectMoneyX2()
     {
         _currentProgress.CalculateMoneyWithMultiplier(2);
-        CollectMoney();
     }
 
     private void CollectMoney()

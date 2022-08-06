@@ -8,7 +8,7 @@ public class TargetEnemyView : EnemyView,
     #region PrivateFields
 
     private bool _spawningCollectables;
-    private float _spawningDelay;
+    [SerializeField] private float _itemSpawnDelay;
     private float _counter;
 
     #endregion
@@ -54,7 +54,6 @@ public class TargetEnemyView : EnemyView,
 
     private void InitializeFields()
     {
-        _spawningDelay = 1.5f;
         _counter = 0.0f;
         _spawningCollectables = true;
     }
@@ -65,7 +64,7 @@ public class TargetEnemyView : EnemyView,
         if (_spawningCollectables)
         {
             _counter += Time.deltaTime;
-            if(_counter >= _spawningDelay)
+            if(_counter >= _itemSpawnDelay)
             {
                 _counter = 0.0f;
                 CollectableSpawner.Instance.LoadCollectable(Position + Vector3.up);

@@ -264,7 +264,7 @@ public class WinGamePanel : BaseMenuPanel,
 
     private async Task CountingMoney()
     {
-        _incrementValue = Mathf.CeilToInt((_moneyCollected - _currentMoney) * _incrementMultiplier);
+        _incrementValue = Mathf.CeilToInt((_moneyCollected) * _incrementMultiplier);
         while (_currentMoney < _moneyCollected)
         {
             _currentMoney += _incrementValue;

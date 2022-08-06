@@ -27,7 +27,6 @@ public class PlayerJumpingStateModel : BasePlayerStateModel
 
         CheckToLand(player);
         CheckForAWall(player);
-        CheckToKill(player);
     }
 
     #endregion
@@ -54,19 +53,6 @@ public class PlayerJumpingStateModel : BasePlayerStateModel
         if (player.RayCastCheck(player.Position + Vector3.up, Vector3.down, 1.1f, 1 << 11 | (1 << 12)))
         {
             player.Stand();
-        }
-    }
-
-    private void CheckToKill(PlayerView player)
-    {
-        _tempVector.x = _movingVector.normalized.z;
-        _tempVector.z = -_movingVector.normalized.x;
-        _tempVector.y = 0f;
-        if (player.RayCastCheck(player.Position + _movingVector.normalized * 0.5f - _tempVector, _tempVector, 2f, 1 << 13)
-        || player.RayCastCheck(player.Position, _movingVector + Vector3.down, 1.1f, 1 << 13))
-        {
-            Debug.Log("kill");
-            player.AirKill();
         }
     }
 

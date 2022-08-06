@@ -1,22 +1,48 @@
-﻿using UnityEngine;
-
-public class MoneyStorage : IMoneyStorage, IServiceConsumer<ICollectedMoneyCounter>
+﻿
+public class MoneyStorage : IMoneyStorage,
+    ISaveable, IServiceConsumer<ICollectedMoneyCounter>
 {
+    #region PrivateFields
 
     private int _moneyValue;
     private int _moneyToAdd;
+    private int _moneyProperty
+    {
+        get { return _moneyValue; }
+        set
+        {
+            _moneyValue = value;
+            MoneyValueSave = value;
+            UpdateConsumersInfo();
+        }
+    }
+
+    #endregion
+
+    #region AccessFields
+
+    public SaveDataType Type => DataType; //ISaveable
+    public readonly SaveDataType DataType;
+
+    #endregion
+
+    #region FieldsToSave
+
+    public int MoneyValueSave;
+
+    #endregion
 
     public MoneyStorage()
     {
         InitializeService();
         InitializeConsumer();
+        DataType = SaveDataType.MoneyData;
     }
 
     public void CollectMoney()
     {
-        _moneyValue += _moneyToAdd;
-        Debug.Log(_moneyToAdd);
-        UpdateConsumersInfo();
+        _moneyProperty += _moneyToAdd;
+        SaveProgressManager.Instance.SaveData(this);
     }
 
     #region IService
@@ -56,11 +82,25 @@ public class MoneyStorage : IMoneyStorage, IServiceConsumer<ICollectedMoneyCount
 
     private void InitializeConsumer()
     {
-        ServiceDistributor.Instance.FindServicesForConsumer(this);
+        ServiceDistributor.Instance.FindServicesForConsumer<ICollectedMoneyCounter>(this);
     }
+
     private void SetCollectedMoney(int value)
     {
         _moneyToAdd = value;
+    }
+
+    #endregion
+
+    #region LoadProgress
+
+    public void SetData(MoneyStorage data)
+    {
+        if (data == null)
+        {
+            return;
+        }
+        _moneyProperty = data.MoneyValueSave;
     }
 
     #endregion

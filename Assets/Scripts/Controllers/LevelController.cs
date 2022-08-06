@@ -1,23 +1,46 @@
 using System.Collections.Generic;
 using UnityEngine;
-public class LevelController : BaseController,
-    ITargetInfo //Service
-{
-    #region PrivateFiedls
 
-    #region Serialized
+public class LevelController : BaseController,
+    ITargetInfo, //Service
+    ISaveable
+{
+    #region PrivateFields
 
     private List<LevelView> _levels;
     private LevelView _currentLevel;
     private int _tempInt;
+    private int _currentLevelIndex;
+    private int _levelIndexProprety
+    {
+        get { return _currentLevelIndex; }
+        set
+        {
+            _currentLevelIndex = value;
+            LevelIndexSave = value;
+        }
+    }
 
     #endregion
+
+    #region AccessFields
+
+    public SaveDataType Type => DataType; //ISaveable
+
+    public readonly SaveDataType DataType;
+
+    #endregion
+
+    #region FieldsToSave
+
+    public int LevelIndexSave;
 
     #endregion
 
     public LevelController(List<LevelView>  levels) : base()
     {
         SetLevels(levels);
+        DataType = SaveDataType.LevelData;
     }
 
     #region PublicMethods
@@ -27,6 +50,7 @@ public class LevelController : BaseController,
     public override void Initialize()
     {
         base.Initialize();
+        SetData(SaveProgressManager.Instance.LoadData<LevelController>(DataType));
         SetEvents();
         InitializeService();
     }
@@ -38,7 +62,6 @@ public class LevelController : BaseController,
     #region PrivateMethods
 
     #region Initialize
-
     private void SetEvents()
     {
         GameEvents.Current.OnGameStart += ChangeLevel;
@@ -59,16 +82,17 @@ public class LevelController : BaseController,
         {
             return;
         }
-        else if (!_currentLevel || CurrentTargetNumber >= _levels.Count)
+        else if (_currentLevel && _currentLevelIndex < _levels.Count)
         {
-            _tempInt = 0;
+            _levelIndexProprety = _levels.IndexOf(_currentLevel) + 1;
         }
-        else
+        else if (_currentLevelIndex >= _levels.Count) 
         {
-            _tempInt = _levels.IndexOf(_currentLevel) + 1;
+            _levelIndexProprety = 0;
         }
         UnLoadLevel(_currentLevel);
-        LoadLevel(GetLevelByIndex(_tempInt));
+        LoadLevel(GetLevelByIndex(_currentLevelIndex));
+        SaveProgressManager.Instance.SaveData(this);
     }
 
     private void RestartLevel()
@@ -129,22 +153,6 @@ public class LevelController : BaseController,
         return levels;
     }
 
-    private LevelView FindLevelByTargetId(int targetId)
-    {
-        if (_levels == null)
-        {
-            return null;
-        }
-        for (int i = 0; i < _levels.Count; i++)
-        {
-            if (_levels[i].TargetId.Equals(targetId))
-            {
-                return _levels[i];
-            }
-        }
-        return null;
-    }
-
     #endregion
 
     #endregion
@@ -152,9 +160,8 @@ public class LevelController : BaseController,
     #region IService
 
     private BaseService<ITargetInfo> _serviceHelper;
-    private List<TargetsUIInfo> _tempInfos;
 
-    public int CurrentTargetNumber => _levels.IndexOf(_currentLevel) + 1;
+    public int CurrentTargetNumber => LevelIndexSave + 1;
 
     public TargetsUIInfo GetTargetInfo(int targetNumber)
     {
@@ -176,8 +183,21 @@ public class LevelController : BaseController,
     {
         _serviceHelper = new BaseService<ITargetInfo>(this);
         _serviceHelper.FindConsumers();
-        _tempInfos = new List<TargetsUIInfo>();
     }
 
     #endregion
+
+    #region LoadProgress
+
+    private void SetData(LevelController data)
+    {
+        if (data == null)
+        {
+            return;
+        }
+        _levelIndexProprety = data.LevelIndexSave;
+    }
+
+    #endregion
+
 }

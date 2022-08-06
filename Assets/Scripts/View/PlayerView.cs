@@ -142,10 +142,27 @@ public class PlayerView : BaseObjectView,
 
     #region Attack
 
-    public void AirKill()
+    public void KillEnemy(EnemyView enemy)
+    {
+        if (enemy)
+        {
+            SetRigidbodyValues(false);
+            if (State == PlayerState.Jumping)
+            {
+                AirKill(enemy);
+            }
+            else
+            {
+                GroundKill(enemy);
+            }
+            enemy.Dead();
+        }
+    }
+
+    public void AirKill(EnemyView enemy)
     {
         SetAnimatorBool("AirKill", true);
-        Kill(EndAirKill);
+        StartCoroutine(KillAnimation(enemy, EndAirKill));
     }
 
     private void EndAirKill()
@@ -154,26 +171,16 @@ public class PlayerView : BaseObjectView,
         Jump();
     }
 
-    public void GroundKill()
+    public void GroundKill(EnemyView enemy)
     {
         _tempInt = Random.Range(1, 3);
         SetAnimatorBool("GroundKill" + _tempInt.ToString(), true);
-        Kill(EndGroundKill);
+        StartCoroutine(KillAnimation(enemy, EndGroundKill));
     }
 
     private void EndGroundKill()
     {
         SetAnimatorBool("GroundKill" + _tempInt.ToString(), false);
-    }
-
-    private void Kill(Action CurrentAction)
-    {
-        if (_hit.collider.gameObject.TryGetComponent(out _enemy))
-        {
-            SetRigidbodyValues(false);
-            KillEnemy(_enemy);
-            StartCoroutine(KillAnimation(_enemy, CurrentAction));
-        }
     }
 
     #endregion
@@ -417,14 +424,6 @@ public class PlayerView : BaseObjectView,
         if (_animator)
         {
             _animator.enabled = !value;
-        }
-    }
-
-    private void KillEnemy(EnemyView enemy)
-    {
-        if (enemy)
-        {
-            enemy.Dead();
         }
     }
 
