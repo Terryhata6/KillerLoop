@@ -9,7 +9,7 @@ namespace SensorToolkit.Example
         public GameObject GunPivot;
         public SteeringRig Steering;
         public Sensor Sight;
-        public Transform[] PatrolPath;
+        public UnityEngine.Transform[] PatrolPath;
         public float WaypointArriveDistance;
         public float PauseTime;
         public float WanderDistance;

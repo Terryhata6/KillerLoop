@@ -1,7 +1,7 @@
 using UnityEngine;
 
 public class CameraController : BaseController,
-    IServiceConsumer<IPlayerSpawner> //Consumer
+    IServiceConsumer<ICameraTargetSpawner> //Consumer
 {
     #region PrivateFields
 
@@ -32,11 +32,11 @@ public class CameraController : BaseController,
 
     #region IServiceConsumer
 
-    public void UseService(IPlayerSpawner service)
+    public void UseService(ICameraTargetSpawner service)
     {
         if (service != null)
         {
-            SetCameraTarget(service.CurrentPlayer.transform);
+            SetCameraTarget(service.CameraTarget);
         }
     }
 

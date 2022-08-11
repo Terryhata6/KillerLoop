@@ -12,7 +12,7 @@ namespace TMPro.Examples
 
         public float SpinSpeed = 5;
         public int RotationRange = 15;
-        private Transform m_transform;
+        private UnityEngine.Transform m_transform;
 
         private float m_time;
         private Vector3 m_prevPOS;

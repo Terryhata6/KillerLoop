@@ -57,9 +57,9 @@ namespace SensorToolkit
         [Tooltip("The distance threshold for the rig to arrive at a destination position.")]
         public float StoppingDistance = 0.5f;
         [Tooltip("The rig will attempt to move towards this transform.")]
-        public Transform DestinationTransform;
+        public UnityEngine.Transform DestinationTransform;
         [Tooltip("The rig will face towards this transform, even strafing while moving towards destination.")]
-        public Transform FaceTowardsTransform;
+        public UnityEngine.Transform FaceTowardsTransform;
 
         RaySensor[] sensors;
         Vector3 destination;

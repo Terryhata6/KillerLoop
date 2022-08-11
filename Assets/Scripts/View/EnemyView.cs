@@ -42,6 +42,17 @@ public class EnemyView : BaseObjectView
     public EnemyState State => _state;
     public float BaseMovementSpeed => _baseMovementSpeed;
 
+    public Quaternion RoadRotation
+        => _roadRunSave?.Points[_savePointCounter].Rotation ?? Rotation;
+
+    public EnemyState RoadState
+        => _roadRunSave?.Points[_savePointCounter].State ?? State;
+
+    public bool EndOfRoad 
+        => _savePointCounter >= _roadRunSave.Points.Count;
+
+    public bool IsNearNextPosition 
+        => (Position - _nextPosition).magnitude <= 0.09f;
     #endregion
 
     private void Awake()
@@ -271,27 +282,26 @@ public class EnemyView : BaseObjectView
 
     public void UpdateRoadPoint()
     {
-        if (_savePointCounter >= _roadRunSave.Points.Count)
+        if (EndOfRoad)
         {
             _canMove = false;
             return;
         }
-        if ((Position - _nextPosition).magnitude <= 0.07f)
+        if (IsNearNextPosition)
         {
             UpdateState();
             UpdateRotation();
             UpdateNextPosition();
             _savePointCounter++;
         }
-
-        _nextPosition.y = Position.y;
+        _nextPosition.y = Position.y; //Необходимо для корректных расчетов
     }
 
     private void UpdateRotation()
     {
         if (_savePointCounter > 0)
         {
-            _transform.rotation = _roadRunSave.Points[_savePointCounter].Rotation;
+            _transform.rotation = RoadRotation;
         }
     }
 
@@ -299,7 +309,7 @@ public class EnemyView : BaseObjectView
     {
         if (_savePointCounter + 1 < _roadRunSave.Points.Count)
         {
-            _nextPosition = _roadRunSave.Points[_savePointCounter + 1].Position;
+            SetNextPosition(_savePointCounter + 1);
         }
     }
 
@@ -332,7 +342,19 @@ public class EnemyView : BaseObjectView
                 _savePointCounter = i;
             }
         }
-        _nextPosition = _roadRunSave.Points[_savePointCounter].Position;
+        SetNextPosition(_savePointCounter);
+    }
+
+    private void SetNextPosition(int index)
+    {
+        if (index < _roadRunSave.Points.Count)
+        {
+            _nextPosition = _roadRunSave.Points[index].Position;
+        }
+        else
+        {
+            _nextPosition = Position;
+        }
     }
 
     #endregion

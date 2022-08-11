@@ -13,9 +13,9 @@ namespace TMPro.Examples
         private TextMeshPro m_textMeshPro;
         private TextMesh m_textMesh;
 
-        private Transform m_transform;
-        private Transform m_floatingText_Transform;
-        private Transform m_cameraTransform;
+        private UnityEngine.Transform m_transform;
+        private UnityEngine.Transform m_floatingText_Transform;
+        private UnityEngine.Transform m_cameraTransform;
 
         Vector3 lastPOS = Vector3.zero;
         Quaternion lastRotation = Quaternion.identity;

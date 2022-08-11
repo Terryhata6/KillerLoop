@@ -162,6 +162,7 @@ public class RoadRunWriter : PlayerView
         _activeRunSaving = false;
         _savePrefab?.SavePoint(new MovementWriterPoint(Rotation, Position, PlayerState.Idle));
         LevelEvents.Current.LevelWin();
+        Debug.Log("finish");
     }
 
     #endregion

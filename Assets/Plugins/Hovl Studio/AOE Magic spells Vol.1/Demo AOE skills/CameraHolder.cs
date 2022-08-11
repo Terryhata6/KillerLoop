@@ -7,7 +7,7 @@ using UnityEngine;
 public class CameraHolder : MonoBehaviour
 {
     //camera holder
-    public Transform Holder;
+    public UnityEngine.Transform Holder;
     public float currDistance = 5.0f;
     public float xRotate = 250.0f;
     public float yRotate = 120.0f;

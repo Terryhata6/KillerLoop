@@ -1,5 +1,7 @@
 ﻿
-public interface IPlayerSpawner : IService
+using UnityEngine;
+
+public interface ICameraTargetSpawner : IService
 {
-    public PlayerView CurrentPlayer { get;}
+    public Transform CameraTarget { get;}
 }

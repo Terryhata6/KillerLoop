@@ -14,7 +14,7 @@ namespace TMPro.Examples
         public int MaxPointSize = 64;
         public int Steps = 4;
 
-        private Transform m_Transform;
+        private UnityEngine.Transform m_Transform;
         //private TextMeshProFloatingText floatingText_Script;
         //public Material material;
 

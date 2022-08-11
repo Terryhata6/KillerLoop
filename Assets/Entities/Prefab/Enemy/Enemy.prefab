@@ -1290,11 +1290,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _animator: {fileID: 5744721596082390224}
   _rigidbody: {fileID: 5511614946357569421}
-  _baseMovementSpeed: 3
-  _jumpForce: 2
+  _baseMovementSpeed: 3.2
+  _jumpForce: 1.5
   _splineTracer: {fileID: 3855693245902013543}
   _flyAwayPower: 20
   _state: 0
+  _roadRunSave: {fileID: 0}
+  _savePointCounter: 0
 --- !u!136 &551206272075753838
 CapsuleCollider:
   m_ObjectHideFlags: 0

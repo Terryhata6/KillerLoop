@@ -37,14 +37,14 @@ public class MainController : MonoBehaviour
         if (_debugTestingScene)
         {
             SceneManager.LoadSceneAsync(_testingSceneName, LoadSceneMode.Additive);
-        }       
+        }
     }
 
     private void Start()
     {
+        SetConsumersToDistributor();
         InitializeControllers();
         SetExecuteControllers();
-        SetConsumersToDistributor();
         _serviceDistributor.Distribute();
         GameEvents.Current.GameStart();
     }

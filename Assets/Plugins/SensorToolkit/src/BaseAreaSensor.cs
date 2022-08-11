@@ -129,7 +129,7 @@ namespace SensorToolkit
 
         // Returns a list of transforms on the given object that passed line of sight tests. Will only return
         // results for objects that have a LOSTargets component.
-        public List<Transform> GetVisibleTransforms(GameObject go)
+        public List<UnityEngine.Transform> GetVisibleTransforms(GameObject go)
         {
             RayCastTargets targets;
             if (go != null && rayCastTargets.TryGetValue(go, out targets))
@@ -138,7 +138,7 @@ namespace SensorToolkit
             }
             else
             {
-                return new List<Transform>();
+                return new List<UnityEngine.Transform>();
             }
         }
 
@@ -209,7 +209,7 @@ namespace SensorToolkit
         class RayCastTargets
         {
             GameObject go;
-            Transform[] targetTransforms;
+            UnityEngine.Transform[] targetTransforms;
             List<Vector2> targetPoints;
             List<Vector2> returnPoints;
             List<bool> isTargetVisible;
@@ -224,7 +224,7 @@ namespace SensorToolkit
                 return targetTransforms != null;
             }
 
-            public void Set(GameObject go, Transform[] targets)
+            public void Set(GameObject go, UnityEngine.Transform[] targets)
             {
                 this.go = go;
                 targetTransforms = targets;
@@ -240,9 +240,9 @@ namespace SensorToolkit
                 isTargetVisible.Clear(); for (int i = 0; i < targets.Count; i++) isTargetVisible.Add(false);
             }
 
-            public List<Transform> GetVisibleTransforms()
+            public List<UnityEngine.Transform> GetVisibleTransforms()
             {
-                var visibleList = new List<Transform>();
+                var visibleList = new List<UnityEngine.Transform>();
                 for (int i = 0; i < isTargetVisible.Count; i++)
                 {
                     if (isTargetVisible[i]) visibleList.Add(targetTransforms[i]);

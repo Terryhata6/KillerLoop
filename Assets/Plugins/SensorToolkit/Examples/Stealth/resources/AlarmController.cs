@@ -8,7 +8,7 @@ namespace SensorToolkit.Example
         public Light PointLight;
         public Color AlarmColour;
         public float FlashFrequency;
-        public Transform[] LinearLevelWaypoints;
+        public UnityEngine.Transform[] LinearLevelWaypoints;
 
         bool alarmStarted = false;
         GameObject whoTrippedAlarm;
@@ -50,13 +50,13 @@ namespace SensorToolkit.Example
          * 'from' and to the 'whoTrippedAlarm' gameobjects. The path is then the sequence of waypoint indices between
          * these two in LinearLevelWaypoints. 
          */
-        public Transform[] PathToWhoTrippedAlarm(GameObject from)
+        public UnityEngine.Transform[] PathToWhoTrippedAlarm(GameObject from)
         {
             var nearestToFrom = getNearestWaypointIndex(from.transform.position);
             var nearestToTripper = getNearestWaypointIndex(whoTrippedAlarm.transform.position);
             var nWaypoints = Mathf.Abs(nearestToFrom - nearestToTripper);
             bool ascending = nearestToTripper > nearestToFrom;
-            var path = new Transform[nWaypoints];
+            var path = new UnityEngine.Transform[nWaypoints];
             for (int i = 0; i < nWaypoints; i++)
             {
                 var offset = ascending ? i : -i;
