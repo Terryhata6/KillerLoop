@@ -1718,7 +1718,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7574862636243893545}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.9471962, y: -64.40968, z: 54.653854}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7574862635462953344}
@@ -1753,6 +1753,8 @@ MonoBehaviour:
   _collectablesInfo:
     _poolExamples: []
     _spawnPoints: {fileID: 0}
+  _winScene: {fileID: 0}
+  _mainLevel: {fileID: 0}
   _writerLevelInfo:
     _savePrefab: {fileID: 7733931519763526561, guid: 6e9dbe746ed4eaf428465f449c2df521, type: 3}
     _spawnPointsStorage: {fileID: 1475946957428213399, guid: b4590694b87731b40bd09000113d14ce, type: 3}

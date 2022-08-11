@@ -28,14 +28,13 @@ public class PlayerView : BaseObjectView,
     private RaycastHit _hit;
     private Camera _mainCam;
     private EngPassObject _engPassObject;
-    private EnemyView _enemy;
     private Vector3 _tempVector;
     private float _baseY;
     private float _x;
     private float _timer;
     private float _movementSpeed;
     private int _tempInt;
-    private float _killingAnimationTime = 0.03f;
+    private float _killingAnimationTime;
     private Collider _tempCollider;
     private Vector3 _hitNormal; //для некоторых состояний нужен
 
@@ -261,7 +260,7 @@ public class PlayerView : BaseObjectView,
         InitializeFields();
         SetRagdoll(false);
         SetRoadSpline(info.RoadSpline);
-        Stand();
+        Stand(); //ActiveState
         Debug.Log("Player Loaded");
     }
 
@@ -331,6 +330,7 @@ public class PlayerView : BaseObjectView,
             Debug.Log("EngPassProjector missing");
         }
         _mainCam = Camera.main;
+        _killingAnimationTime = 0.03f;
         DefaultSpeed();
     }
 

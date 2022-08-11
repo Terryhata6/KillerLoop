@@ -8,7 +8,7 @@ public class CameraMouseOrbit : MonoBehaviour {
     }
 
     public TargetMode targetMode = TargetMode.Position;
-    public Transform targetTransform;
+    public UnityEngine.Transform targetTransform;
     public bool followTargetTransform = true;
     public Vector3 targetOffset = Vector3.zero;
     public Vector3 targetPosition;

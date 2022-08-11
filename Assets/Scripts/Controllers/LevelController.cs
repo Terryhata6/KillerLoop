@@ -68,6 +68,7 @@ public class LevelController : BaseController,
 
         LevelEvents.Current.OnNextLevel += ChangeLevel;
         LevelEvents.Current.OnLevelRestart += RestartLevel;
+        LevelEvents.Current.OnLevelWin += LoadWinScene;
 
     }
 
@@ -82,14 +83,15 @@ public class LevelController : BaseController,
         {
             return;
         }
-        else if (_currentLevel && _currentLevelIndex < _levels.Count)
+        else if (_currentLevel && CurrentTargetNumber < _levels.Count)
         {
             _levelIndexProprety = _levels.IndexOf(_currentLevel) + 1;
         }
-        else if (_currentLevelIndex >= _levels.Count) 
+        else if (CurrentTargetNumber >= _levels.Count) 
         {
             _levelIndexProprety = 0;
         }
+
         UnLoadLevel(_currentLevel);
         LoadLevel(GetLevelByIndex(_currentLevelIndex));
         SaveProgressManager.Instance.SaveData(this);
@@ -132,6 +134,11 @@ public class LevelController : BaseController,
         }
     }
 
+    private void LoadWinScene()
+    {
+        _currentLevel.ActiveWinScene();
+    }
+
     private void SetLevels(List<LevelView> levels)
     {
         if (levels != null
@@ -161,7 +168,7 @@ public class LevelController : BaseController,
 
     private BaseService<ITargetInfo> _serviceHelper;
 
-    public int CurrentTargetNumber => LevelIndexSave + 1;
+    public int CurrentTargetNumber => _currentLevelIndex + 1;
 
     public TargetsUIInfo GetTargetInfo(int targetNumber)
     {

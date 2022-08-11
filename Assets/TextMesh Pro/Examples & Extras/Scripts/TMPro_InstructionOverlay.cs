@@ -16,7 +16,7 @@ namespace TMPro.Examples
 
         private TextMeshPro m_TextMeshPro;
         private TextContainer m_textContainer;
-        private Transform m_frameCounter_transform;
+        private UnityEngine.Transform m_frameCounter_transform;
         private Camera m_camera;
 
         //private FpsCounterAnchorPositions last_AnchorPosition;

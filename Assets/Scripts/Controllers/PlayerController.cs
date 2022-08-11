@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : BaseController, IExecute, 
-    IPlayerSpawner, //Service
+    ICameraTargetSpawner, //Service
     IServiceConsumer<IPlayerLevelInfoUpdater> //Consumer
 {
     #region PrivateFields
@@ -218,8 +218,8 @@ public class PlayerController : BaseController, IExecute,
 
     #region IService
 
-    private BaseService<IPlayerSpawner> _serviceHelper;
-    public PlayerView CurrentPlayer => _playerView;
+    private BaseService<ICameraTargetSpawner> _serviceHelper;
+    public Transform CameraTarget => _playerView.transform;
 
     public void AddConsumer(IConsumer consumer)
     {
@@ -228,7 +228,7 @@ public class PlayerController : BaseController, IExecute,
 
     private void InitializeService()
     {
-        _serviceHelper = new BaseService<IPlayerSpawner>(this);
+        _serviceHelper = new BaseService<ICameraTargetSpawner>(this);
         _serviceHelper.FindConsumers();
     }
 

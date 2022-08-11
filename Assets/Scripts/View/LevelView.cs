@@ -18,6 +18,10 @@ public class LevelView : BaseObjectView,
     [SerializeField] private RoadRunSave _roadRunWay;
     [Header("Collectables Information")]
     [SerializeField] private CollectablesLevelInfo _collectablesInfo;
+    [Header("Winning scene")]
+    [SerializeField] private FinalSceneView _winScene;
+    [Header("Main scene")]
+    [SerializeField] private GameObject _mainLevel;
     [Header("Writer Information")]
     [SerializeField] private WriterLevelInfo _writerLevelInfo;
 
@@ -36,10 +40,26 @@ public class LevelView : BaseObjectView,
     public void Load()
     {
         InitializeService();
+        if (_winScene)
+        {
+            _winScene.Initialize();
+        }
         UpdateConsumersInfo();
         Debug.Log("Level loaded");
         LevelEvents.Current.LevelLoaded();
 
+    }
+
+    public void ActiveWinScene()
+    {
+        if (!_winScene || !_mainLevel)
+        {
+            return;
+        }
+        _mainLevel.SetActive(false);
+        _winScene.Enable();
+        Debug.Log("Win Scene loaded");
+        LevelEvents.Current.WinSceneLoaded();
     }
 
     public void UnLoad()

@@ -19,7 +19,7 @@ namespace TMPro.Examples
         private const string fpsLabel = "{0:2}</color> <#8080ff>FPS \n<#FF8000>{1:2} <#8080ff>MS";
 
         private TextMeshPro m_TextMeshPro;
-        private Transform m_frameCounter_transform;
+        private UnityEngine.Transform m_frameCounter_transform;
         private Camera m_camera;
 
         private FpsCounterAnchorPositions last_AnchorPosition;

@@ -9,10 +9,10 @@ namespace TMPro.Examples
     {
         public enum CameraModes { Follow, Isometric, Free }
 
-        private Transform cameraTransform;
-        private Transform dummyTarget;
+        private UnityEngine.Transform cameraTransform;
+        private UnityEngine.Transform dummyTarget;
 
-        public Transform CameraTarget;
+        public UnityEngine.Transform CameraTarget;
 
         public float FollowDistance = 30.0f;
         public float MaxFollowDistance = 100.0f;

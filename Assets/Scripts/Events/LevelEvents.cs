@@ -40,6 +40,13 @@ public class LevelEvents
         OnLevelLoaded?.Invoke();
     }
 
+    public Action OnWinSceneLoaded;
+    public void WinSceneLoaded()
+    {
+        OnWinSceneLoaded?.Invoke();
+    }
+
+
     public Action OnLevelContinue;
     public void LevelContinue()
     {

@@ -82,7 +82,7 @@ public class ServiceDistributor : Singleton<ServiceDistributor>
             SetConsumersToServices<ICollectedMoneyCounter>(_consumers, _services);
             SetConsumersToServices<IPlayerDistanceUpdater>(_consumers, _services);
             SetConsumersToServices<ITargetDistanceUpdater>(_consumers, _services);
-            SetConsumersToServices<IPlayerSpawner>(_consumers, _services);
+            SetConsumersToServices<ICameraTargetSpawner>(_consumers, _services);
         }
         else
         {

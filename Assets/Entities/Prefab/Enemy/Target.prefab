@@ -1362,7 +1362,7 @@ MonoBehaviour:
   _targetObject: {fileID: 0}
   _offset: {x: 0, y: 0}
   _rotationOffset: {x: 0, y: 0, z: 0}
-  lastPosition: {x: 0.77, y: 0, z: 4.7299995}
+  lastPosition: {x: -1.1771963, y: 64.40968, z: -49.923855}
 --- !u!114 &8878470000465848245
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1382,7 +1382,7 @@ MonoBehaviour:
   _splineTracer: {fileID: 5671305134606515411}
   _flyAwayPower: 50
   _state: 0
-  _roadRunSave: {fileID: 992269219285134464, guid: e0ef3ea9068ccba48b634838f6de6f05, type: 3}
+  _roadRunSave: {fileID: 5603143110596371623, guid: e0ef3ea9068ccba48b634838f6de6f05, type: 3}
   _savePointCounter: 0
   _itemSpawnDelay: 1
 --- !u!1 &3088317194601428697
